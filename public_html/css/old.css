@@ -5503,3 +5503,12 @@ h2 {
   justify-content: center !important;
   align-items: center !important;
 }
+
+.news-content p a {
+  text-decoration: underline !important;
+}
+
+.news-content p a:hover {
+  color: #b53e00;
+  text-decoration:none !important;
+}

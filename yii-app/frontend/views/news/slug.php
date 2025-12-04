@@ -31,7 +31,7 @@ $time = strtotime($model->date);
     <h1><?= $model->seo->h1 ?? $this->title ?></h1>
 
     <div class="single-img w-100">
-        <div class="" id="news-photo-block">
+        <div class="news-content" id="news-photo-block">
             <div class="row w-100">
                 <div class="col-md-412">
                     <div style="text-align: center;">
