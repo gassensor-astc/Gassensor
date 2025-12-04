@@ -5,13 +5,12 @@ Disallow: /cart
 Disallow: /personal-data
 Disallow: /pdf/
 Disallow: /cookie
+Disallow: /js
+Disallow: /site/login
 Disallow: *ProductSearch
 Disallow: *search
 Disallow: *sort=
-Disallow: *login
 Disallow: *?t=
-Disallow: *Ajax
-Disallow: *js
 
 User-agent: Googlebot
 Disallow: /*.pdf
@@ -20,12 +19,11 @@ Disallow: /cart
 Disallow: /personal-data
 Disallow: /pdf/
 Disallow: /cookie
+Disallow: /site/login
 Disallow: *ProductSearch
 Disallow: *search
 Disallow: *sort=
-Disallow: *login
 Disallow: *?t=
-Disallow: *Ajax
 Allow: /js/
 Allow: /assets/35e876f7/
 Allow: /lib/yii2AjaxRequest.js
@@ -38,13 +36,12 @@ Disallow: /cart
 Disallow: /personal-data
 Disallow: /pdf/
 Disallow: /cookie
+Disallow: /js
+Disallow: /site/login
 Disallow: *ProductSearch
 Disallow: *search
 Disallow: *sort=
-Disallow: *login
 Disallow: *?t=
-Disallow: *Ajax
-Disallow: *js
 
 Clean-param: t
 
