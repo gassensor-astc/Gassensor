@@ -1933,7 +1933,6 @@ a.news-box:hover {
 }
 .entry-summary p {
   font-size: 0.84em;
-  color: #1f1f59;
   /* margin-bottom: 30px; */
 }
 .inner-post .entry-footer .post-link {
@@ -5509,6 +5508,15 @@ h2 {
 }
 
 .news-content p a:hover {
+  color: #b53e00;
+  text-decoration:none !important;
+}
+
+.news-content ul li a {
+  text-decoration: underline !important;
+}
+
+.news-content ul li a:hover {
   color: #b53e00;
   text-decoration:none !important;
 }
