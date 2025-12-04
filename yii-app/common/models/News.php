@@ -30,6 +30,7 @@ class News extends NewsBase
         $rules = parent::rules();
 
         $rules[] = ['uploadFile', 'file', 'extensions' => 'png, jpg, gif, pdf'];
+        //$rules[] = [['lenght'], 'string', 'max' => 255];
 
         return $rules;
     }
@@ -45,12 +46,12 @@ class News extends NewsBase
                 'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => false,
             ],
-            'sluggable' => [
+            /*'sluggable' => [
                 'class' => SluggableBehavior::class,
                 'attribute' => 'title',
                 //'ensureUnique' => true,
                 'immutable' => true,
-            ],
+            ],*/
         ];
     }
 

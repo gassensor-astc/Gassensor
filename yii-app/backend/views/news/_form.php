@@ -29,7 +29,7 @@ $js =
 JS;
 
 $this->registerJs($js, $this::POS_READY);
-
+//echo '<pre>';var_dump($model);
 ?>
 
 <?php $form = ActiveForm::begin(); ?>

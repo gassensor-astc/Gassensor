@@ -11,6 +11,7 @@ use common\models\News;
  */
 class NewsSearch extends News
 {
+    public $lenght;
     /**
      * {@inheritdoc}
      */
@@ -18,7 +19,7 @@ class NewsSearch extends News
     {
         return [
             [['id', 'created_at'], 'integer'],
-            [['date', 'slug', 'title', 'content'], 'safe'],
+            [['date', 'slug', 'title', 'content', 'lenght'], 'safe'],
         ];
     }
 
