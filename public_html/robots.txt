@@ -1,7 +1,9 @@
 User-agent: Yandex
+Disallow: /*.pdf
+Disallow: /*.xlsx
 Disallow: /cart
 Disallow: /personal-data
-Disallow: /personal-data/
+Disallow: /pdf/
 Disallow: /cookie
 Disallow: *ProductSearch
 Disallow: *search
@@ -10,14 +12,31 @@ Disallow: *login
 Disallow: *?t=
 Disallow: *Ajax
 Disallow: *js
-
-Clean-param: t&t= /pdf/products/
 
 User-agent: Googlebot
-Allow: /catalog/
+Disallow: /*.pdf
+Disallow: /*.xlsx
 Disallow: /cart
 Disallow: /personal-data
-Disallow: /personal-data/
+Disallow: /pdf/
+Disallow: /cookie
+Disallow: *ProductSearch
+Disallow: *search
+Disallow: *sort=
+Disallow: *login
+Disallow: *?t=
+Disallow: *Ajax
+Allow: /js/
+Allow: /assets/35e876f7/
+Allow: /lib/yii2AjaxRequest.js
+Allow: /catalog/
+
+User-agent: *
+Disallow: /*.pdf
+Disallow: /*.xlsx
+Disallow: /cart
+Disallow: /personal-data
+Disallow: /pdf/
 Disallow: /cookie
 Disallow: *ProductSearch
 Disallow: *search
@@ -27,18 +46,6 @@ Disallow: *?t=
 Disallow: *Ajax
 Disallow: *js
 
-User-agent: *
-Disallow: /cart
-Disallow: /personal-data
-Disallow: /personal-data/
-Disallow: /cookie
-Disallow: *ProductSearch
-Disallow: *search
-Clean-param: t&t= /pdf/products/
-Disallow: *sort=
-Disallow: *login
-Disallow: *?t=
-Disallow: *Ajax
-Disallow: *js
+Clean-param: t
 
 Sitemap: https://gassensor.ru/sitemap.xml
