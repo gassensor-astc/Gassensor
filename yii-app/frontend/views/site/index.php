@@ -53,16 +53,8 @@ $seoHome = Seo::findOne(['type' => Seo::TYPE_PAGE_ABOUT]);
 
     <div class="row">
         <div class="col-xxl-2 col-md-3">
-
-            <p style="font-size: 16px; font-weight: bold">Новости</p>
-
             <div id="main_news">
             </div>
-
-           <br>
-
-            <p><a class="share" href="<?= Url::to(['/news']) ?>">Читать все новости...</a></p>
-
         </div>
 
         <div class="col-xxl-8 col-md-6 order-first order-md-0">

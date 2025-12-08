@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use common\helpers\Tools;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use common\helpers\StringHelpers;
 
 class AjaxController extends Controller
@@ -22,7 +23,7 @@ class AjaxController extends Controller
             ],
         ]);
 
-        $html = '';
+        $html = '<p style="font-size: 16px; font-weight: bold">Новости</p>';
 
         foreach ($dataProvider->getModels() ?? [] as $model) {
             $time = strtotime($model->date);
@@ -33,6 +34,9 @@ class AjaxController extends Controller
                 </p>
             ';
         }
+
+        $html .= '<br>
+            <p><a class="share" href="' . Url::to(['/news']) . '">Читать все новости...</a></p>';
 
         $data = ['message' => 'success', 'code' => 200, 'html' => $html];
 
