@@ -12,6 +12,19 @@ $(function() {
   //   return new bootstrap.Popover(popoverTriggerEl)
   // })
 
+  function getNews() {
+    let csrfToken =  $("meta[name='csrf-token']").attr("content");
+
+    $.ajax({
+      url: 'ajax/mainnews',
+      method: "GET",
+      dataType: "json",
+      success: (resp) => {
+        //console.log(resp);
+        $('#main_news').html(resp.html);
+      }
+    })
+  }
 
   function initAjaxActiveForm(formSelector, config, success, err) {
     try {
@@ -179,4 +192,7 @@ $(function() {
 
   checkCookies();
 
+  if (window.location.pathname === "/") {
+    getNews();
+  }
 });

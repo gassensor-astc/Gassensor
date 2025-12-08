@@ -56,9 +56,10 @@ $seoHome = Seo::findOne(['type' => Seo::TYPE_PAGE_ABOUT]);
 
             <p style="font-size: 16px; font-weight: bold">Новости</p>
 
-            <?php foreach ($dataProvider->getModels() ?? [] as $model): ?>
-                <?= $this->render('_news-list', ['model' => $model]) ?>
-            <?php endforeach; ?>
+            <div id="main_news">
+            </div>
+
+           <br>
 
             <p><a class="share" href="<?= Url::to(['/news']) ?>">Читать все новости...</a></p>
 
