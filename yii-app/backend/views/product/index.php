@@ -54,15 +54,11 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index', 's
 
                         'columns' => array(
                             array('class' => 'yii\grid\SerialColumn'),
-                            array('class' => 'yii\grid\ActionColumn'),
+                            //array('class' => 'yii\grid\ActionColumn'),
                             'id',
-                            array(
-                                'class' => 'yii\grid\CheckboxColumn', 'checkboxOptions' => function ($model) {
-                                return array('value' => $model->id);
-                            },
-                            ),
                             'createdUpdatedAt:raw:Создан/Изменен',
-                            'name',
+                            //'name',
+                            Product::getColumnNameField(),
                             'manufacture_id:raw:id производителя',
 
                             Product::getManufactureTitleGridCol(),
@@ -78,13 +74,12 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index', 's
                                         : null;
                                 }
                             ),
-                            'price',
+                            //'price',
                             array(
                                 'attribute' => 'slug',
                                 'format' => 'raw',
                                 'value' => function ($model) {
-                                    $url = $model->url;
-                                    return $model->slug . '<hr/>' . Html::a($url, $url, array('target' => '_blank', 'data-pjax' => 0));
+                                    return Html::a($model->slug, $model->url, array('target' => '_blank', 'data-pjax' => 0));
                                 }
                             ),
                             'measurement_type_id',
@@ -99,15 +94,20 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index', 's
                                     return $this->render('_ranges', array('model' => $model));
                                 }
                             ),
-                            'resolution',
-                                'sensitivity',
-                            'sensitivity_unit',
+                            //'resolution',
+                            //'sensitivity',
+                            //'sensitivity_unit',
                             'response_time:datetime',
-                            'energy_consumption_from',
-                            'energy_consumption_to',
+                            //'energy_consumption_from',
+                            //'energy_consumption_to',
                             'energy_consumption_unit',
                             'temperature_range_from',
                             'temperature_range_to',
+                            array(
+                                'class' => 'yii\grid\CheckboxColumn', 'checkboxOptions' => function ($model) {
+                                    return array('value' => $model->id);
+                                },
+                            ),
                         ),
                     )); ?>
 

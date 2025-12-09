@@ -112,11 +112,11 @@ $this->registerJs($js, $this::POS_READY);
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row hidden">
                 <?= $form->field($model, 'sensitivity')->textInput() ?>
             </div>
 
-            <div class="row">
+            <div class="row hidden">
                 <?= $form->field($model, 'resolution')->textInput() ?>
             </div>
 
@@ -138,7 +138,7 @@ $this->registerJs($js, $this::POS_READY);
                 <div class="col"><?= $form->field($model, 'sensitivity_digital')->textInput(['maxlength' => true])->label(false) ?></div>
             </div>
 
-            <div class="row">
+            <div class="row hidden">
                 <div class="col"><?= $form->field($model, 'sensitivity_from')->textInput() ?></div>
                 <div class="col"><?= $form->field($model, 'sensitivity_to')->textInput() ?></div>
                 <div class="col"><?= $form->field($model, 'sensitivity_unit')->textInput(['maxlength' => true])->label('Ед. изм.') ?></div>
