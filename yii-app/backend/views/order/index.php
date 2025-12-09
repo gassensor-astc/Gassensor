@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="row">
                         <div class="col-md-12">
 
-                            <?= Html::a('<i class="far fa-file-excel"></i> Экспорт Excel', Url::current(['export-excel']), ['class' => 'btn btn-sm btn-primary ml-5']) ?>
+                            <?= Html::a('<i class="far fa-file-excel"></i> Экспорт в Excel', Url::current(['export-excel']), ['class' => 'btn btn-sm btn-primary ml-5']) ?>
 
                         </div>
                     </div>
@@ -67,7 +67,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'columns' => [
                                 ['class' => 'yii\grid\CheckboxColumn'],
                                 ['class' => 'yii\grid\SerialColumn'],
-                                ['class' => 'yii\grid\ActionColumn'],
                                 'id',
                                 'created_at:dateTime',
                                 [
@@ -90,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'phone',
                                 'delivery_info:ntext',
                                 'comment:ntext',
-
+                                ['class' => 'yii\grid\ActionColumn'],
                             ],
                         ]); ?>
 
@@ -109,3 +108,14 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
+
+<script>
+    (function(){
+        let yeys = document.querySelectorAll('a[title="Просмотр"]');
+        for (let i in yeys) {
+            if (yeys[i]) {
+                yeys[i].style.display = 'none';
+            }
+        }
+    })()
+</script>

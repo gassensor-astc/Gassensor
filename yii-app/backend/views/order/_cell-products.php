@@ -1,5 +1,6 @@
 <?php
 use common\models\Order;
+use common\models\Product;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -10,7 +11,10 @@ use yii\helpers\Html;
 <ul>
     <?php foreach ($model->orderProducts as $v): ?>
       <li>
-        <?= Html::a($v->product_info, ['product/view', 'id' => $v->product_id], ['target' => '_blank', 'data-pjax' => 0]) ?>
+          <?php
+          $product = Product::findOne($v->product_id);
+          ?>
+        <?= Html::a($v->product_info, '/product/' . $product->slug, ['target' => '_blank', 'data-pjax' => 0]) ?>
         (<?= $v->count ?> шт)
       </li>
     <?php endforeach; ?>
