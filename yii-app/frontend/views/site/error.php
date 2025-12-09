@@ -8,7 +8,7 @@
 use common\widgets\TraceViewer;
 use yii\helpers\Html;
 
-$this->title = $name;
+$this->title = '404 - страница не найдена';
 ?>
 <style>
     .error_subtitle {
@@ -109,3 +109,9 @@ if ($exception instanceof \yii\web\NotFoundHttpException) {
 <?php endif; ?>
 
 </div>
+
+<script>
+    (function(){
+        document.title = "404 - страница не найдена";
+    })()
+</script>
