@@ -38,7 +38,17 @@ $this->params['productJsonLd'] = $model->getJsonLd();
 ?>
 
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> container'>
-    <h1><?= $seo->h1 ?? $this->title ?></h1>
+    <h1>
+        <?= $seo->h1 ?? $this->title ?>
+        <?php if (\Yii::$app->user->isAdmin()): ?>
+                <a href="/backend/product/update?id=<?= $model->id ?>"
+                   class="btn d-inline rounded-pill ml-2"
+                   target="_blank"
+                   style="font-size: 0.8rem; padding: 4px; background: red;">
+                    <i class="fa fa-edit m-1"></i>
+                </a>
+        <?php endif; ?>
+    </h1>
 
     <div class="row">
         <div class="col-md-4">
@@ -70,16 +80,6 @@ $this->params['productJsonLd'] = $model->getJsonLd();
             <div class="border my-3 p-2 bg-light">
                 <?= CartAddWidget::widget(['formAdd' => $formAdd, 'model' => $model, 'hiddenCount' => false, 'tableGrid' => true]) ?>
             </div>
-            <?php if (\Yii::$app->user->isAdmin()): ?>
-                <div class="mt-5">
-                    <a href="/backend/product/update?id=<?= $model->id ?>"
-                       class="btn d-inline rounded-pill"
-                       target="_blank"
-                       style="font-size: 0.8rem; padding: 4px; background: red;">
-                        <i class="fa fa-edit m-1"></i>
-                    </a>
-                </div>
-            <?php endif; ?>
 
         </div>
         <div class="col-md-8">
