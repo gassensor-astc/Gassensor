@@ -5,11 +5,11 @@
 ?>
 
 <div class="container">
-    <div class="row">
+    <div class="flex-row gap-1">
 
         <?php if ($model->first === 1): ?>
 
-            <div class="col-sm">
+            <div class="">
 
                 <?php /* Yii::t('app', 'First') */?>
 
@@ -21,7 +21,13 @@
 
         <?php if ($model->analog === 1): ?>
 
-            <div class="col-sm">
+            <?php
+            if ($model->sensitivity_first) {
+                echo '<div class="" style="max-width: 10px;">&#47;</div>';
+            }
+            ?>
+
+            <div class="">
 
                 <?php /* Yii::t('app', 'Analog') */?>
 
@@ -33,7 +39,13 @@
 
         <?php if ($model->digital === 1): ?>
 
-            <div class="col-sm">
+            <?php
+            if ($model->sensitivity_first || $model->sensitivity_analog) {
+                echo '<div class="" style="max-width: 10px;">&#47;</div>';
+            }
+            ?>
+
+            <div class="">
 
                 <?php /* Yii::t('app', 'Digital') */?>
 
