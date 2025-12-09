@@ -12,9 +12,13 @@ use yii\helpers\Html;
     <?php foreach ($model->orderProducts as $v): ?>
       <li>
           <?php
-          $product = Product::findOne($v->product_id);
+          $myProduct = Product::findOne($v->product_id);
+          $mySlug = '';
+          if ($myProduct) {
+              $mySlug = '/product/' . $myProduct->slug;
+          }
           ?>
-        <?= Html::a($v->product_info, '/product/' . $product->slug, ['target' => '_blank', 'data-pjax' => 0]) ?>
+        <?= Html::a($v->product_info, $mySlug, ['target' => '_blank', 'data-pjax' => 0]) ?>
         (<?= $v->count ?> шт)
       </li>
     <?php endforeach; ?>
