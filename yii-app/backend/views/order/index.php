@@ -110,12 +110,14 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <script>
-    (function(){
-        let yeys = document.querySelectorAll('a[title="Просмотр"]');
-        for (let i in yeys) {
-            if (yeys[i]) {
-                yeys[i].style.display = 'none';
+    (function() {
+        setInterval(() => {
+            let eyes = document.querySelectorAll('a[title="Просмотр"]');
+            for (let i = 0; i < eyes.length; i++) {
+                if (eyes[i]) {
+                    eyes[i].style.display = 'none';
+                }
             }
-        }
+        }, 500);
     })()
 </script>

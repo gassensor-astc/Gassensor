@@ -17,6 +17,8 @@ class OrderController extends Controller
 {
     use FlashTrait;
 
+    public $enableCsrfValidation = false;
+
     /**
      * @inheritDoc
      */
@@ -93,7 +95,7 @@ class OrderController extends Controller
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             Yii::$app->getSession()->setFlash('success', "Данные успешно обновлены");
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['update', 'id' => $model->id]);
         }
 
         return $this->render('update', compact('model'));
