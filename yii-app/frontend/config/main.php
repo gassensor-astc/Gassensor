@@ -29,6 +29,7 @@ return [
                 'catalog/manufacture/<slug>' => 'catalog/manufacture',
                 'news/page/<page:\d+>' => 'news/index',
                 'news/<slug>' => 'news/slug',
+                'ajax/mainnews' => 'ajax/mainnews',
                 'manufacture/<slug>' => 'manufacture/slug',
                 'applications/page/<page:\d+>' => 'applications/index',
                 'remains/page/<page:\d+>' => 'remains/index',
