@@ -25,6 +25,7 @@ return [
             'name' => 'sessid',
         ],
         'urlManager' => [
+            //'enableStrictParsing' => true,
             'rules' => [
                 'catalog/manufacture/<slug>' => 'catalog/manufacture',
                 'news/page/<page:\d+>' => 'news/index',
@@ -40,7 +41,7 @@ return [
                 'catalog/<slug>' => 'catalog/gas',
                 'catalog' => 'catalog/index',
                 'page/<slug>' => 'page/index',
-                '/<page:\d+>' => 'site/index',
+                //'/<page:\d+>' => 'site/index',
 
                 [
                     'pattern' => 'products',
