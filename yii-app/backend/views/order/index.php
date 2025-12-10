@@ -89,7 +89,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'phone',
                                 'delivery_info:ntext',
                                 'comment:ntext',
-                                ['class' => 'yii\grid\ActionColumn'],
+                                [
+                                    'class' => 'yii\grid\ActionColumn',
+                                    'template' => '{update} {delete}',
+                                ],
                             ],
                         ]); ?>
 
@@ -108,16 +111,3 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
-
-<script>
-    (function() {
-        setInterval(() => {
-            let eyes = document.querySelectorAll('a[title="Просмотр"]');
-            for (let i = 0; i < eyes.length; i++) {
-                if (eyes[i]) {
-                    eyes[i].style.display = 'none';
-                }
-            }
-        }, 500);
-    })()
-</script>
