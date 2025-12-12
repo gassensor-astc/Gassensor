@@ -43,7 +43,7 @@ use yii\widgets\ActiveForm;
     <?php endif; ?>
 
     <?php if ($tableGrid === false): ?>
-        <?= Html::submitButton('Добавить в корзину', ['class' => 'btn btn-primary mt-1',]) ?>
+        <?= Html::submitButton('<span class="icon ion-md-basket"></span>', ['class' => 'btn btn-primary mt-1', 'style' => 'min-width: 50px;']) ?>
     <?php endif; ?>
 
     <?php ActiveForm::end(); ?>

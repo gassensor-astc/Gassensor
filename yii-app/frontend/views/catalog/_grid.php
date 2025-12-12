@@ -49,16 +49,6 @@ use yii\helpers\Html;
             ],
 
             [
-                'attribute' => 'cart',
-                'label' => 'Заказать',
-                'headerOptions' => ['class' => 'table-top'],
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return $this->render('_cell-cart', ['model' => $model]);
-                }
-            ],
-
-            [
                 'label' => 'Диапазон',
                 'headerOptions' => ['class' => 'table-top'],
                 'class' => MyDataColumn::class,
@@ -66,6 +56,27 @@ use yii\helpers\Html;
             ],
 
             Product::getMeasurementTypeNameGridCol(),
+
+            [
+                'attribute' => 'signalType',
+                'label' => 'Выходной сигнал',
+                'headerOptions' => ['class' => 'table-top'],
+                'contentOptions' => ['style' => 'text-align:center;'],
+                'format' => 'raw',
+                'value' => function ($model) {
+                    $html = '';
+                    if ($model->first) {
+                        $html .= '<div>Первичный</div>';
+                    }
+                    if ($model->analog) {
+                        $html .= '<div>Аналоговый</div>';
+                    }
+                    if ($model->digital) {
+                        $html .= '<div>Цифровой</div>';
+                    }
+                    return $html;
+                }
+            ],
 
             [
                 'attribute' => 'formfactor',
@@ -86,7 +97,7 @@ use yii\helpers\Html;
                             $value = $value . '.0';
                         }
 
-                        return '<div class="text-end">' . $value . '</div>';
+                        return '<div class="text-center">' . $value . '</div>';
                     } else {
                         return '<p class="text-center">' . $model->formfactor . '</p>';
                     }
@@ -96,6 +107,16 @@ use yii\helpers\Html;
 
             Product::getManufactureTitleGridCol(),
 
+            [
+                'attribute' => 'cart',
+                'label' => 'Заказать',
+                'headerOptions' => ['class' => 'table-top', 'style' => 'max-width: 90px;'],
+                'contentOptions' => ['style' => 'text-align:center; max-width: 90px;'],
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return $this->render('_cell-cart', ['model' => $model]);
+                }
+            ],
         ],
     ]); ?>
 

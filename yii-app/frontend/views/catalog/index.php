@@ -6,9 +6,11 @@
 /* @var $seo common\models\Seo|null */
 
 use common\models\Seo;
+use frontend\assets\AppAsset;
 
 $this->title = 'Каталог';
 $this->params['breadcrumbs'][] = $this->title;
+$this->registerJsFile('lib/yii2AjaxRequest.js', ['depends' => AppAsset::class]);
 
 if (!$seo) {
     $seo = Seo::findOne(['type' => Seo::TYPE_PAGE_CATALOG]);
@@ -23,7 +25,19 @@ $js =
     <<<JS
 
 $("select").change(function(){
-    $(this).closest("form").submit();
+    if ($(this).attr('id') !== 'productsearch-selectedsignaltypes') {
+        $(this).closest("form").submit();
+    } else {
+        setTimeout(()=>{
+            let h = $('.select2-selection--multiple').outerHeight();
+            console.log('h = ' + h);
+            if (h < 45) {
+                $('#form_div').css('height', '330px');
+            } else {
+                $('#form_div').css('height', '360px');
+            }
+        }, 100);       
+    }
 })
 
 $('input[type="number"]').on('change', function() {
@@ -41,7 +55,17 @@ $(window).on("scroll", function(){
 $(document).ready(function(){
 
 	var p = window.location.search;
-
+    
+    setTimeout(()=>{
+            let h = $('.select2-selection--multiple').outerHeight();
+            console.log('h = ' + h);
+            if (h < 45) {
+                $('#form_div').css('height', '330px');
+            } else {
+                $('#form_div').css('height', '360px');
+            }
+        }, 500);
+    
 	p = p.match(new RegExp('scroll=([^&=]+)'));
 
 	if (p) {
@@ -76,12 +100,10 @@ $this->registerJs($js, $this::POS_READY);
     <h1 class="text-center"><?= $seo->h1 ?? $this->title ?></h1>
 
     <div class="row">
-        <div style="height: 360px" class="col-lg-2 col-md-3 bg-light border py-1">
-
+        <div style="height: 330px;" class="col-lg-2 col-md-3 bg-light border py-1" id="form_div">
             <?= $this->render('_filter', [
                 'model' => $searchModel,
             ]) ?>
-
         </div>
         <div class="col-md-10">
 

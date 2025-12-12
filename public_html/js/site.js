@@ -88,6 +88,18 @@ $(function() {
         return;
       }
 
+      let html = '';
+      //<span id="cartTotalNum" className="fs-09" style="vertical-align: middle;">
+      //
+      //                                            (<span className="val">1</span>)
+      //
+      //                       </span>
+      if (parseInt(resp.data.count)) {
+        html = '(<span className="val">'+resp.data.count+'</span>)';
+      }
+
+      $('#cartTotalNum').html(html);
+
       var modal = bootstrap.Modal.getInstance(modalWrapAddCart);
 
       inputCount.val(resp.data.count).data('id', resp.data.id);
