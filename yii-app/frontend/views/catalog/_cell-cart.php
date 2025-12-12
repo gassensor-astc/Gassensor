@@ -8,6 +8,10 @@ $formAdd = new common\components\cart\AddToCartForm(['productId' => $model->id, 
 
 ?>
 
-<?= CartAddWidget::widget(['formAdd' => $formAdd, 'model' => $model,]) ?>
+<?= CartAddWidget::widget([
+    'formAdd' => $formAdd,
+    'model' => $model,
+    //'button_label' => 'Купить',
+    ]) ?>
 
 

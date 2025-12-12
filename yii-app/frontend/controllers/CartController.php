@@ -52,8 +52,10 @@ class CartController extends Controller
         $cart = Yii::$app->cart;
         $item = $cart->getItem($model->productId);
 
+
+
         return [
-            'count' => $item->count,
+            'count' => $cart->getItemsCount(),
             'id' => $item->product->id,
         ];
     }

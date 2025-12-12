@@ -4,6 +4,7 @@ namespace common\models\search;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 use common\models\Product;
 
 
@@ -30,6 +31,28 @@ class ProductSearch extends Product
 
     public $measurement_type_name;
 
+    public $selectedSignalTypes = [
+        1 => 'Первичный',
+        2 => 'Аналоговый',
+        3 => 'Цифровой',
+    ];
+
+    public function getAvailableSignalTypes()
+    {
+//        $signalTypes = [
+//            ['id' => 1, 'name' => 'Первичный'],
+//            ['id' => 2, 'name' => 'Аналоговый'],
+//            ['id' => 3, 'name' => 'Цифровой'],
+//        ];
+//
+//        return ArrayHelper::map($signalTypes, 'id', 'name');
+
+        return [
+            1 => 'Первичный',
+            2 => 'Аналоговый',
+            3 => 'Цифровой',
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -57,9 +80,9 @@ class ProductSearch extends Product
 
             ['temperature_range_from', 'default', 'value' => -100],
             ['temperature_range_to', 'default', 'value' => 1000],
-
+            //['selectedSignalTypes', 'each', 'rule' => ['integer']],
             [['name', 'img', 'slug', 'range_unit', 'sensitivity_unit', 'sensitivity',
-                'gaz_title', 'manufacture_title', 'measurement_type_name',], 'safe'],
+                'gaz_title', 'manufacture_title', 'measurement_type_name', 'selectedSignalTypes'], 'safe'],
         ];
     }
 
@@ -224,6 +247,8 @@ class ProductSearch extends Product
             $query->orderBy('product.name ASC');
         }
 
+
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -235,6 +260,18 @@ class ProductSearch extends Product
             'formfactor' => $this->formfactor,
             'response_time' => $this->response_time,
         ]);
+
+        if (!empty($this->selectedSignalTypes)) {
+            if (in_array('1', $this->selectedSignalTypes)) {
+                $query->andFilterWhere(['=', 'first', 1]);
+            }
+            if (in_array('2', $this->selectedSignalTypes)) {
+                $query->andFilterWhere(['=', 'analog', 1]);
+            }
+            if (in_array('3', $this->selectedSignalTypes)) {
+                $query->andFilterWhere(['=', 'digital', 1]);
+            }
+        }
 
         $query->andFilterWhere(['>=', 'temperature_range_from', $this->temperature_range_from]);
         $query->andFilterWhere(['<=', 'temperature_range_to', $this->temperature_range_to]);
