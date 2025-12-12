@@ -5,6 +5,10 @@ option:disabled {
     background-color: #e5e7ed
 }
 
+textarea.select2-search__field::placeholder {
+    color: #181717 !important;
+}
+
 .login-page main {
     width: 100%;
     max-width: 460px;

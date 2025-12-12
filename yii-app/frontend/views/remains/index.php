@@ -11,7 +11,7 @@ $seo = Seo::findOne(['type' => Seo::TYPE_PAGE_REMAINS])->registerMetaTags($this)
 $this->params['breadcrumbs'][] = $this->title;
 
 $filename = './upload/' . Setting::getSensorsList();
-
+$filename_dwnld = '/upload/sensors_list.xlsx';
 ?>
 <style>
     .page-item.active .page-link {
@@ -38,7 +38,7 @@ $filename = './upload/' . Setting::getSensorsList();
 
             <?php if (file_exists($filename)): ?>
 
-            <p><a class="share" target="_blank" href="<?= $filename ?>">Скачать список доступной продукции в формате Excel</a> (<?= StringHelpers::humanFilesize(filesize($filename),0)?>)</p>
+            <p><a class="share" target="_blank" href="<?= $filename_dwnld ?>">Скачать список доступной продукции в формате Excel</a> (<?= StringHelpers::humanFilesize(filesize($filename),0)?>)</p>
 
             <?php endif ?>
 
@@ -78,5 +78,3 @@ $filename = './upload/' . Setting::getSensorsList();
         </div>
     </div>
 </div>
-
-

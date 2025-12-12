@@ -86,6 +86,17 @@ class Product extends ProductBase
         return $rules;
     }
 
+    public function getAvailableSignalTypes()
+    {
+        $signalTypes = [
+            ['id' => 1, 'name' => 'Первичный'],
+            ['id' => 2, 'name' => 'Аналоговый'],
+            ['id' => 3, 'name' => 'Цифровой'],
+        ];
+
+        return ArrayHelper::map($signalTypes, 'id', 'name');
+    }
+
     /**
      * {@inheritDoc}
      * @see \yii\base\Component::behaviors()

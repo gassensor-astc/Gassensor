@@ -49,16 +49,6 @@ use yii\helpers\Html;
         ],
 
         [
-            'attribute' => 'cart',
-            'headerOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
-            'label' => 'Заказать',
-            'format' => 'raw',
-            'value' => function($model) {
-                return $this->render('../catalog/_cell-cart', ['model' => $model]);
-            }
-        ],
-
-        [
             'label' => 'Диапазон',
             'headerOptions' => ['class' => 'table-top'],
             'class' => MyDataColumn::class,
@@ -86,7 +76,7 @@ use yii\helpers\Html;
                         $value = $value . '.0';
                     }
 
-                    return '<div class="text-end">' . $value . '</div>';
+                    return '<div class="text-center">' . $value . '</div>';
                 } else {
                     return '<p class="text-center">' . $model->formfactor . '</p>';
                 }
@@ -95,6 +85,16 @@ use yii\helpers\Html;
         ],
 
         Product::getManufactureTitleGridCol(),
+
+        [
+            'attribute' => 'cart',
+            'headerOptions' => ['style' => 'text-align:center; vertical-align: middle;'],
+            'label' => 'Заказать',
+            'format' => 'raw',
+            'value' => function($model) {
+                return $this->render('../catalog/_cell-cart', ['model' => $model]);
+            }
+        ],
     ],
 ]); ?>
 
