@@ -24,6 +24,12 @@ textarea.select2-search__field::placeholder {
     border-radius: 5px
 }
 
+.has-error .help-block {
+    color: red;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+}
+
 .login-block h1, .login-block h6 {
     font-family: Open Sans, sans-serif;
     color: #96a2b2;

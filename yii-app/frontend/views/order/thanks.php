@@ -4,7 +4,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model common\models\Order|null */
 
-$this->title = 'Создан заказ';
+$this->title = 'Заказ создан!';
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index', 'sort' => '-id']];
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -20,19 +20,20 @@ $this->params['breadcrumbs'][] = $this->title;
         </p>
 	</div>
 	<div class="col">
-		<?= Html::a('Продолжить поиск сенсора', '/catalog', ['class' => 'btn', 'onclick' => "ym(85084891,'reachGoal','CLICK_ON_SEARCH_SPONSOR')"]) ?>
 	</div>
 </div>
 
 
     <?php if ($model): ?>
-    <div class="border">
+    <div class="">
         <h3>Данные заказа</h3>
 
         <div class="row">
             <div class="col-sm-6">
                 <ul>
-                	<li>Получатель: <b><?= $model['name'] ?></b> <?= $model['email'] ?> <?= $model['phone'] ?></li>
+                	<li>Получатель: <b><?= $model['name'] ?></b></li>
+                    <li>E-mail: <b><?= $model['email'] ?></b></li>
+                    <li>Телефон: <b><?= $model['phone'] ?></b></li>
                     <li>Доставка: <?= $model['delivery_info'] ?></li>
                     <li>Комментарий: <?= $model['comment'] ?></li>
                 </ul>
@@ -45,6 +46,9 @@ $this->params['breadcrumbs'][] = $this->title;
               <?php endforeach; ?>
               </ul>
 
+            </div>
+            <div>
+                <?= Html::a('Продолжить поиск сенсора', '/catalog', ['class' => 'btn', 'onclick' => "ym(85084891,'reachGoal','CLICK_ON_SEARCH_SPONSOR')"]) ?>
             </div>
         </div>
     </div>

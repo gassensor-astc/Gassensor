@@ -37,8 +37,8 @@ th, td {
           <!-- backend
           <a href="https://gassensor.ru/backend/product/view?id=<?= $id ?>"> #<?= $id ?> </a>
            -->
-          <a href="https://gassensor.ru<?= $orderProduct->product->url ?>"> #<?= $id ?> </a>
-          <b><?= $orderProduct->product->name ?></b>
+          <a href="https://gassensor.ru<?= $orderProduct->product->url ?>">#<?= $id ?></a>
+          &nbsp;<b><?= $orderProduct->product->name ?></b>
         </td>
         <td><?= $orderProduct->count ?></td>
     </tr>
@@ -49,11 +49,11 @@ th, td {
 <hr />
 
 <h3>Клиент</h3>
-name: <?= $model->name ?>
+Получатель: <?= $model->name ?>
 <br />
-email: <?= $model->email ?>
+E-mail: <?= $model->email ?>
 <br />
-тел: <?= $model->phone ?>
+Телефон: <?= $model->phone ?>
 <br />
 Информация о доставке: <?= $model->delivery_info ?>
 <br />

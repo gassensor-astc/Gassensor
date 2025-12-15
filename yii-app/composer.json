@@ -10,6 +10,7 @@
     "kartik-v/yii2-editors": "dev-master",
     "kartik-v/yii2-grid": "dev-master",
     "kartik-v/yii2-widget-select2": "@dev",
+    "kartik-v/yii2-widgets": "^3.4",
     "kidzen/yii2-dynamicform": "*",
     "phpoffice/phpspreadsheet": "*",
     "wbraganca/yii2-dynamicform": "*",
