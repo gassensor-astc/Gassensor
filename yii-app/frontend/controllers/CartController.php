@@ -75,7 +75,7 @@ class CartController extends Controller
             $this->addFlashError('invalid request');
         } else {
             $cart->removeItem($id);
-            $this->addFlashSuccess("Удален товар {$product->name}");
+            //$this->addFlashSuccess("Удален товар {$product->name}");
         }
 
         return $this->redirect(['index']);
