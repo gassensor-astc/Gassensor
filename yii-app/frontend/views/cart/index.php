@@ -11,16 +11,22 @@ $this->params['breadcrumbs'][] = $this->title;
 $cart = Yii::$app->cart;
 
 ?>
+<style>
+    .help-block {
+        color: red;
+    }
+</style>
 
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> container'>
      <h1><?= $this->title ?></h1>
 
-<table>
+<table style="width: 100%;">
 
 <tr>
-	<th>Товар</th>
-    <th>Кол-во, шт</th>
-    <th></th>
+	<th style="min-width: 10%;">Товар</th>
+    <th style="min-width: 77%;">Название</th>
+    <th style="width: 5%; max-width: 5%;">Кол-во, шт</th>
+    <th style="width: 8%; max-width: 8%;"></th>
 </tr>
 
 <?php foreach ($cart->getItems() as $id => $data): ?>
@@ -29,9 +35,11 @@ $cart = Yii::$app->cart;
       <?= Html::a($data->product->name, "/product/{$data->product->slug}") ?>
     </td>
     <td>
-    	<?= Html::input('number', 'count', $data->count, ['class' => 'cart-item-count', 'data-id' => $data->product->id,]) ?>
+        <?= $data->product->seo->h1 ?>
     </td>
-
+    <td>
+    	<?= Html::input('number', 'count', $data->count, ['style' => 'width: 100px','class' => 'cart-item-count', 'data-id' => $data->product->id,]) ?>
+    </td>
     <td>
       <?= Html::a('<i class="ion-md-trash"></i> Удалить', ['del', 'id' => $id]) ?>
     </td>

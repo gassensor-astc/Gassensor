@@ -148,7 +148,7 @@ class Order extends OrderBase
                 ['html' => 'orderCreated-html', 'text' => 'orderCreated-text'],
                 ['model' => $this]
             )
-            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'])
+            ->setFrom([Yii::$app->params['supportEmail'] => 'Гассенсор'])
             ->setTo(explode(',', $to))
             ->setSubject("Новый заказ #{$this->id}")
             ->send();

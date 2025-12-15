@@ -2,6 +2,8 @@
 
 namespace backend\controllers;
 
+use common\models\Order;
+use common\models\OrderProduct;
 use Yii;
 use common\helpers\{Uploader,FlashTrait};
 use yii\filters\VerbFilter;
@@ -52,7 +54,46 @@ class SiteController extends Controller
         //$this->addFlashSuccess('test1');
         //$this->addFlashError('test2');
 
-        return $this->render('index');
+        $chartData = [
+            's1' => [],
+            'ticks' => [],
+        ];
+        $chartDataLine = [];
+
+        $allOrders = Order::find()->orderBy('created_at ASC')->asArray()->all();
+        $dates = [];
+        $dates2 = [];
+
+        foreach ($allOrders as $order) {
+            $data = date('d.m.Y', $order['created_at']);
+            $data2 = date('Y-m-d', $order['created_at']);
+
+            if (!isset($dates[$data])) {
+                $dates[$data] = 0;
+            }
+            if (!isset($dates2[$data2])) {
+                $dates2[$data2] = 0;
+            }
+
+            $orderProduct = OrderProduct::find()->where(['=', 'order_id', $order['id']])->asArray()->one();
+
+            if ($orderProduct) {
+                $dates[$data] += $orderProduct['count'];
+                $dates2[$data2] += $orderProduct['count'];
+            }
+        }
+
+        foreach ($dates as $date => $counts) {
+            $chartData['s1'][] = $counts;
+            $chartData['ticks'][] = $date;
+        }
+
+        foreach ($dates2 as $date => $counts) {
+            $chartDataLine[] = [$date, $counts];
+        }
+
+
+        return $this->render('index', compact('chartData', 'chartDataLine'));
     }
 
     /**
