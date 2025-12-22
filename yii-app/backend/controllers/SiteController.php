@@ -60,7 +60,12 @@ class SiteController extends Controller
         ];
         $chartDataLine = [];
 
-        $allOrders = Order::find()->orderBy('created_at ASC')->asArray()->all();
+        $lMonth = strtotime("-1 month");
+        $allOrders = Order::find()
+            ->orderBy('created_at ASC')
+            ->asArray()
+            ->all();
+
         $dates = [];
         $dates2 = [];
 
@@ -92,6 +97,7 @@ class SiteController extends Controller
             $chartDataLine[] = [$date, $counts];
         }
 
+        array_splice($chartDataLine, 0, -10);
 
         return $this->render('index', compact('chartData', 'chartDataLine'));
     }
