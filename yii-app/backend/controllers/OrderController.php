@@ -52,7 +52,11 @@ class OrderController extends Controller
         ];
         $chartDataLine = [];
 
-        $allOrders = Order::find()->orderBy('created_at ASC')->asArray()->all();
+        $allOrders = Order::find()
+            ->orderBy('created_at ASC')
+            ->asArray()
+            ->all();
+
         $dates = [];
         $dates2 = [];
 
@@ -83,6 +87,8 @@ class OrderController extends Controller
         foreach ($dates2 as $date => $counts) {
             $chartDataLine[] = [$date, $counts];
         }
+
+        array_splice($chartDataLine, 0, -10);
 
         return $this->render('index', compact('searchModel', 'dataProvider', 'chartData', 'chartDataLine'));
     }
