@@ -169,6 +169,10 @@ Use search to find needed section.
                             class="menu-item-parent"> Страницы</span></a>
             </li>
             <li class="nav-item">
+                <a href="<?= Url::to(['slider/index', 'sort' => '-id']) ?>"><i class="fa fa-fw fa-clone"></i> <span
+                        class="menu-item-parent"> Слайдер</span></a>
+            </li>
+            <li class="nav-item">
                 <a href="<?= Url::to(['news/index', 'sort' => '-id']) ?>"><i class="fa fa-fw fa-list-ul"></i> <span
                             class="menu-item-parent"> <?= Yii::t('app', 'News') ?></span></a>
             </li>
