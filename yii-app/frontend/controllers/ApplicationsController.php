@@ -17,8 +17,9 @@ class ApplicationsController extends Controller
         $query = Applications::find();
         $applications = $query->where('type=1')->all();
         $detectorTubes = $query->where('type=2')->all();
+        $all = Applications::find()->orderBy('created_at DESC')->all();
 
-        return $this->render($this->action->id, compact('applications', 'detectorTubes'));
+        return $this->render($this->action->id, compact('applications', 'detectorTubes', 'all'));
     }
 
     /**

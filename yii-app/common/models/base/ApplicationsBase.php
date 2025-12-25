@@ -30,10 +30,11 @@ class ApplicationsBase extends \yii\db\ActiveRecord
     {
         return [
             [['title', 'content', 'type'], 'required'],
-            [['content'], 'string'],
+            [['content',], 'string'],
             [['type'], 'integer'],
             [['slug', 'title'], 'string', 'max' => 255],
             [['slug'], 'unique'],
+            [['preview'], 'file', 'extensions' => 'png, jpg, gif'],
         ];
     }
 
@@ -48,6 +49,8 @@ class ApplicationsBase extends \yii\db\ActiveRecord
             'title' => Yii::t('app', 'Title'),
             'content' => Yii::t('app', 'Content'),
             'type' => Yii::t('app', 'Type'),
+            'preview' => Yii::t('app', 'Preview'),
+            'created_at' => Yii::t('app', 'Date'),
         ];
     }
 

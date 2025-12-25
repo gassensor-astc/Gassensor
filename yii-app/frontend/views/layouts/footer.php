@@ -25,7 +25,7 @@ use yii\helpers\Url;
                                 <ul>
                                     <li><a href="<?=Url::to(['/']) ?>">Главная</a></li>
                                     <li><a href="<?=Url::to(['/catalog']) ?>">Каталог</a></li>
-                                    <li><a href="<?=Url::to(['/applications']) ?>">Применение</a></li>
+                                    <li><a href="<?=Url::to(['/applications']) ?>">Сататьи</a></li>
                                     <li><a href="<?=Url::to(['/page/accessories']) ?>">Аксессуары</a></li>
                                     <li><a href="<?=Url::to(['/manufacture']) ?>">Производители</a></li>
                                     <li><a href="<?=Url::to(['/converter']) ?>">Конвертер газа</a></li>

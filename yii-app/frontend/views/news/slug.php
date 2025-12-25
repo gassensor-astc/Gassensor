@@ -28,7 +28,18 @@ $time = strtotime($model->date);
           <?= date('Y', $time) ?>
        </span>
 
-    <h1><?= $model->seo->h1 ?? $this->title ?></h1>
+    <h1>
+        <?= $model->seo->h1 ?? $this->title ?>
+        <?php if (Yii::$app->user->isAdmin()): ?>
+            <?= Html::a('<i class="fa fa-edit m-1"></i>',
+                ['backend/news/update',
+                    'id' => $model->id,],
+                ['class' => "btn d-inline rounded-pill",
+                    'target' => "_blank",
+                    'style' => "font-size: 0.8rem; padding: 4px; background: red;"
+                ]) ?>
+        <?php endif; ?>
+    </h1>
 
     <div class="single-img w-100">
         <div class="news-content" id="news-photo-block">
@@ -63,17 +74,6 @@ $time = strtotime($model->date);
             </p>
 
         </div>
-
-        <?php if (\Yii::$app->user->isAdmin()): ?>
-            <div class="mt-5">
-                <a href="/backend/news/update?id=<?= $model->id ?>"
-                   class="btn d-inline rounded-pill"
-                   target="_blank"
-                   style="font-size: 0.8rem; padding: 4px; background: red;">
-                    <i class="fa fa-edit m-1"></i>
-                </a>
-            </div>
-        <?php endif; ?>
 
     </div>
 

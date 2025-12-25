@@ -226,7 +226,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
             <a href="<?=Url::to(['/manufacture']) ?>">Производители</a>
         </div>
         <div class="new-header-row-second new-header-menu <?=str_starts_with($currentUrl, '/applications') ? 'new-header-menu-current':'' ?>">
-            <a href="<?=Url::to(['/applications']) ?>">Применение</a>
+            <a href="<?=Url::to(['/applications']) ?>">Статьи</a>
         </div>
         <div class="new-header-row-second new-header-menu <?=str_starts_with($currentUrl, '/page/accessories') ? 'new-header-menu-current':'' ?>">
             <a href="<?=Url::to(['/page/accessories']) ?>">Аксессуары</a>
@@ -406,7 +406,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
             </li>
 
             <li class="menu-item <?=$currentUrl == '/applications/index' ? 'current-menu-ancestor current-menu-parent':'' ?>">
-                <a href="<?=Url::to(['/applications']) ?>">Применение</a>
+                <a href="<?=Url::to(['/applications']) ?>">Сататьи</a>
             </li>
             <li class="menu-item <?=$currentUrl == '/page/accessories' ? 'current-menu-ancestor current-menu-parent':'' ?>">
                 <a href="<?=Url::to(['/page/accessories']) ?>">Аксессуары</a>
@@ -468,7 +468,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
                   <li class="menu-item <?=$currentUrl == '/catalog/index' ? 'current-menu-ancestor current-menu-parent':'' ?>"><a href="<?=Url::to('/catalog') ?>">Каталог</a></li>
                   <li class="menu-item <?=$currentUrl == '/remains/index' ? 'current-menu-ancestor current-menu-parent':'' ?>"><a href="<?=Url::to('/remains') ?>">Склад</a></li>
                   <li class="menu-item <?=$currentUrl == '/manufacture/index' ? 'current-menu-ancestor current-menu-parent':'' ?>"><a href="<?=Url::to('/manufacture') ?>">Производители</a></li>
-                  <li class="menu-item <?=$currentUrl == '/applications/index' ? 'current-menu-ancestor current-menu-parent':'' ?>"><a href="<?=Url::to('/applications') ?>">Применение</a></li>
+                  <li class="menu-item <?=$currentUrl == '/applications/index' ? 'current-menu-ancestor current-menu-parent':'' ?>"><a href="<?=Url::to('/applications') ?>">Сататьи</a></li>
                   <li class="menu-item <?=$currentUrl == '/page/accessories' ? 'current-menu-ancestor current-menu-parent':'' ?>"><a href="<?=Url::to('/page/accessories') ?>">Аксессуары</a></li>
                   <li class="menu-item <?=$currentUrl == '/converter/index' ? 'current-menu-ancestor current-menu-parent':'' ?>"><a href="<?=Url::to('/converter') ?>">Конвертер газа</a></li>
                   <li class="menu-item <?=$currentUrl == '/page/contacts' ? 'current-menu-ancestor current-menu-parent':'' ?>"><a href="<?=Url::to('/page/contacts') ?>">Контакты</a></li>

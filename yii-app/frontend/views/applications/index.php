@@ -6,58 +6,87 @@ use yii\helpers\Html;
 
 $seo = Seo::findOne(['type' => Seo::TYPE_APPLICATIONS])->registerMetaTags($this);
 $this->params['breadcrumbs'][] = $this->title;
-
+$months = [
+    1 => 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+];
 ?>
+
+<style>
+    .new-grid-3 {
+        display: grid;
+        grid-row-gap: 40px;
+        grid-template-columns: repeat(3, 1fr);
+        position: relative;
+    }
+    .new-grid-item {
+        gap: 5px;
+        display: flex;
+        flex-direction: column;
+    }
+    .new-preview {
+        opacity: 1;
+        transition: opacity 300ms;
+        border-radius: 8px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        width: 381px;
+        height: 240px;
+    }
+    .new-grid-item-a {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .new-grid-item-title {
+        padding-left: 15px;
+        padding-right: 15px;
+        flex-direction: row;
+        display: flex;
+    }
+    .new-grid-item-hrefs {
+        flex-direction: row;
+        display: flex;
+    }
+</style>
 
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> container'>
     <h1 class="text-center"><?= $seo->h1 ?></h1>
 
-    <div class="row">
-        <div class="col-12 col-sm-6">
-            <h3>Применение газовых сенсоров</h3>
+    <div class="new-grid-3 mb-4">
+        <?php foreach ($all ?? [] as $application): ?>
+            <div class="new-grid-item">
+                <div class="new-grid-item-hrefs">
+                    <a href="/applications/<?=$application->slug?>" class="new-grid-item-a">
+                        <span class="new-preview" style="background-image: url('<?=$application->preview?>');"></span>
+                        <span class="new-grid-item-title">
+                            <?=$application->title?>
+                        </span>
+                    </a>
+                </div>
+                <div class="new-grid-item-title">
+                    <?=date('d.m.Y', $application->created_at)?>
+                    &#47;
+                    <?php
+                        if ($application->type == 1) {
+                            echo 'газовые сенсоры';
+                        } else {
+                            echo 'газодетекторыне трубки';
+                        }
+                    ?>
+                </div>
+                <?php if (Yii::$app->user->isAdmin()): ?>
+                    <?= Html::a('<i class="fa fa-edit m-1"></i>',
+                        ['backend/applications/update',
+                            'id' => $application->id,],
+                        ['class' => "btn d-inline rounded-pill",
+                            'target' => "_blank",
+                            'style' => "font-size: 0.8rem; padding: 4px; background: red; max-width: 60px; width: 60px; min-width: 60px; position: relative; top: -250px;"
+                        ]) ?>
 
-            <ul>
-                <?php foreach ($applications ?? [] as $application): ?>
-                    <li>
-                        <?= Html::a($application->title, ['applications/slug', 'slug' => $application->slug]); ?>
-                        <?php if (Yii::$app->user->isAdmin()): ?>
-
-                            <?= Html::a('<i class="fa fa-edit m-1"></i>',
-                                ['backend/applications/update',
-                                    'id' => $application->id,],
-                                ['class' => "btn d-inline rounded-pill",
-                                    'target' => "_blank",
-                                    'style' => "font-size: 0.8rem; padding: 4px; background: red;"
-                                ]) ?>
-
-                        <?php endif; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-
-        </div>
-        <div class="col-12 col-sm-6">
-            <h3>Применение газодетекторных трубок</h3>
-
-            <ul>
-                <?php foreach ($detectorTubes ?? [] as $application): ?>
-                    <li>
-                        <?= Html::a($application->title, ['applications/slug', 'slug' => $application->slug]); ?>
-                        <?php if (Yii::$app->user->isAdmin()): ?>
-
-                            <?= Html::a('<i class="fa fa-edit m-1"></i>',
-                                ['backend/applications/update',
-                                    'id' => $application->id,],
-                                ['class' => "btn d-inline rounded-pill",
-                                    'target' => "_blank",
-                                    'style' => "font-size: 0.8rem; padding: 4px; background: red;"
-                                ]) ?>
-
-                        <?php endif; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-
-        </div>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
