@@ -67,14 +67,7 @@ $months = [
                 </div>
                 <div class="new-grid-item-title">
                     <?=date('d.m.Y', $application->created_at)?>
-                    &#47;
-                    <?php
-                        if ($application->type == 1) {
-                            echo 'газовые сенсоры';
-                        } else {
-                            echo 'газодетекторыне трубки';
-                        }
-                    ?>
+                    <i class="fa fa-eye" aria-hidden="true"></i> <?=$application->views?>
                 </div>
                 <?php if (Yii::$app->user->isAdmin()): ?>
                     <?= Html::a('<i class="fa fa-edit m-1"></i>',

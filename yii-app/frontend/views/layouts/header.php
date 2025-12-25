@@ -406,7 +406,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
             </li>
 
             <li class="menu-item <?=$currentUrl == '/applications/index' ? 'current-menu-ancestor current-menu-parent':'' ?>">
-                <a href="<?=Url::to(['/applications']) ?>">Сататьи</a>
+                <a href="<?=Url::to(['/applications']) ?>">Статьи</a>
             </li>
             <li class="menu-item <?=$currentUrl == '/page/accessories' ? 'current-menu-ancestor current-menu-parent':'' ?>">
                 <a href="<?=Url::to(['/page/accessories']) ?>">Аксессуары</a>
