@@ -73,7 +73,7 @@ $model->save();
 
         <div class="mt-4 mb-2">
             <a href="/applications">
-                <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Назад к списку
+                <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Назад в статьи
             </a>
         </div>
     </div>
