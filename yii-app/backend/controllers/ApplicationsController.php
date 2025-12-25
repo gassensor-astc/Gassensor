@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use Yii;
+use yii\web\UploadedFile;
 
 class ApplicationsController extends Controller
 {
@@ -72,12 +73,20 @@ class ApplicationsController extends Controller
 
                 if ($isValid) {
                     $model->slug = StringHelpers::slug($model->slug);
+                    $model->created_at = strtotime($req->post()['Applications']['created_at']);
+
+                    if ($preview = UploadedFile::getInstance($model, 'preview')) {
+                        [$path, $url] = $model->getPictPath($preview->name);
+                        copy($preview->tempName, $path);
+                        $model->preview = $url;
+                    }
+
                     $model->save();
 
                     $modelSeo->ref_id = $model->id;
                     $modelSeo->save(false);
 
-                    return $this->redirect(['view', 'id' => $model->id]);
+                    return $this->redirect(['update', 'id' => $model->id]);
                 }
             }
         } else {
@@ -97,6 +106,8 @@ class ApplicationsController extends Controller
     public function actionUpdate(int $id)
     {
         $model = $this->findModel($id);
+        $model->created_at = date('d.m.Y', $model->created_at);
+        $url = $model->preview;
         $modelSeo = $model->seo ?: new Seo(['type' => Seo::TYPE_APPLICATIONS, 'ref_id' => $model->id]);
         $req = $this->request;
 
@@ -105,12 +116,21 @@ class ApplicationsController extends Controller
 
             if ($isValid) {
                 $model->slug = StringHelpers::slug($model->slug);
+                $model->created_at = strtotime($req->post()['Applications']['created_at']);
+
+                if ($preview = UploadedFile::getInstance($model, 'preview')) {
+                    [$path, $url] = $model->getPictPath($preview->name);
+                    copy($preview->tempName, $path);
+                }
+
+                $model->preview = $url;
+
                 $model->save();
                 $modelSeo->save(false);
 
                 Yii::$app->getSession()->setFlash('success', "Данные успешно обновлены");
 
-                return $this->redirect(['view', 'id' => $id]);
+                return $this->redirect(['update', 'id' => $id]);
             }
         }
 

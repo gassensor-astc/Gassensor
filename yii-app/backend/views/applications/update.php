@@ -57,3 +57,17 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update') . ' #' . $model->id;
     </article>
 
 </div>
+<script>
+    (function() {
+        setInterval(() => {
+            let eyes = document.querySelectorAll('link[rel="stylesheet"]');
+            for (let i = 0; i < eyes.length; i++) {
+                if (eyes[i]) {
+                    if (eyes[i].href.includes('bootstrap.css?v=')) {
+                        eyes[i].remove();
+                    }
+                }
+            }
+        }, 50);
+    })()
+</script>
