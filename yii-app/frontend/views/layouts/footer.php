@@ -25,7 +25,7 @@ use yii\helpers\Url;
                                 <ul>
                                     <li><a href="<?=Url::to(['/']) ?>">Главная</a></li>
                                     <li><a href="<?=Url::to(['/catalog']) ?>">Каталог</a></li>
-                                    <li><a href="<?=Url::to(['/applications']) ?>">Применение</a></li>
+                                    <li><a href="<?=Url::to(['/remains']) ?>">Склад</a></li>
                                     <li><a href="<?=Url::to(['/page/accessories']) ?>">Аксессуары</a></li>
                                     <li><a href="<?=Url::to(['/manufacture']) ?>">Производители</a></li>
                                     <li><a href="<?=Url::to(['/converter']) ?>">Конвертер газа</a></li>
@@ -42,6 +42,7 @@ use yii\helpers\Url;
                             <div class="textwidget custom-html-widget">
                                 <ul>
                                     <li><a href="<?=Url::to(['/news']) ?>">Новости</a></li>
+                                    <li><a href="<?=Url::to(['/applications']) ?>">Статьи</a></li>
                                     <li><a href="<?=Url::to(['/page/vacancy']) ?>">Вакансии</a></li>
                                     <li><a href="<?=Url::to(['/page/privacy']) ?>">Политика конфиденциальности</a></li>
                                     <li><a href="<?=Url::to(['/page/contacts']) ?>">Контакты</a></li>
