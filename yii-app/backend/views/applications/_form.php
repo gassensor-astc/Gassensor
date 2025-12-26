@@ -4,9 +4,13 @@
 /* @var $form yii\widgets\ActiveForm */
 /* @var $modelSeo common\models\Seo */
 
+require_once __DIR__ . '/../../../vendor/kartik-v/yii2-widget-datepicker/src/DatePicker.php';
+require_once __DIR__ . '/../../../vendor/kartik-v/yii2-widget-datepicker/src/DatePickerAsset.php';
+
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\web\View;
+use kartik\date\DatePicker;
 
 ?>
 
@@ -15,6 +19,30 @@ use yii\web\View;
 <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 <?= $form->field($model, 'content')->textarea(['rows' => '6', 'class' => 'form-control', 'id' => 'app-gas-content']) ?>
 <?= $form->field($model, 'type')->radioList([ 1 => 'газовые сенсоры', 2 => 'газодетекторыне трубки' ]) ?>
+<?= $form->field($model, 'preview')->fileInput(['accept' => '.jpg,.png,.gif']) ?>
+
+<?php
+     /*echo DatePicker::widget([
+    'name' => 'created_at',
+    'value' => date('d.M.Y', time()),
+    'options' => ['placeholder' => 'Select issue date ...'],
+    'pluginOptions' => [
+        'format' => 'dd-M-yyyy',
+        'todayHighlight' => true
+    ]
+    ]);*/
+
+    if ($model->preview) {
+        echo '<img src="' . $model->preview . '" style="width: 200px;" />';
+    }
+
+    echo $form->field($model, 'created_at')->widget(DatePicker::class, [
+    'options' => ['placeholder' => 'Creation date'],
+    'pluginOptions' => [
+        'format' => 'd.m.yyyy',
+        'todayHighlight' => true
+    ]]);
+ ?>
 
 <h3>SEO</h3>
 
@@ -44,7 +72,7 @@ $this->registerJs("$(document).ready(function () {
             this.dataProcessor.htmlFilter.addRules( {
                 elements: {
                     img: function( el ) {
-                       el.attributes.title = el.attributes.alt;
+                       //el.attributes.title = el.attributes.alt;
                     }
                 }
             });            
@@ -52,7 +80,11 @@ $this->registerJs("$(document).ready(function () {
     }
     });
 
-CKEDITOR.config.allowedContent = true;CKEDITOR.config.extraAllowedContent = 'img[title]';CKEDITOR.config.removePlugins = 'spellchecker, about, save, newpage, print, templates, scayt, flash, pagebreak, smiley,preview,find'});", View::POS_END);
+CKEDITOR.config.allowedContent = true;
+CKEDITOR.config.extraAllowedContent = 'img[title]';
+//CKEDITOR.config.image2_prefillDimensions = false; 
+CKEDITOR.config.removePlugins = 'spellchecker, about, save, newpage, print, templates, scayt, flash, pagebreak, smiley,preview,find'});",
+    View::POS_END);
 
 
 ?>

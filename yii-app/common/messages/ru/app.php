@@ -46,7 +46,7 @@ return [
     'Edit_seo' => 'Редактирование SEO',
     'Orders' => 'Заказы',
     'Measurement Types' => 'Типы измерений',
-    'Applications' => 'Применение',
+    'Applications' => 'Статьи',
     'Name' => 'Название',
     'Price' => 'Цена',
     'Img' => 'Изображение',

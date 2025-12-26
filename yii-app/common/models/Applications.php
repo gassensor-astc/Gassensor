@@ -46,6 +46,12 @@ class Applications extends ApplicationsBase
             ->andOnCondition(['type' => Seo::TYPE_APPLICATIONS]);
     }
 
+    public function getPictPath($name)
+    {
+        $name = time() . '_' . $name;
+        return [\Yii::getAlias('@documentroot' . '/upload/articles/'. $name), '/upload/articles/'. $name];
+    }
+
     /**
      * @inheritdoc
      * @return ApplicationsQuery the active query used by this AR class.
