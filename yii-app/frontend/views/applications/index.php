@@ -67,9 +67,7 @@ $months = [
                 </div>
                 <div class="new-grid-item-title">
                     <?=date('d.m.Y', $application->created_at)?>
-                    <div style="flex: 1"></div>
-                    <i class="fa fa-eye" aria-hidden="true" style="margin-left: 1px; margin-top: 4px; margin-right: 4px;"></i> <?=$application->views?>
-                    <div style="width: 35px"></div>
+                    <i class="fa fa-eye" aria-hidden="true" style="margin-left: 15px; margin-top: 4px; margin-right: 4px;"></i> <?=$application->views?>
                 </div>
                 <?php if (Yii::$app->user->isAdmin()): ?>
                     <?= Html::a('<i class="fa fa-edit m-1"></i>',
