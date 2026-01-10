@@ -70,9 +70,19 @@ class UserController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            Yii::$app->getSession()->setFlash('success', "Данные успешно обновлены");
-            return $this->redirect(['index', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            // Если передан пароль — захешируем и сохраним
+            if (!empty($model->password)) {
+                $model->setPassword($model->password);
+            } else {
+                // Не трогаем текущий hash, если пароль не задан
+                $model->password = null;
+            }
+
+            if ($model->save(false)) {
+                Yii::$app->getSession()->setFlash('success', "Данные успешно обновлены");
+                return $this->redirect(['index', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', compact('model'));

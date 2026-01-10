@@ -31,6 +31,7 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_ACTIVE = 10;
 
     public $password;
+    public $role;
 
     /**
      * {@inheritdoc}
@@ -58,6 +59,8 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+            // Разрешаем массовое присвоение основных полей и временного поля пароля
+            [['name', 'username', 'email', 'phone', 'password', 'role'], 'safe'],
         ];
     }
 

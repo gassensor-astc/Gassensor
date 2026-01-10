@@ -4,6 +4,50 @@ use common\models\Setting;
 use yii\helpers\Url;
 
 ?>
+<style>
+    @media (max-width: 768px) {
+        .main-footer .row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .main-footer .col-md-3.col-sm-6 {
+            width: 45% !important;
+            flex: 0 0 45% !important;
+            max-width: 45% !important;
+            padding: 0 10px;
+            margin-bottom: 15px;
+        }
+        .main-footer .col-md-3.col-sm-6:first-child {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+            text-align: left;
+            margin-bottom: 10px;
+            padding-left: 20px !important;
+        }
+        .main-footer .col-md-3.col-sm-6:first-child .widget-footer {
+            margin-bottom: 0 !important;
+        }
+        .main-footer .col-md-3.col-sm-6:first-child .widget_media_image {
+            margin-bottom: 10px !important;
+        }
+        /* Скрыть 4-ю колонку (контакты) на мобильном, если нужно */
+        .main-footer .col-md-3.col-sm-6:nth-child(4) {
+            display: none;
+        }
+        .widget-footer {
+            margin-bottom: 0 !important;
+        }
+        .main-footer ul li {
+            padding: 4px 0 !important;
+        }
+        .main-footer ul li a {
+            font-size: 14px !important;
+        }
+    }
+</style>
 <footer id="site-footer" class="site-footer bg-footer">
     <div class="main-footer">
         <div class="container-custom">
@@ -28,6 +72,7 @@ use yii\helpers\Url;
                                     <li><a href="<?=Url::to(['/remains']) ?>">Склад</a></li>
                                     <li><a href="<?=Url::to(['/page/accessories']) ?>">Аксессуары</a></li>
                                     <li><a href="<?=Url::to(['/manufacture']) ?>">Производители</a></li>
+                                    <li><a href="<?=Url::to(['/cart']) ?>">Корзина</a></li>
                                     <li><a href="<?=Url::to(['/converter']) ?>">Конвертер газа</a></li>
                                 </ul>
                             </div>

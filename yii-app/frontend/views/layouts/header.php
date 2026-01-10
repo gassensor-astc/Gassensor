@@ -169,7 +169,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
         display: block;
         width: 24px;
         height: 3px;
-        background-color: #6B9F2A;
+        background-color: #153C75;
         border-radius: 2px;
         transition: all 0.2s ease;
     }
@@ -187,7 +187,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
 
     .mobile-menu-dropdown {
         display: none;
-        flex-direction: column;
+        flex-wrap: wrap;
         background: #fff;
         border-top: 1px solid #DFDEDE;
         position: absolute;
@@ -203,13 +203,19 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
         display: flex;
     }
     .mobile-menu-dropdown a {
-        display: block;
-        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        width: 50%;
+        box-sizing: border-box;
+        padding: 12px 16px;
         color: #03132B;
         text-decoration: none;
-        font-size: 1rem;
+        font-size: 0.9rem;
         border-bottom: 1px solid #f0f0f0;
-        text-align: right;
+        text-align: left;
+    }
+    .mobile-menu-dropdown a:nth-child(odd) {
+        border-right: 1px solid #f0f0f0;
     }
     .mobile-menu-dropdown a:hover,
     .mobile-menu-dropdown a.current {
@@ -217,7 +223,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
     }
     .mobile-menu-dropdown a i {
         margin-right: 8px;
-        color: #6B9F2A;
+        color: #153C75;
     }
 
     /* Mobile breakpoint - 768px */
@@ -225,9 +231,10 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
         .new-header {
             height: auto;
             position: relative;
+            margin-top: 0.25rem;
         }
         .new-header-row:first-of-type {
-            height: 60px;
+            height: 44px;
             padding: 0;
             align-items: center;
         }
@@ -242,16 +249,23 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
         .new-header-logo {
             justify-content: flex-start !important;
             padding-left: 1rem !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
         .new-header-logo a img {
-            width: 180px;
+            width: 150px;
             height: auto;
         }
         .mobile-burger {
             display: flex !important;
         }
+        .new-header-hr {
+            margin-top: 0.4rem;
+            margin-bottom: 0.5rem;
+        }
         .new-header-slider {
             min-height: 15rem;
+            margin-top: 0.5rem;
         }
         .new-header-slider-slides {
             height: 15rem;
@@ -334,20 +348,20 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
     <!-- Mobile dropdown menu -->
     <nav class="mobile-menu-dropdown" id="mobileMenu">
         <a href="/" class="<?= $currentUrl == '/site/index' ? 'current' : '' ?>">Главная</a>
+        <?php if ($user->isGuest): ?>
+            <a href="<?= Url::to('/site/login') ?>"><i class="icon ion-md-person"></i> Войти</a>
+        <?php else: ?>
+            <a href="<?= Url::to('/backend/site/index') ?>" target="_blank"><i class="icon ion-md-person"></i> Admin</a>
+        <?php endif; ?>
         <a href="<?= Url::to(['/news']) ?>" class="<?= str_starts_with($currentUrl, '/news') ? 'current' : '' ?>">Новости</a>
-        <a href="<?= Url::to(['/catalog']) ?>" class="<?= str_starts_with($currentUrl, '/catalog') ? 'current' : '' ?>">Каталог</a>
+        <a href="<?= Url::to('/cart') ?>"><i class="icon ion-md-basket"></i> Корзина<?php if($count = Yii::$app->cart->getItemsCount()): ?> (<?= $count ?>)<?php endif; ?></a>
         <a href="<?= Url::to(['/remains']) ?>" class="<?= str_starts_with($currentUrl, '/remains') ? 'current' : '' ?>">Склад</a>
         <a href="<?= Url::to(['/manufacture']) ?>" class="<?= str_starts_with($currentUrl, '/manufacture') ? 'current' : '' ?>">Производители</a>
         <a href="<?= Url::to(['/applications']) ?>" class="<?= str_starts_with($currentUrl, '/applications') ? 'current' : '' ?>">Статьи</a>
         <a href="<?= Url::to(['/page/accessories']) ?>" class="<?= str_starts_with($currentUrl, '/page/accessories') ? 'current' : '' ?>">Аксессуары</a>
         <a href="<?= Url::to(['/converter']) ?>" class="<?= str_starts_with($currentUrl, '/converter') ? 'current' : '' ?>">Конвертер газа</a>
         <a href="<?= Url::to(['/page/contacts']) ?>" class="<?= str_starts_with($currentUrl, '/page/contacts') ? 'current' : '' ?>">Контакты</a>
-        <a href="<?= Url::to('/cart') ?>"><i class="icon ion-md-basket"></i> Корзина<?php if($count = Yii::$app->cart->getItemsCount()): ?> (<?= $count ?>)<?php endif; ?></a>
-        <?php if ($user->isGuest): ?>
-            <a href="<?= Url::to('/site/login') ?>"><i class="icon ion-md-person"></i> Войти</a>
-        <?php else: ?>
-            <a href="<?= Url::to('/backend/site/index') ?>" target="_blank"><i class="icon ion-md-person"></i> Admin</a>
-        <?php endif; ?>
+        <a href="<?= Url::to(['/catalog']) ?>" class="<?= str_starts_with($currentUrl, '/catalog') ? 'current' : '' ?>">Каталог</a>
     </nav>
 
     <div class="new-header-row">

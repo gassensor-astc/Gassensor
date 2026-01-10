@@ -5,7 +5,7 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
-/* @var $model backend\models\UserForm */
+/* @var $model yii\base\Model */
 /* @var $form yii\widgets\ActiveForm */
 
 $params = [
@@ -27,9 +27,11 @@ $items = ArrayHelper::map($roles, 'name', 'name');
 
 <?= $form->field($model, 'phone') ?>
 
-<?= $form->field($model, 'role')->dropDownList($items, $params) ?>
+<?php if (property_exists($model, 'role')): ?>
+    <?= $form->field($model, 'role')->dropDownList($items, $params) ?>
+<?php endif; ?>
 
-<?= $form->field($model, 'password')->passwordInput() ?>
+<?= $form->field($model, 'password')->passwordInput()->hint('Оставьте пустым, чтобы не менять') ?>
 
     <div class="form-actions">
         <div class="row">
