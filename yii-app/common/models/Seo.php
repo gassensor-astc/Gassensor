@@ -41,6 +41,7 @@ class Seo extends SeoBase
     const TYPE_PAGE_PRIVACY = 90;
 
     const TYPE_PAGE_ABOUT = 100;
+    const TYPE_PAGE_GASES = 110;
 
     /**
      * @param false $isPrependEmpty
@@ -169,6 +170,9 @@ class Seo extends SeoBase
                 break;
             case self::TYPE_PAGE_PRIVACY:
                 $result = '/page/privacy';
+                break;
+            case self::TYPE_PAGE_GASES:
+                $result = '/gases';
                 break;
             default:
                 throw new \Exception("not implemented  {$this->type}");

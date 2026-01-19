@@ -69,11 +69,12 @@ use yii\helpers\Url;
                                 <ul>
                                     <li><a href="<?=Url::to(['/']) ?>">Главная</a></li>
                                     <li><a href="<?=Url::to(['/catalog']) ?>">Каталог</a></li>
+                                    <li><a href="<?=Url::to(['/gases']) ?>">Газы</a></li>
                                     <li><a href="<?=Url::to(['/remains']) ?>">Склад</a></li>
                                     <li><a href="<?=Url::to(['/page/accessories']) ?>">Аксессуары</a></li>
                                     <li><a href="<?=Url::to(['/manufacture']) ?>">Производители</a></li>
-                                    <li><a href="<?=Url::to(['/cart']) ?>">Корзина</a></li>
                                     <li><a href="<?=Url::to(['/converter']) ?>">Конвертер газа</a></li>
+                                    <li><a href="<?=Url::to(['/cart']) ?>">Корзина</a></li>
                                 </ul>
                             </div>
                         </div>

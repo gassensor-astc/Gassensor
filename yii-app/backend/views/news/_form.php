@@ -9,15 +9,15 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\web\View;
 
-$js =
-        <<<JS
- $("#news-slug").on("change keyup input click", function () {
+$js = <<<JS
+ // Автоматическая генерация slug из title
+ $("#news-title").on("change keyup input", function () {
      if (this.value.length >= 2) {
          let q = this.value;
          let request = $.ajax({
              url: '/backend/ajax/slug?q=' + q,
-                method: "GET",
-                dataType: "json"
+             method: "GET",
+             dataType: "json"
          });
          request.done(function (data) {
              if (data.slug != null && data.slug !== '') {
@@ -25,7 +25,24 @@ $js =
              }
          });
      }
-  });
+ });
+ 
+ // Также транслитерация при ручном вводе slug
+ $("#news-slug").on("change", function () {
+     if (this.value.length >= 2) {
+         let q = this.value;
+         let request = $.ajax({
+             url: '/backend/ajax/slug?q=' + q,
+             method: "GET",
+             dataType: "json"
+         });
+         request.done(function (data) {
+             if (data.slug != null && data.slug !== '') {
+                 $("#news-slug").val(data.slug);
+             }
+         });
+     }
+ });
 JS;
 
 $this->registerJs($js, $this::POS_READY);
