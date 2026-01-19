@@ -207,6 +207,15 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                     ],
             ]) ?>
 
+            <?php if (!empty($seo->opisanie)): ?>
+                <div class="mt-4 mb-3">
+                    <h4>Описание</h4>
+                    <div style="text-align: left;">
+                        <?= $seo->opisanie ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
         </div>
     </div>
 

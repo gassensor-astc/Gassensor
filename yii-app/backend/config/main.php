@@ -26,6 +26,8 @@ $accessRules = [
 
     //allow all
     ['allow' => true, 'controllers' => ['site'], 'actions' => ['error',],],
+    
+    ['allow' => true, 'controllers' => ['opisanie-ai'],],
 
 ];
 
@@ -48,6 +50,7 @@ return [
 
         'urlManager' => [
             'rules' => [
+                'opisanie-ai' => 'opisanie-ai/index',
                 'seo/robots' => 'seo/robots',
                 'PUT,POST seo/update-robots' => 'seo/update-robots',
                 'seo/sitemap' => 'seo/sitemap',
