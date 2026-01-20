@@ -35,8 +35,8 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
         padding-right: 1.25rem;
     }
     .new-header-logo a img {
-        width: 209px;
-        height: 44px;
+        width: 260px;
+        /*height: 88px;*/
     }
     .new-header-right-border {
         border-right: 1px solid #DFDEDE;

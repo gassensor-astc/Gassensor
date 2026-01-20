@@ -5,10 +5,19 @@
 /* @var $dataProviderFreons yii\data\ActiveDataProvider */
 
 use common\models\Gaz;
+use common\models\Seo;
 use yii\helpers\Html;
 
 $this->title = 'Датчики и сенсоры по типу газа';
 $this->params['breadcrumbs'][] = $this->title;
+
+$h1 = $this->title;
+if ($seo = Seo::findOne(['type' => Seo::TYPE_PAGE_GASES])) {
+    $seo->registerMetaTags($this);
+    if ($seo->h1) {
+        $h1 = $seo->h1;
+    }
+}
 
 ?>
 <style>
@@ -40,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="gases-index container">
 
     <h1 class="text-center">
-        <?= Html::encode($this->title) ?>
+        <?= Html::encode($h1) ?>
     </h1>
 
     <h5 class="mt-4 mb-3">Газы</h5>
