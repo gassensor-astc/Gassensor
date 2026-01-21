@@ -401,7 +401,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
             <form action="/search" style="width: 100%;">
                 <div class="new-header-search">
                     <button class="pt-1 ms-1 bg-transparent border-0"><i class="icon ion-md-search" style="color: #DFDEDE; font-size: 24px;"></i></button>
-                    <?= Html::textInput('q', '', ['class' => 'form-control', 'style' => 'border: 0; width: 100%;', 'placeholder' => 'Поиск по сайту']) ?>
+                    <?= Html::textInput('q', Yii::$app->request->get('q', ''), ['class' => 'form-control', 'style' => 'border: 0; width: 100%;', 'placeholder' => 'Поиск по сайту']) ?>
                 </div>
             </form>
         </div>
@@ -500,7 +500,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
                 <li class="toggle_search topbar-search">
                   <form action="/search">
                   <div class="d-flex">
-                    <?= Html::textInput('q', '', ['class' => 'form-control']) ?>
+                    <?= Html::textInput('q', Yii::$app->request->get('q', ''), ['class' => 'form-control']) ?>
                     <button class="pt-1 ms-1 bg-transparent border-0"><i class="icon ion-md-search"></i></button>
                   </div>
                   </form>

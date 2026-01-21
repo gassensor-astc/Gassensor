@@ -9,7 +9,7 @@
 <?php foreach ($texts as $str): ?>
 
     <?php if (mb_stripos($str, $q) !== false): ?>
-        <div class="snippet border m-1 p-1">
+        <div class="snippet m-1 p-1">
           <a href="<?= $url ?>" target="_blank">
               <?= preg_replace("($q)iu", "<b>$q</b>", strip_tags($str)) ?>
           </a>

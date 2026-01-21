@@ -18,7 +18,17 @@ class SearchController extends Controller
      */
     public function actionIndex($q = null)
     {
-        return $this->render($this->action->id, ['q' => $q]);
+        $q = trim($q);
+        $minLength = 3;
+        
+        if (mb_strlen($q) < $minLength) {
+            return $this->render('index-cards', [
+                'q' => $q,
+                'error' => "Введите минимум {$minLength} символа для поиска",
+            ]);
+        }
+        
+        return $this->render('index-cards', ['q' => $q, 'error' => null]);
     }
 
     /**
