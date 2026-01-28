@@ -84,6 +84,12 @@ $this->registerJs($js, $this::POS_READY);
                     )->label("Главный газ 3")
                 ?>
 
+                <?= $form->field($modelProductGaz, 'is_main_4')
+                    ->dropDownList(
+                        Gaz::getDropDownData(true,), ['id' => 'list4', 'class' => 'select2 form-list itemName2', 'style' => 'width:100%', 'prompt' => 'Выберите']
+                    )->label("Главный газ 4")
+                ?>
+
                 <?= $form->field($modelProductGaz, 'gaz_id')
                     ->dropDownList(
                         Gaz::getDropDownData(true,), ['class' => 'select2 itemName2', 'multiple' => 'multiple', 'style' => 'width:100%', 'id' => 'main_gaz_id', 'placeholder' => 'Поиск газа ...',]
@@ -229,6 +235,9 @@ $this->registerJs($js, $this::POS_READY);
                         case 2:
                             $title = ArrayHelper::getValue($model, 'mainGaz3.title');
                             break;
+                        case 3:
+                            $title = ArrayHelper::getValue($model, 'mainGaz4.title');
+                            break;
                     }
 
                     ?>
@@ -258,7 +267,7 @@ $this->registerJs($js, $this::POS_READY);
 
                                 <?= $form->field($modelRange, "[{$i}]pos")
                                     ->dropDownList(
-                                        [0 => 'Главный газ 1', 1 => 'Главный газ 2', 2 => 'Главный газ 3'],
+                                        [0 => 'Главный газ 1', 1 => 'Главный газ 2', 2 => 'Главный газ 3', 3 => 'Главный газ 4'],
                                         ['class' => 'form-select form-list select-gaz', 'data-list' => $i]
                                     )->label('Газы (<span id="gaz_' . $i . '">' . $title . '</span>)') ?>
 
@@ -319,6 +328,8 @@ $this->registerJs(
                 } else if (gazId === 2) {
                   //  console.log($("#list3 option:selected");
                     $("#gaz_" + posId).text($("#list3 option:selected").text());
+                } else if (gazId === 3) {
+                    $("#gaz_" + posId).text($("#list4 option:selected").text());
                 }
             }
         }); 

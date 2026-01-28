@@ -25,8 +25,6 @@ function declension($number, $titles) {
 
 $minutes = ['минута', 'минуты', 'минут'];
 
-$model->views++;
-$model->save();
 ?>
 <style>
     .new-info {

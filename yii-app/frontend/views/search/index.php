@@ -39,6 +39,27 @@ $pageSize = 20;
         margin-top: 20px;
         padding-top: 20px;
     }
+    .search-inline-form {
+        width: 100%;
+        max-width: 520px;
+    }
+    .search-inline-form .input-group {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 100%;
+    }
+    .search-inline-form .form-control {
+        flex: 1 1 auto;
+        min-width: 0;
+        height: 36px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+    .search-inline-form .btn {
+        height: 36px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
 </style>
 
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> container'>
@@ -61,11 +82,18 @@ $pageSize = 20;
 
 <?php if ($dpProducts->totalCount > 0): ?>
     <h1><?= Html::encode($this->title) ?>  (<?= $dpProducts->totalCount ?>)</h1>
+    <form action="/search" class="mt-2 mb-3 search-inline-form">
+        <div class="input-group">
+            <?= Html::textInput('q', $q, ['class' => 'form-control', 'placeholder' => 'Поиск по сайту']) ?>
+            <button class="btn btn-outline-secondary" type="submit">Поиск</button>
+        </div>
+    </form>
 <!--    <h4>Товары (--><?php //= $dpProducts->totalCount ?><!--)</h4>-->
-    <?php foreach ($dpProducts->getModels() as $v): ?>
+    <?php foreach ($dpProducts->getModels() as $i => $v): ?>
         <?= $this->render('_snippet-product', [
             'q' => $q,
             'model' => $v,
+            'isFirst' => $i === 0,
         ]) ?>
     <?php endforeach; ?>
     <div class="pagination-wrapper">

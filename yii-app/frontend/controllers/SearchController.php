@@ -22,13 +22,13 @@ class SearchController extends Controller
         $minLength = 3;
         
         if (mb_strlen($q) < $minLength) {
-            return $this->render('index-cards', [
+            return $this->render('index', [
                 'q' => $q,
                 'error' => "Введите минимум {$minLength} символа для поиска",
             ]);
         }
-        
-        return $this->render('index-cards', ['q' => $q, 'error' => null]);
+
+        return $this->render('index', ['q' => $q, 'error' => null]);
     }
 
     /**

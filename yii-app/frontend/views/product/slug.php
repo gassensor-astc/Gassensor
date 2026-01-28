@@ -71,7 +71,7 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                 ?>
 
                 <div class="mt-3 border p-2 shadow position-relative pdf-link-wrap">
-                    <?= Html::a('<i class="fa fa-2x fa-file-pdf"></i> ' . $model->$attr, $url, ['target' => '_blank', 'class' => 'stretched-link']) ?>
+                    <?= Html::a('<i class="fa fa-2x fa-file-pdf"></i> ' . $model->$attr, $url, ['target' => '_blank', 'class' => 'stretched-link', 'rel' => 'noopener noreferrer']) ?>
                 </div>
 
                 <hr/>
@@ -109,32 +109,29 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                                     'format' => 'raw',
                                     'value' => function ($model) {
 
-                                        $arrs = [];
-                                        $rerurn = '';
+                                        $items = [];
 
                                         if ($gaz = $model->mainGaz) {
-                                            $arrs[] = ['slug' => $gaz->slug, 'title' => $gaz->title];
+                                            $items[] = Html::a($gaz->title, "/catalog/{$gaz->slug}");
                                         }
 
                                         if ($gaz2 = $model->mainGaz2) {
-                                            $arrs[] = ['slug' => $gaz2->slug, 'title' => $gaz2->title];
+                                            $items[] = Html::a($gaz2->title, "/catalog/{$gaz2->slug}");
                                         }
 
                                         if ($gaz3 = $model->mainGaz3) {
-                                            $arrs[] = ['slug' => $gaz3->slug, 'title' => $gaz3->title];
+                                            $items[] = Html::a($gaz3->title, "/catalog/{$gaz3->slug}");
                                         }
 
-                                        foreach ($arrs as $arr) {
-                                            $rerurn .= Html::a($arr['title'], "/catalog/{$arr['slug']}") . ' / ';
+                                        if ($gaz4 = $model->mainGaz4) {
+                                            $items[] = Html::a($gaz4->title, "/catalog/{$gaz4->slug}");
                                         }
 
-                                        $rerurn = rtrim($rerurn, ' / ');
-
-                                        return $rerurn;
+                                        return join(', ', $items);
                                     }
                             ],
 
-                            Product::getGazesGridCol(false, $model->notMainGazes),
+                            Product::getGazesGridCol(false, $model->notMainGazes, false),
 
                             'measurementType.name:text:Тип измерения',
 
@@ -152,7 +149,7 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                                     'label' => 'Диапазон',
                                     'format' => 'raw',
                                     'value' => function ($model) {
-                                        return $this->render('_cell-range', ['model' => $model]);
+                                        return $this->render('_cell-range-detail', ['model' => $model]);
                                     }
                             ],
 

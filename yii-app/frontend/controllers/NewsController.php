@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\helpers\BotDetector;
 use common\models\News;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -39,6 +40,10 @@ class NewsController extends Controller
     {
         if (!$model = News::findOne(['slug' => $slug])) {
             throw new NotFoundHttpException('not found');
+        }
+
+        if (!BotDetector::isSearchBot() && $model->hasAttribute('views')) {
+            $model->updateCounters(['views' => 1]);
         }
 
         return $this->render($this->action->id, compact('model'));

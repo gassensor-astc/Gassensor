@@ -28,6 +28,7 @@ use Yii;
  * @property Gaz $mainGaz
  * @property Gaz $mainGaz2
  * @property Gaz $mainGaz3
+ * @property Gaz $mainGaz4
  * @property Gaz $notMainGazes
  * @property string $pictUrl
  * @property string $pictPath
@@ -71,6 +72,11 @@ class Product extends ProductBase
     public function getMainGaz3Id()
     {
         return $this->mainGaz3->id ?? null;
+    }
+
+    public function getMainGaz4Id()
+    {
+        return $this->mainGaz4->id ?? null;
     }
 
     /**
@@ -152,6 +158,14 @@ class Product extends ProductBase
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getMainProductGaz4()
+    {
+        return $this->hasOne(ProductGaz::class, ['product_id' => 'id'])->andOnCondition(['is_main_4' => 1]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getMainGaz()
     {
         return $this->hasOne(Gaz::class, ['id' => 'gaz_id'])->via('mainProductGaz');
@@ -174,6 +188,14 @@ class Product extends ProductBase
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMainGaz4()
+    {
+        return $this->hasOne(Gaz::class, ['id' => 'gaz_id'])->via('mainProductGaz4');
+    }
+
+    /**
      * @return Gaz[]
      */
     public function getNotMainGazes()
@@ -184,6 +206,7 @@ class Product extends ProductBase
             ->andWhere(['is_main' => 0])
             ->andWhere(['is_main_2' => 0])
             ->andWhere(['is_main_3' => 0])
+            ->andWhere(['is_main_4' => 0])
             ->all();
     }
 
@@ -382,14 +405,14 @@ class Product extends ProductBase
      * @param bool $visible
      * @return array
      */
-    public static function getGazesGridCol($backend = false, $visible = true)
+    public static function getGazesGridCol($backend = false, $visible = true, $asLinks = true)
     {
         return [
             'attribute' => 'gaz_title',
             'label' => 'Дополнительный газ',
             'visible' => $visible,
             'format' => 'raw',
-            'value' => function ($model) use ($backend) {
+            'value' => function ($model) use ($backend, $asLinks) {
                 $gazs = $model->notMainGazes;
                 $items = ArrayHelper::getColumn($gazs, function ($model) use ($backend) {
                     $label = $model->title;
@@ -400,12 +423,26 @@ class Product extends ProductBase
                                 'target' => '_blank', 'data-pjax' => 0,]);
                     }
 
-                    return Html::tag('div', $label, ['class' => 'fs-07']);
-                    //return Html::a($label, "/catalog/{$model->slug}", ['class' => 'px-1']);
+                    return Html::a($label, "/catalog/{$model->slug}", ['style' => 'display: block; padding: 2px 0;']);
                 });
 
                 sort($items);
-                return join("\n", $items);
+                $content = join("\n", $items);
+
+                if (!$asLinks && !$backend) {
+                    $plain = ArrayHelper::getColumn($gazs, function ($model) {
+                        return Html::encode($model->title);
+                    });
+                    sort($plain);
+                    return Html::tag('div', join("<br>", $plain), [
+                        'style' => 'line-height: 1.2;'
+                    ]);
+                }
+
+                // Оборачиваем в контейнер с 4 колонками
+                return Html::tag('div', $content, [
+                    'style' => 'column-count: 4; column-gap: 20px;'
+                ]);
             }
         ];
 
@@ -509,6 +546,13 @@ class Product extends ProductBase
 
             $model = new ProductGaz($cond);
             $model->is_main = 0;
+            $model->is_main_2 = 0;
+            $model->is_main_3 = 0;
+            if ($model->hasAttribute('is_main_4')) {
+                $model->setAttribute('is_main_4', 0);
+            } else {
+                $model->is_main_4 = 0;
+            }
 
             if (!$model->save()) {
                 throw new \Exception('fail saving ProductGaz');
@@ -572,6 +616,11 @@ class Product extends ProductBase
         $model->is_main = 0;
         $model->is_main_2 = 1;
         $model->is_main_3 = 0;
+        if ($model->hasAttribute('is_main_4')) {
+            $model->setAttribute('is_main_4', 0);
+        } else {
+            $model->is_main_4 = 0;
+        }
 
         if (!$model->save()) {
             throw new \Exception('fail saving ProductGaz');
@@ -617,6 +666,47 @@ class Product extends ProductBase
         $model->is_main = 0;
         $model->is_main_2 = 0;
         $model->is_main_3 = 1;
+        if ($model->hasAttribute('is_main_4')) {
+            $model->setAttribute('is_main_4', 0);
+        } else {
+            $model->is_main_4 = 0;
+        }
+
+        if (!$model->save()) {
+            throw new \Exception('fail saving ProductGaz');
+        }
+    }
+
+    /**
+     * @param int|null $id
+     * @return void
+     * @throws \Exception
+     */
+    public function saveMainbGaz4(?int $id = null)
+    {
+        if (!$id) {
+            return;
+        }
+
+        $cond = ['product_id' => $this->id, 'gaz_id' => $id];
+        $model = ProductGaz::findOne($cond);
+
+        if (!$model) {
+            $model = new ProductGaz($cond);
+        }
+
+        if ($model->hasAttribute('is_main_4') && (int)$model->getAttribute('is_main_4') === 1) {
+            return; //not changed
+        }
+
+        $model->is_main = 0;
+        $model->is_main_2 = 0;
+        $model->is_main_3 = 0;
+        if ($model->hasAttribute('is_main_4')) {
+            $model->setAttribute('is_main_4', 1);
+        } else {
+            $model->is_main_4 = 1;
+        }
 
         if (!$model->save()) {
             throw new \Exception('fail saving ProductGaz');
