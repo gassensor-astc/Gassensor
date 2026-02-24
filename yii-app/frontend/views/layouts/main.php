@@ -24,7 +24,17 @@ LegacyAsset::register($this);
 
         <?= Html::csrfMetaTags() ?>
 
-        <title><?= defined('TITLE_PREFIX') ? TITLE_PREFIX : '' ?><?= Html::encode($this->title) ?></title>
+        <?php
+        $page = (int) (Yii::$app->request->get('page', 1) ?: 1);
+        if ($page < 1) $page = 1;
+        // Плавающая точка: в БД может быть точка в конце или нет — не дублируем. Суффикс уже может быть добавлен в Seo::registerMetaTags()
+        if ($page > 1 && !preg_match('/\. Страница \d+\.?$/u', $this->title)) {
+            $titleText = rtrim($this->title, " \t\n.") . '. Страница ' . $page;
+        } else {
+            $titleText = $this->title;
+        }
+        ?>
+        <title><?= defined('TITLE_PREFIX') ? TITLE_PREFIX : '' ?><?= Html::encode($titleText) ?></title>
         <?= $this->render('json-ld') ?>
 
 
@@ -32,13 +42,15 @@ LegacyAsset::register($this);
 
         <?php
 
+        /* Canonical: при наличии page/sort — только путь, без query (filter, page и т.д.).
+         * Другие canonical задаются через Seo::url_canonical в registerMetaTags();
+         * шаблоны URL по типам страниц — в common\models\Seo::getRefUrl(). */
         /* @var $request \yii\web\Request */
         $request = Yii::$app->request;
         if ($request->get('page') || $request->get('sort')) {
-            $url = Url::current(['sort' => null, 'page' => null,]);
-            $url = trim(preg_replace('%/index$%', '', $url), ' /');
-
-            echo "<link rel='canonical' href='https://gassensor.ru/$url' />";
+            $path = trim($request->pathInfo, '/');
+            $canonicalHref = 'https://gassensor.ru/' . ($path !== '' ? $path : '');
+            echo "<link rel='canonical' href='" . Html::encode($canonicalHref) . "' />";
         }
 
         ?>

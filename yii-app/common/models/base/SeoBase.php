@@ -19,7 +19,9 @@ use Yii;
  * @property string $keyword
  * @property string $description
  * @property string $url_canonical
+ * @property string $breadcrumb_text
  * @property string $opisanie
+ * @property string $opisanie_ai
  */
 class SeoBase extends \yii\db\ActiveRecord
 {
@@ -39,8 +41,8 @@ class SeoBase extends \yii\db\ActiveRecord
         return [
             [['ref_id', 'type'], 'integer'],
             [['type'], 'required'],
-            [['keyword', 'description', 'opisanie'], 'string'],
-            [['h1', 'title', 'url_canonical'], 'string', 'max' => 255],
+            [['keyword', 'description', 'opisanie', 'opisanie_ai'], 'string'],
+            [['h1', 'title', 'url_canonical', 'breadcrumb_text'], 'string', 'max' => 255],
             [['ref_id', 'type'], 'unique', 'targetAttribute' => ['ref_id', 'type']],
         ];
     }
@@ -59,7 +61,9 @@ class SeoBase extends \yii\db\ActiveRecord
             'keyword' => Yii::t('app', 'Keyword'),
             'description' => Yii::t('app', 'Description'),
             'url_canonical' => Yii::t('app', 'Url Canonical'),
+            'breadcrumb_text' => Yii::t('app', 'Текст хлебной крошки'),
             'opisanie' => Yii::t('app', 'Описание товара'),
+            'opisanie_ai' => Yii::t('app', 'Описание ИИ'),
         ];
     }
 

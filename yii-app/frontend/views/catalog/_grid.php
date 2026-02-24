@@ -77,6 +77,18 @@ use yii\helpers\Html;
                     return $html;
                 }
             ],
+            [
+                'attribute' => 'life_time',
+                'label' => Html::tag('span', 'Срок жизни, до (лет)', [
+                ]),
+                'encodeLabel' => false,
+                'headerOptions' => ['class' => 'table-top'],
+                'contentOptions' => ['style' => 'text-align:right;'],
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return $this->render('/product/_cell-life_time', ['model' => $model, 'withHint' => true]);
+                }
+            ],
 
             [
                 'attribute' => 'formfactor',

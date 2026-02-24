@@ -17,7 +17,15 @@ if ($seo = $model->seo) {
 ?>
 
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> container'>
-    <h1><?= $seo->h1 ?? $this->title ?></h1>
+    <h1>
+        <?= $seo->h1 ?? $this->title ?>
+        <a href="/backend/seo/manufacture-update?id=<?= $model->id ?>"
+           class="btn btn-sm btn-danger ms-2 align-baseline"
+           target="_blank"
+           aria-label="Редактировать SEO">
+            Редактировать SEO
+        </a>
+    </h1>
 
     <div id="post" class="single-post show">
         <div class="entry-summary seperate-border">

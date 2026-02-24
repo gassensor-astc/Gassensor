@@ -94,6 +94,17 @@ echo $form->field($model, 'selectedSignalTypes', [
 ])->label(false);
 ?>
 
+<div class="mb-2">
+    <div class="row g-1">
+        <div class="col" style="min-width: 190px; vertical-align: middle; line-height: 34px;">
+            <label>Срок жизни, до (лет)</label>
+        </div>
+        <div class="col">
+            <?= $form->field($model, 'life_time_to')->input('number', ['style' => 'max-width: 100px;'])->label(false) ?>
+        </div>
+    </div>
+</div>
+
 <?php if (0): ?>
     <div class="mb-3 border p-1">
         <label>Энергопотребление</label>

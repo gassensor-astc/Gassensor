@@ -25,6 +25,8 @@ class ProductSearch extends Product
 
     public $response_time_to;
 
+    public $life_time_to;
+
     public $gaz_title;
 
     public $manufacture_title;
@@ -61,7 +63,7 @@ class ProductSearch extends Product
     {
         return [
             [['id', 'created_at', 'updated_at', 'manufacture_id', 'measurement_type_id',
-                'formfactor', 'range_from', 'range_to', 'response_time',
+                'formfactor', 'range_from', 'range_to', 'response_time', 'life_time', 'warranty_period',
                 'energy_consumption_from', 'energy_consumption_to'], 'integer'],
 
             [['price', 'resolution'], 'number'],
@@ -71,6 +73,7 @@ class ProductSearch extends Product
 
             [['response_time_from'], 'number', 'min' => 0, 'max' => 1000],
             [['response_time_to'], 'number', 'min' => 0, 'max' => 5000],
+            [['life_time_to'], 'number', 'min' => 0, 'max' => 5000],
 
             ['response_time_from', 'default', 'value' => 0],
             ['response_time_to', 'default', 'value' => 5000],
@@ -113,6 +116,7 @@ class ProductSearch extends Product
         $labels['resolution_to'] = 'До';
         $labels['response_time_from'] = 'От';
         $labels['response_time_to'] = 'До';
+        $labels['life_time_to'] = 'До';
 
         return $labels;
     }
@@ -135,6 +139,7 @@ class ProductSearch extends Product
         }
 
         $this->load($params);
+        $this->normalizeZeroFilters();
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -198,6 +203,11 @@ class ProductSearch extends Product
         $dataProvider = $this->getDataProvider($params);
         $query = $dataProvider->query;
 
+        if ($this->isLifeTimeOutOfRange()) {
+            $query->andWhere('0=1');
+            return $dataProvider;
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'product.id' => $this->id,
@@ -240,6 +250,12 @@ class ProductSearch extends Product
         $dataProvider = $this->getDataProvider($params);
         /* @var $query \yii\db\ActiveQuery */
         $query = $dataProvider->query;
+
+        if ($this->isLifeTimeOutOfRange()) {
+            $query->andWhere('0=1');
+            return $dataProvider;
+        }
+
 
         if (isset($params['new']) && $params['new'] === true) {
             $query->orderBy('id DESC');
@@ -287,6 +303,7 @@ class ProductSearch extends Product
 
         $query->andFilterWhere(['>=', 'response_time', $this->response_time_from]);
         $query->andFilterWhere(['<=', 'response_time', $this->response_time_to]);
+        $query->andFilterWhere(['>=', 'life_time', $this->life_time_to]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'product_range.unit', $this->range_unit])
@@ -302,6 +319,22 @@ class ProductSearch extends Product
         ];
 
         return $dataProvider;
+    }
+
+    private function normalizeZeroFilters(): void
+    {
+        foreach (['life_time_to', 'response_time_to'] as $attr) {
+            if ((string)$this->$attr === '0') {
+                $this->$attr = null;
+            }
+        }
+    }
+
+    private function isLifeTimeOutOfRange(): bool
+    {
+        return $this->life_time_to !== null
+            && $this->life_time_to !== ''
+            && (int)$this->life_time_to > 7;
     }
 }
 

@@ -723,12 +723,16 @@ class Product extends ProductBase
             $images[] = 'https://gassensor.ru' . $this->getPictUrl(false);
         }
 
+        $seo = $this->seo;
+        $name = ($seo && !empty($seo->h1)) ? $seo->h1 : $this->name;
+        $description = ($seo && !empty($seo->description)) ? $seo->description : $this->name;
+
         $data = [
             '@context' => 'https://schema.org/',
             '@type' => 'Product',
-            'name' => $this->name,
+            'name' => $name,
             'image' => $images,
-            'description' => $this->name,
+            'description' => $description,
             'sku' => $this->id,
             'mpn' => $this->id,
             'brand' => [

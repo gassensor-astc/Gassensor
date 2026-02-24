@@ -80,7 +80,6 @@ $pageSize = 20;
     ]);
 ?>
 
-<?php if ($dpProducts->totalCount > 0): ?>
     <h1><?= Html::encode($this->title) ?>  (<?= $dpProducts->totalCount ?>)</h1>
     <form action="/search" class="mt-2 mb-3 search-inline-form">
         <div class="input-group">
@@ -88,6 +87,8 @@ $pageSize = 20;
             <button class="btn btn-outline-secondary" type="submit">Поиск</button>
         </div>
     </form>
+
+<?php if ($dpProducts->totalCount > 0): ?>
 <!--    <h4>Товары (--><?php //= $dpProducts->totalCount ?><!--)</h4>-->
     <?php foreach ($dpProducts->getModels() as $i => $v): ?>
         <?= $this->render('_snippet-product', [
@@ -99,6 +100,8 @@ $pageSize = 20;
     <div class="pagination-wrapper">
         <?= LinkPager::widget(['pagination' => $dpProducts->pagination]) ?>
     </div>
+<?php else: ?>
+    <p style="margin-bottom: 80px;">Поиск по сайту не дал результатов...</p>
 <?php endif; ?>
 
 <?php /*

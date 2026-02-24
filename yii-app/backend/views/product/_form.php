@@ -280,6 +280,21 @@ $this->registerJs($js, $this::POS_READY);
 
             <?php DynamicFormWidget::end(); ?>
 
+            <div class="row" style="margin: 90px 0 0;">
+                <div class="col" style="padding-left: 0; padding-right: 8px;">
+                    <?= $form->field($model, 'life_time')
+                        ->input('number', ['min' => 0, 'placeholder' => 'Срок жизни'])
+                        ->label(false)
+                        ->hint('Срок жизни') ?>
+                </div>
+                <div class="col" style="padding-left: 8px; padding-right: 0;">
+                    <?= $form->field($model, 'warranty_period')
+                        ->input('number', ['min' => 0, 'placeholder' => 'Гарантийный срок'])
+                        ->label(false)
+                        ->hint('Гарантийный срок') ?>
+                </div>
+            </div>
+
 
         </div>
 

@@ -62,6 +62,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                             <?= Html::a('<i class="fa fa-fw fa-edit"></i> Производители (каталог)', Url::to(['seo/manufacture']), ['class' => 'btn btn-success mr-1']) ?>
 
+                            <?= Html::a('<i class="fa fa-fw fa-edit"></i> SEO-описания товаров', Url::to(['seo/product-descriptions']), ['class' => 'btn btn-success mr-1']) ?>
+
                             <?= Html::a('<i class="fa fa-fw fa-edit"></i> Robots.txt', Url::to(['seo/robots']), ['class' => 'btn btn-success mr-1']) ?>
 
                             <?= Html::a('<i class="fa fa-fw fa-edit"></i> Sitemap.xml', Url::to(['seo/sitemap']), ['class' => 'btn btn-success mr-1']) ?>

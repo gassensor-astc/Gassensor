@@ -63,6 +63,7 @@ $this->params['productJsonLd'] = $model->getJsonLd();
             ]) ?>
             <hr/>
 
+            <div class="mt-2 mb-1 fw-bold">Техническая спецификация:</div>
             <?php foreach (Product::getPdfIndexes() as $v):
                 if (!$url = $model->getPdfUrl($v)) {
                     continue;
@@ -77,6 +78,7 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                 <hr/>
             <?php endforeach; ?>
 
+            <div class="mt-2 mb-1 fw-bold">Заказать товар:</div>
             <div class="border my-3 p-2 bg-light">
                 <?= CartAddWidget::widget(['formAdd' => $formAdd, 'model' => $model, 'hiddenCount' => false, 'tableGrid' => true]) ?>
             </div>
@@ -185,6 +187,15 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                                     'value' => function ($model) {
                                         return $this->render('_cell-temperature_range', ['model' => $model]);
                                     }
+                            ],
+                            [
+                                    'attribute' => 'life_time',
+                                    'label' => 'Срок жизни (гарантийный срок), лет',
+                                    'format' => 'raw',
+                                    'value' => function ($model) {
+                                        return $this->render('_cell-life_time', ['model' => $model]);
+                                    },
+                                    'visible' => $model->life_time !== null || $model->warranty_period !== null,
                             ],
                             [
                                     'attribute' => 'info',

@@ -21,6 +21,7 @@ AppAsset::register($this);
     <title>Панель управления | <?= Html::encode($this->title) ?></title>
     <?php $this->registerCsrfMetaTags() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="/i/favicon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,300,400,700">
     <script type="text/javascript">
         var SITE_URL = "/";
@@ -163,6 +164,10 @@ Use search to find needed section.
             <li class="nav-item">
                 <a href="<?= Url::to(['seo/index', 'sort' => '-id']) ?>"><i class="fa fa-fw fa-globe"></i> <span
                             class="menu-item-parent"> SEO</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="<?= Url::to(['seo/product-descriptions']) ?>"><i class="fa fa-fw fa-globe"></i> <span
+                            class="menu-item-parent"> SEO-описания товаров</span></a>
             </li>
             <li class="nav-item">
                 <a href="<?= Url::to(['page/index', 'sort' => '-id']) ?>"><i class="fa fa-fw fa-file-text"></i> <span

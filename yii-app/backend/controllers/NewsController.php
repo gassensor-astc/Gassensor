@@ -85,6 +85,10 @@ class NewsController extends Controller
                     $model->save();
 
                     $modelSeo->ref_id = $model->id;
+                    $postSeo = $req->post('Seo');
+                    if (is_array($postSeo) && array_key_exists('breadcrumb_text', $postSeo)) {
+                        $modelSeo->breadcrumb_text = trim((string) ($postSeo['breadcrumb_text'] ?? ''));
+                    }
                     $modelSeo->save(false);
 
                     if ($model->uploadFile = UploadedFile::getInstance($model, 'uploadFile')) {
@@ -122,6 +126,12 @@ class NewsController extends Controller
             if ($isValid) {
                 $model->slug = StringHelpers::slug($model->slug);
                 $model->save();
+
+                $modelSeo->ref_id = $model->id;
+                $postSeo = $req->post('Seo');
+                if (is_array($postSeo) && array_key_exists('breadcrumb_text', $postSeo)) {
+                    $modelSeo->breadcrumb_text = trim((string) ($postSeo['breadcrumb_text'] ?? ''));
+                }
                 $modelSeo->save(false);
 
                 if ($model->uploadFile = UploadedFile::getInstance($model, 'uploadFile')) {

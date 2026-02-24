@@ -34,10 +34,22 @@ class CatalogController extends Controller
         $dataProvider = $searchModel->searchFront($params);
         $dataProvider->sort = false;
 
+        $seo = null;
+        if ($searchModel->gaz_id && ($gaz = Gaz::findOne((int) $searchModel->gaz_id))) {
+            $gasTitle = trim(rtrim($gaz->title, '.'));
+            $count = (int) $dataProvider->totalCount;
+            $seo = new Seo();
+            $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle);
+            $seo->setAttribute('h1', 'Сенсоры и датчики газа ' . $gasTitle);
+            $seo->setAttribute('description', 'Каталог сенсоров и датчиков газа ' . $gasTitle . ' по доступной цене. ' . $count . ' сенсоров и датчиков на базе газа ' . $gasTitle . ' купить в Москве. ');
+        } else {
+            $seo = $searchModel->manufacture->seo ?? null;
+        }
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'seo' => $searchModel->manufacture->seo ?? null,
+            'seo' => $seo,
         ]);
     }
 
@@ -65,10 +77,27 @@ class CatalogController extends Controller
         $dataProvider->query->joinWith('manufacture')->orderBy('manufacture.weight, id');
         $dataProvider->sort = false;
 
+        // SEO: как в actionIndex при выборе газа — единый формат H1/title/description
+        $gazSeo = $gaz->seo;
+        $gasTitle = trim(rtrim($gaz->title, '.'));
+        $count = (int) $dataProvider->totalCount;
+        if ($gazSeo && (string)$gazSeo->h1 !== '' && (string)$gazSeo->title !== '') {
+            $seo = $gazSeo;
+        } else {
+            $seo = new Seo();
+            $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle);
+            $seo->setAttribute('h1', 'Сенсоры и датчики газа ' . $gasTitle);
+            $seo->setAttribute('description', 'Каталог сенсоров и датчиков газа ' . $gasTitle . ' по доступной цене. ' . $count . ' сенсоров и датчиков на базе газа ' . $gasTitle . ' купить в Москве.');
+        }
+        // Canonical задаём отдельно — всегда чистый URL без query (не из БД)
+        $canonicalUrl = 'https://gassensor.ru/catalog/' . $gaz->slug;
+        $seo->setAttribute('url_canonical', null);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'seo' => $gaz->seo,
+            'seo' => $seo,
+            'canonicalUrl' => $canonicalUrl,
         ]);
     }
 
@@ -97,6 +126,7 @@ class CatalogController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'seo' => $seo,
+            'manufacture' => $manufacture,
         ]);
     }
 }

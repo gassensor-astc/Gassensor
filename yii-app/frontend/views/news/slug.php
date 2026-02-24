@@ -8,13 +8,12 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Новости', 'url' => '/news'];
-$this->params['breadcrumbs'][] = $this->title;
-
-
 if ($seo = $model->seo) {
     $seo->registerMetaTags($this);
 }
+$this->params['breadcrumbs'][] = ['label' => 'Новости', 'url' => '/news'];
+$breadcrumbLabel = ($seo && trim((string) ($seo->breadcrumb_text ?? '')) !== '') ? trim($seo->breadcrumb_text) : (($seo && $seo->h1 !== null && $seo->h1 !== '') ? $seo->h1 : $this->title);
+$this->params['breadcrumbs'][] = $breadcrumbLabel;
 
 $time = strtotime($model->date);
 

@@ -44,6 +44,8 @@ use common\models\ProductRange;
  * @property string $sensitivity_unit
  * @property integer $response_time
  * @property string $response_time_unit
+ * @property integer $life_time
+ * @property integer $warranty_period
  * @property double $energy_consumption_from
  * @property double $energy_consumption_to
  * @property string $energy_consumption_unit
@@ -79,7 +81,7 @@ class ProductBase extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['created_at', 'updated_at', 'manufacture_id', 'measurement_type_id', 'temperature_range_from', 'temperature_range_to'], 'integer'],
+            [['created_at', 'updated_at', 'manufacture_id', 'measurement_type_id', 'temperature_range_from', 'temperature_range_to', 'life_time', 'warranty_period'], 'integer'],
             [['manufacture_id', 'name', 'measurement_type_id', 'response_time'], 'required'],
             [['price', 'range_from', 'range_to', 'resolution', 'sensitivity_from', 'sensitivity_to', 'energy_consumption_from', 'energy_consumption_to', 'response_time'], 'number'],
             [['formfactor', 'range_unit'], 'string', 'max' => 30],
@@ -135,6 +137,8 @@ class ProductBase extends \yii\db\ActiveRecord
             'sensitivity_unit' => Yii::t('app', 'Sensitivity Unit'),
             'response_time' => Yii::t('app', 'Response Time'),
             'response_time_unit' => Yii::t('app', 'Response Time Unit'),
+            'life_time' => Yii::t('app', 'Life Time'),
+            'warranty_period' => Yii::t('app', 'Warranty Period'),
             'energy_consumption_from' => Yii::t('app', 'Energy Consumption From'),
             'energy_consumption_to' => Yii::t('app', 'Energy Consumption To'),
             'energy_consumption_unit' => Yii::t('app', 'Energy Consumption Unit'),

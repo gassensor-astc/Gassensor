@@ -97,7 +97,7 @@ $seoHome = Seo::findOne(['type' => Seo::TYPE_PAGE_ABOUT]);
 
         <div class="col-xxl-8 col-md-6 order-first order-md-0">
 
-            <h2>Последние поступления продукции</h2>
+            <h2>Поиск по параметрам</h2>
 
             <div class="col-lg-12 col-md-6 bg-light border p-3 mb-3 filter-container">
                 <?= $this->render('_filter', [

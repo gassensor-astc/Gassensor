@@ -108,12 +108,36 @@ class Seo extends SeoBase
      */
     public function registerMetaTags(\yii\web\View $view)
     {
-        $view->registerMetaTag(['name' => 'description', 'content' => $this->description,]);
+        $page = (int) (\Yii::$app->request->get('page', 1) ?: 1);
+        // для URL вида /remains/page/3 и /news/page/11 номер может быть в параметрах экшена
+        if ($page < 2 && isset(\Yii::$app->controller, \Yii::$app->controller->actionParams['page'])) {
+            $p = (int) \Yii::$app->controller->actionParams['page'];
+            if ($p >= 1) {
+                $page = $p;
+            }
+        }
+        $page = $page < 1 ? 1 : $page;
+        $pageSuffixTitle = $page > 1 ? '. Страница ' . $page : '';
+        $pageSuffixDesc = $page > 1 ? '. Страница ' . $page . '.' : '';
+
+        $title = rtrim($this->title, " \t\n.") . $pageSuffixTitle;
+        $description = rtrim($this->description, " \t\n.") . $pageSuffixDesc;
+        if ($pageSuffixDesc === '' && $description !== '' && !preg_match('/[.!?]$/u', $description)) {
+            $description .= '.';
+        }
+
+        $view->registerMetaTag(['name' => 'description', 'content' => $description]);
        // $view->registerMetaTag(['name' => 'keywords', 'content' => $this->keyword,]);
-        $view->title = $this->title;
+        $view->title = $title;
 
         if ($this->url_canonical) {
-            $view->registerLinkTag(['rel' => 'canonical', 'href' =>  Url::base(1) . $this->url_canonical]);
+            $path = preg_replace('/\?.*$/s', '', trim($this->url_canonical));
+            if (preg_match('#^https?://[^/]+(.*)$#', $path, $m)) {
+                $path = $m[1] !== '' ? $m[1] : '/';
+            }
+            $href = Url::base(1) . $path;
+            $href = preg_replace('/\?.*$/s', '', $href);
+            $view->registerLinkTag(['rel' => 'canonical', 'href' => $href]);
         }
 
         return $this;

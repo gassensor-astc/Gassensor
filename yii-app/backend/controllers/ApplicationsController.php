@@ -126,6 +126,15 @@ class ApplicationsController extends Controller
                 $model->preview = $url;
 
                 $model->save();
+
+                $modelSeo->ref_id = $model->id;
+                if (isset($req->post('Seo')['description'])) {
+                    $modelSeo->description = $req->post('Seo')['description'];
+                }
+                $postSeo = $req->post('Seo');
+                if (is_array($postSeo) && array_key_exists('breadcrumb_text', $postSeo)) {
+                    $modelSeo->breadcrumb_text = trim((string) ($postSeo['breadcrumb_text'] ?? ''));
+                }
                 $modelSeo->save(false);
 
                 Yii::$app->getSession()->setFlash('success', "Данные успешно обновлены");
