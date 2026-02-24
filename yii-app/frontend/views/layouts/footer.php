@@ -47,6 +47,15 @@ use yii\helpers\Url;
             font-size: 14px !important;
         }
     }
+    #back-to-top.btn-back-to-top {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 100;
+    }
+    .site-footer {
+        margin-top: 5rem;
+    }
 </style>
 <footer id="site-footer" class="site-footer bg-footer">
     <div class="main-footer">
@@ -94,9 +103,7 @@ use yii\helpers\Url;
                                     <li><a href="<?=Url::to(['/page/contacts']) ?>">Контакты</a></li>
                                 </ul>
                             </div>
-                        <div class="mt-4"><a id="back-to-top" href="#" class="btn btn-back-to-top">Наверх<i class="icon ion-ios-arrow-dropup-circle"></i></a> </div>
                         </div>
-
                     </div>
                 </div>
                 <!-- end col-lg-3 -->
@@ -141,3 +148,4 @@ use yii\helpers\Url;
     </div>
     <!-- .copyright-footer -->
 </footer>
+<a id="back-to-top" href="#" class="btn btn-back-to-top" aria-label="Наверх">Наверх<i class="icon ion-ios-arrow-dropup-circle"></i></a>

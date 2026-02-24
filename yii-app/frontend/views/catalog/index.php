@@ -17,6 +17,8 @@ $this->registerJsFile('lib/yii2AjaxRequest.js', ['depends' => AppAsset::class]);
 
 if (!$seo) {
     $seo = Seo::findOne(['type' => Seo::TYPE_PAGE_CATALOG]);
+}
+if ($seo && (string)$seo->title !== '') {
     $this->title = $seo->title;
 }
 if (isset($canonicalUrl)) {
@@ -33,17 +35,34 @@ $req = Yii::$app->request;
 $js =
     <<<JS
 
+$('#catalog-filter-form').on('submit', function(e) {
+    var \$sel = $(this).find('select[name="ProductSearch[gaz_id]"]');
+    var slug = \$sel.find('option:selected').data('slug');
+    if (slug) {
+        e.preventDefault();
+        var params = $(this).serializeArray()
+            .filter(function(o) { return o.name !== 'ProductSearch[gaz_id]'; })
+            .filter(function(o) {
+                if (o.value === '' || o.value === undefined) return false;
+                if (o.name === 'ProductSearch[response_time_to]' && o.value === '5000') return false;
+                return true;
+            });
+        var qs = $.param(params);
+        window.location = '/catalog/' + encodeURIComponent(slug) + (qs ? '?' + qs : '');
+        return false;
+    }
+});
+
 $("select").change(function(){
     if ($(this).attr('id') !== 'productsearch-selectedsignaltypes') {
         $(this).closest("form").submit();
-    } else {
+    }     else {
         setTimeout(()=>{
             let h = $('.select2-selection--multiple').outerHeight();
-            console.log('h = ' + h);
             if (h < 45) {
-                $('#form_div').css('height', '330px');
+                $('#form_div').css('height', 'fit-content');
             } else {
-                $('#form_div').css('height', '360px');
+                $('#form_div').css('height', 'fit-content');
             }
         }, 100);       
     }
@@ -67,11 +86,10 @@ $(document).ready(function(){
     
     setTimeout(()=>{
             let h = $('.select2-selection--multiple').outerHeight();
-            console.log('h = ' + h);
             if (h < 45) {
-                $('#form_div').css('height', '330px');
+                $('#form_div').css('height', 'fit-content');
             } else {
-                $('#form_div').css('height', '360px');
+                $('#form_div').css('height', 'fit-content');
             }
         }, 500);
     
@@ -79,7 +97,7 @@ $(document).ready(function(){
 
 	if (p) {
 		window.scrollTo(0, p[1]);
-	}	  
+	}
 
 });
 
@@ -108,8 +126,26 @@ $this->registerJs($js, $this::POS_READY);
         min-height: 600px;
         padding-bottom: 24px;
     }
+    /* На малой высоте экрана (14" и т.п.) — не даём футеру схлопнуть блок поиска */
+    @media (max-height: 900px) {
+        .catalog-index {
+            padding-bottom: 2rem;
+        }
+    }
     .catalog-index .field-productsearch-life_time_to {
         margin-bottom: 16px;
+    }
+    .catalog-index #form_div {
+        align-self: flex-start !important;
+        height: fit-content !important;
+    }
+    .catalog-index #catalog-search-btn-block {
+        width: 100%;
+    }
+    .catalog-index #catalog-search-btn-block .btn-form {
+        width: 100%;
+        display: block;
+        box-sizing: border-box;
     }
     .catalog-index .field-productsearch-life_time_to .invalid-feedback {
         display: block;
@@ -133,7 +169,7 @@ $this->registerJs($js, $this::POS_READY);
     </h1>
 
     <div class="row">
-        <div style="height: 330px;" class="col-lg-2 col-md-3 bg-light border py-1" id="form_div">
+        <div style="height: fit-content; align-self: flex-start;" class="col-lg-2 col-md-3 bg-light border py-1" id="form_div">
             <?= $this->render('_filter', [
                 'model' => $searchModel,
             ]) ?>

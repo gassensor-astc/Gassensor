@@ -30,6 +30,18 @@ class CatalogController extends Controller
         }
 
         $params = $this->request->queryParams;
+        $gazId = isset($params['ProductSearch']['gaz_id']) ? (int)$params['ProductSearch']['gaz_id'] : 0;
+        if ($gazId > 0 && ($gaz = Gaz::findOne($gazId)) && !empty($gaz->slug)) {
+            $queryParams = $params;
+            unset($queryParams['ProductSearch']['gaz_id']);
+            $queryParams = array_filter($queryParams, static function ($v) {
+                return $v !== '' && $v !== null && $v !== [];
+            });
+            return $this->redirect(
+                array_merge(['catalog/gas', 'slug' => $gaz->slug], $queryParams),
+                302
+            );
+        }
 
         $dataProvider = $searchModel->searchFront($params);
         $dataProvider->sort = false;
@@ -39,7 +51,7 @@ class CatalogController extends Controller
             $gasTitle = trim(rtrim($gaz->title, '.'));
             $count = (int) $dataProvider->totalCount;
             $seo = new Seo();
-            $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle);
+            $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle . ' купить ' . $count . ' шт в Москве');
             $seo->setAttribute('h1', 'Сенсоры и датчики газа ' . $gasTitle);
             $seo->setAttribute('description', 'Каталог сенсоров и датчиков газа ' . $gasTitle . ' по доступной цене. ' . $count . ' сенсоров и датчиков на базе газа ' . $gasTitle . ' купить в Москве. ');
         } else {
@@ -85,11 +97,13 @@ class CatalogController extends Controller
             $seo = $gazSeo;
         } else {
             $seo = new Seo();
-            $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle);
-            $seo->setAttribute('h1', 'Сенсоры и датчики газа ' . $gasTitle);
+            $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle . ' купить ' . $count . ' шт в Москве');
             $seo->setAttribute('description', 'Каталог сенсоров и датчиков газа ' . $gasTitle . ' по доступной цене. ' . $count . ' сенсоров и датчиков на базе газа ' . $gasTitle . ' купить в Москве.');
         }
-        // Canonical задаём отдельно — всегда чистый URL без query (не из БД)
+
+        $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle . ' купить ' . $count . ' шт в Москве');
+        $seo->setAttribute('h1', 'Сенсоры и датчики газа ' . $gasTitle);
+        // Canonical задаём отдельно
         $canonicalUrl = 'https://gassensor.ru/catalog/' . $gaz->slug;
         $seo->setAttribute('url_canonical', null);
 

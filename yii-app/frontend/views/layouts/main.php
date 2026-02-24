@@ -64,10 +64,10 @@ LegacyAsset::register($this);
         <?php endif; ?>
 
     </head>
-    <body>
+    <body class="d-flex flex-column min-vh-100">
     <?php $this->beginBody() ?>
-
-    <div class="site">
+<style>.site main { min-height: 0; flex: 1 1 auto; }.site-footer { margin-top: auto; flex-shrink: 0; }</style>
+    <div class="site flex-grow-1 d-flex flex-column">
 
         <?= $this->render('header') ?>
 
@@ -78,7 +78,7 @@ LegacyAsset::register($this);
             ]) ?>
         </div>
 
-        <main class="p-2">
+        <main class="p-2 flex-grow-1" style="min-height: 0;">
 
             <?= Alert::widget() ?>
             <?= $content ?>
