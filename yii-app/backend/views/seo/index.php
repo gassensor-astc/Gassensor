@@ -45,6 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                               Seo::TYPE_PAGE_ACCESSORIES,
                                               Seo::TYPE_PAGE_CONVERTER,
                                               Seo::TYPE_PAGE_REMAINS,
+                                              Seo::TYPE_PAGE_NEWS,
                                               Seo::TYPE_PAGE_ABOUT,
                                               Seo::TYPE_PAGE_GASES,
                                           ) as $v):

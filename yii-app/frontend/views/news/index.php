@@ -4,7 +4,15 @@
 
 use common\models\Seo;
 
-$seo = Seo::findOne(['type' => Seo::TYPE_PAGE_NEWS])->registerMetaTags($this);
+$seo = Seo::findOne(['type' => Seo::TYPE_PAGE_NEWS]);
+$seo->registerMetaTags($this);
+// Если Description в SEO пустой — выводим meta description из заголовка страницы
+if (trim((string) ($seo->description ?? '')) === '') {
+    $fallback = trim($seo->h1 ?? $seo->title ?? $this->title ?? '');
+    if ($fallback !== '') {
+        $this->registerMetaTag(['name' => 'description', 'content' => $fallback]);
+    }
+}
 
 $this->params['breadcrumbs'][] = $this->title;
 

@@ -120,13 +120,15 @@ class Seo extends SeoBase
         $pageSuffixTitle = $page > 1 ? '. Страница ' . $page : '';
         $pageSuffixDesc = $page > 1 ? '. Страница ' . $page . '.' : '';
 
-        $title = rtrim($this->title, " \t\n.") . $pageSuffixTitle;
-        $description = rtrim($this->description, " \t\n.") . $pageSuffixDesc;
+        $title = rtrim((string) $this->title, " \t\n.") . $pageSuffixTitle;
+        $description = rtrim((string) ($this->description ?? ''), " \t\n.") . $pageSuffixDesc;
         if ($pageSuffixDesc === '' && $description !== '' && !preg_match('/[.!?]$/u', $description)) {
             $description .= '.';
         }
 
-        $view->registerMetaTag(['name' => 'description', 'content' => $description]);
+        if ($description !== '') {
+            $view->registerMetaTag(['name' => 'description', 'content' => $description]);
+        }
        // $view->registerMetaTag(['name' => 'keywords', 'content' => $this->keyword,]);
         $view->title = $title;
 
