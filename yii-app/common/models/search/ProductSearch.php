@@ -203,11 +203,6 @@ class ProductSearch extends Product
         $dataProvider = $this->getDataProvider($params);
         $query = $dataProvider->query;
 
-        if ($this->isLifeTimeOutOfRange()) {
-            $query->andWhere('0=1');
-            return $dataProvider;
-        }
-
         // grid filtering conditions
         $query->andFilterWhere([
             'product.id' => $this->id,
@@ -251,16 +246,8 @@ class ProductSearch extends Product
         /* @var $query \yii\db\ActiveQuery */
         $query = $dataProvider->query;
 
-        if ($this->isLifeTimeOutOfRange()) {
-            $query->andWhere('0=1');
-            return $dataProvider;
-        }
-
-
         if (isset($params['new']) && $params['new'] === true) {
             $query->orderBy('id DESC');
-        } else {
-            $query->orderBy('product.name ASC');
         }
 
 
@@ -303,7 +290,7 @@ class ProductSearch extends Product
 
         $query->andFilterWhere(['>=', 'response_time', $this->response_time_from]);
         $query->andFilterWhere(['<=', 'response_time', $this->response_time_to]);
-        $query->andFilterWhere(['>=', 'life_time', $this->life_time_to]);
+        $query->andFilterWhere(['<=', 'life_time', $this->life_time_to]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'product_range.unit', $this->range_unit])
@@ -313,10 +300,11 @@ class ProductSearch extends Product
 
         $query->andFilterWhere(['gaz_group.id' => $this->gaz_group_id]);
 
-        $dataProvider->sort->defaultOrder = [
-            //'gaz_title' => SORT_ASC,
-            'name' => SORT_ASC
-        ];
+        if ($this->life_time_to !== null && $this->life_time_to !== '') {
+            $query->orderBy(['life_time' => SORT_DESC, 'product.name' => SORT_ASC]);
+        } else {
+            $query->orderBy('product.name ASC');
+        }
 
         return $dataProvider;
     }

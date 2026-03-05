@@ -130,7 +130,9 @@ class Seo extends SeoBase
             $view->registerMetaTag(['name' => 'description', 'content' => $description]);
         }
        // $view->registerMetaTag(['name' => 'keywords', 'content' => $this->keyword,]);
-        $view->title = $title;
+        if ($title !== '') {
+            $view->title = $title;
+        }
 
         if ($this->url_canonical) {
             $path = preg_replace('/\?.*$/s', '', trim($this->url_canonical));

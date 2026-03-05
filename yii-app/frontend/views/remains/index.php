@@ -6,7 +6,11 @@ use common\models\Setting;
 use common\helpers\StringHelpers;
 use yii\widgets\LinkPager;
 
-$seo = Seo::findOne(['type' => Seo::TYPE_PAGE_REMAINS])->registerMetaTags($this);
+$seo = Seo::findOne(['type' => Seo::TYPE_PAGE_REMAINS]);
+$seo->registerMetaTags($this);
+if (trim((string) ($seo->description ?? '')) === '') {
+    $this->registerMetaTag(['name' => 'description', 'content' => 'Наличие датчиков и сенсоров на складе компании Газсенсор.']);
+}
 
 $this->params['breadcrumbs'][] = $this->title;
 

@@ -29,17 +29,35 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJsFile('lib/yii2AjaxRequest.js', ['depends' => AppAsset::class]);
 
-if ($seo = $model->seo) {
+$seo = $model->seo;
+if ($seo) {
     $seo->registerMetaTags($this);
+}
+// Если SEO нет или title/description пустые — не теряем title и подставляем meta description
+$hasSeoDescription = $seo && trim((string) ($seo->description ?? '')) !== '';
+if (!$hasSeoDescription) {
+    $fallbackDesc = trim(strip_tags($model->info ?? ''));
+    if ($fallbackDesc !== '' && mb_strlen($fallbackDesc) > 160) {
+        $fallbackDesc = mb_substr($fallbackDesc, 0, 157) . '...';
+    }
+    if ($fallbackDesc === '') {
+        $fallbackDesc = $model->name;
+    }
+    if ($fallbackDesc !== '') {
+        $this->registerMetaTag(['name' => 'description', 'content' => $fallbackDesc]);
+    }
 }
 
 $this->params['productJsonLd'] = $model->getJsonLd();
+
+// Временный отладочный комментарий: уберите после проверки (product id, есть ли SEO, длина title/description)
+echo '<!-- product_id=' . (int)$model->id . ' seo=' . ($seo ? 'yes' : 'no') . ($seo ? ' seo_title_len=' . strlen(trim((string)($seo->title ?? ''))) . ' seo_desc_len=' . strlen(trim((string)($seo->description ?? ''))) : '') . ' -->' . "\n";
 
 ?>
 
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> container'>
     <h1>
-        <?= $seo->h1 ?? $this->title ?>
+        <?= ($seo && trim((string)($seo->h1 ?? '')) !== '') ? $seo->h1 : $this->title ?>
         <?php if (\Yii::$app->user->isAdmin()): ?>
                 <a href="/backend/product/update?id=<?= $model->id ?>"
                    class="btn d-inline rounded-pill ml-2"
@@ -215,7 +233,7 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                     ],
             ]) ?>
 
-            <?php if (!empty($seo->opisanie)): ?>
+            <?php if ($seo && !empty($seo->opisanie)): ?>
                 <div class="mt-4 mb-3">
                     <h4>Описание</h4>
                     <div style="text-align: left;">
