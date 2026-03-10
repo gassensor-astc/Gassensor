@@ -17,7 +17,11 @@ class NewsController extends Controller
             'query' => News::find()->orderBy('date DESC'),
             'pagination' => [
                 'pageSize' => 12,
-                'pageSizeParam' => false
+                'pageSizeParam' => false,
+                // Не добавляем ?page=1 в URL – первая страница всегда без параметра
+                'forcePageParam' => false,
+                // Явно фиксируем маршрут, чтобы пагинация вела на /news, а не /news/index
+                'route' => '/news',
             ],
         ]);
 

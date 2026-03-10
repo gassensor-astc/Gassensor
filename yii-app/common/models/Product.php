@@ -501,7 +501,7 @@ class Product extends ProductBase
                         </a></p>';
 
                     return $text;
-                } elseif (isset($_GET['slug']) && $_GET['slug'] && !isset($_GET['filter'])) {
+                } elseif (isset($_GET['slug']) && $_GET['slug']) {
                     $text = '<p>' . $label;
                     $text .= '<a target="_blank"  href="/manufacture/' . $model->manufacture->slug . '">
                             ' . Html::img('/i/new-window.gif', ['loading' => "lazy"]) . '

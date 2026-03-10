@@ -108,15 +108,31 @@ class Seo extends SeoBase
      */
     public function registerMetaTags(\yii\web\View $view)
     {
-        $page = (int) (\Yii::$app->request->get('page', 1) ?: 1);
-        // для URL вида /remains/page/3 и /news/page/11 номер может быть в параметрах экшена
-        if ($page < 2 && isset(\Yii::$app->controller, \Yii::$app->controller->actionParams['page'])) {
-            $p = (int) \Yii::$app->controller->actionParams['page'];
+        // Номер страницы в пагинации.
+        // Требования:
+        // - /catalog/slug   → страница 1 (без суффикса);
+        // - /catalog/slug?page=1 → считаем той же первой страницей (без суффикса);
+        // - /catalog/slug?page=2 → Страница 2, и т.д.
+        // Поэтому:
+        // - query-параметр `page` трактуем как человеко-понятный номер (1,2,3…),
+        //   но значения 0 и 1 считаем первой страницей;
+        // - если query-параметра нет, а номер приходит в параметрах экшена (обычно 1-based,
+        //   как в случае /catalog/2), используем его как есть.
+        $request = \Yii::$app->request;
+        $page = 1;
+        $pageParam = $request->get('page', null);
+        if ($pageParam !== null && $pageParam !== '') {
+            $p = (int)$pageParam;
+            $page = $p <= 1 ? 1 : $p;
+        } elseif (isset(\Yii::$app->controller, \Yii::$app->controller->actionParams['page'])) {
+            $p = (int)\Yii::$app->controller->actionParams['page'];
             if ($p >= 1) {
                 $page = $p;
             }
         }
-        $page = $page < 1 ? 1 : $page;
+        if ($page < 1) {
+            $page = 1;
+        }
         $pageSuffixTitle = $page > 1 ? '. Страница ' . $page : '';
         $pageSuffixDesc = $page > 1 ? '. Страница ' . $page . '.' : '';
 

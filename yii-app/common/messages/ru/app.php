@@ -37,7 +37,7 @@ return [
     'Sensitivity Analog' => 'Выходной сигнал (аналоговый)',
     'Sensitivity Digital' => 'Выходной сигнал (цифровой)',
     'Resolution' => 'Разрешение',
-    'Response Time' => 'Время отклика t90',
+    'Response Time' => 'Время отклика t90, сек',
     'Sensitivity From' => 'От',
     'Sensitivity To' => 'До',
     'Seos' => 'SEO',

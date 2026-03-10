@@ -12,7 +12,7 @@ use yii\helpers\Url;
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="convertModalLabel">Конвертер газа</h1>
+                <p class="modal-title fs-5" id="convertModalLabel">Конвертер газа</p>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
             </div>
             <div class="modal-body">

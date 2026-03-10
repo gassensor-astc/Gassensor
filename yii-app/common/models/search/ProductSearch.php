@@ -39,6 +39,9 @@ class ProductSearch extends Product
         3 => 'Цифровой',
     ];
 
+    /** @var mixed Не используется (чекбокс убран), оставлено для совместимости с GET-параметрами */
+    public $response_time_empty;
+
     public function getAvailableSignalTypes()
     {
 //        $signalTypes = [
@@ -76,7 +79,6 @@ class ProductSearch extends Product
             [['life_time_to'], 'number', 'min' => 0, 'max' => 5000],
 
             ['response_time_from', 'default', 'value' => 0],
-            ['response_time_to', 'default', 'value' => 5000],
 
             [['temperature_range_from'], 'number', 'min' => -100, 'max' => 1000],
             [['temperature_range_to'], 'number', 'min' => 0, 'max' => 1000],
@@ -85,7 +87,7 @@ class ProductSearch extends Product
             ['temperature_range_to', 'default', 'value' => 1000],
             //['selectedSignalTypes', 'each', 'rule' => ['integer']],
             [['name', 'img', 'slug', 'range_unit', 'sensitivity_unit', 'sensitivity',
-                'gaz_title', 'manufacture_title', 'measurement_type_name', 'selectedSignalTypes'], 'safe'],
+                'gaz_title', 'manufacture_title', 'measurement_type_name', 'selectedSignalTypes', 'response_time_empty'], 'safe'],
         ];
     }
 
@@ -136,6 +138,11 @@ class ProductSearch extends Product
             $dataProvider = new ActiveDataProvider([
                 'query' => $query,
             ]);
+        }
+
+        // Для SEO: не добавляем ?page=1 в URL, первая страница всегда без параметра.
+        if ($dataProvider->pagination !== false) {
+            $dataProvider->pagination->forcePageParam = false;
         }
 
         $this->load($params);
@@ -312,7 +319,8 @@ class ProductSearch extends Product
     private function normalizeZeroFilters(): void
     {
         foreach (['life_time_to', 'response_time_to'] as $attr) {
-            if ((string)$this->$attr === '0') {
+            $v = $this->$attr;
+            if ($v === '' || $v === null || (string)$v === '0') {
                 $this->$attr = null;
             }
         }

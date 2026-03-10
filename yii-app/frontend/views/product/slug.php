@@ -147,7 +147,7 @@ echo '<!-- product_id=' . (int)$model->id . ' seo=' . ($seo ? 'yes' : 'no') . ($
                                             $items[] = Html::a($gaz4->title, "/catalog/{$gaz4->slug}");
                                         }
 
-                                        return join(', ', $items);
+                                        return $items !== [] ? join(', ', $items) : '&mdash;';
                                     }
                             ],
 

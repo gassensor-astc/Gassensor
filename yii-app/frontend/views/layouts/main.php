@@ -25,9 +25,27 @@ LegacyAsset::register($this);
         <?= Html::csrfMetaTags() ?>
 
         <?php
-        $page = (int) (Yii::$app->request->get('page', 1) ?: 1);
-        if ($page < 1) $page = 1;
-        // Плавающая точка: в БД может быть точка в конце или нет — не дублируем. Суффикс уже может быть добавлен в Seo::registerMetaTags()
+        // Номер страницы для заголовка.
+        // Требования:
+        // - /... и /...?page=1 считаются первой страницей (без суффикса);
+        // - /...?page=2 → Страница 2 и т.д.
+        $req = Yii::$app->request;
+        $page = 1;
+        $pageParam = $req->get('page', null);
+        if ($pageParam !== null && $pageParam !== '') {
+            $p = (int)$pageParam;
+            $page = $p <= 1 ? 1 : $p;
+        } elseif (isset(Yii::$app->controller, Yii::$app->controller->actionParams['page'])) {
+            $p = (int)Yii::$app->controller->actionParams['page'];
+            if ($p >= 1) {
+                $page = $p;
+            }
+        }
+        if ($page < 1) {
+            $page = 1;
+        }
+        // Плавающая точка: в БД может быть точка в конце или нет — не дублируем.
+        // Суффикс уже может быть добавлен в Seo::registerMetaTags().
         if ($page > 1 && !preg_match('/\. Страница \d+\.?$/u', $this->title)) {
             $titleText = rtrim($this->title, " \t\n.") . '. Страница ' . $page;
         } else {

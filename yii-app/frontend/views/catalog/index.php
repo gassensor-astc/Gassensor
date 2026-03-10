@@ -32,6 +32,34 @@ if (!empty($canonicalUrl)) {
 /* @var $request \yii\web\Request */
 $req = Yii::$app->request;
 
+// Номер страницы для H1 каталога.
+// Логика синхронизирована с Seo::registerMetaTags():
+// - /catalog/slug и /catalog/slug?page=1 считаем первой страницей (без суффикса);
+// - /catalog/slug?page=2 → Страница 2 и т.д.
+$page = 1;
+$pageParam = $req->get('page', null);
+if ($pageParam !== null && $pageParam !== '') {
+    $p = (int)$pageParam;
+    $page = $p <= 1 ? 1 : $p;
+} elseif (isset($this->context, $this->context->actionParams['page'])) {
+    $p = (int)$this->context->actionParams['page'];
+    if ($p >= 1) {
+        $page = $p;
+    }
+}
+if ($page < 1) {
+    $page = 1;
+}
+
+// Базовый текст H1 (из SEO или из title)
+$catalogH1 = $seo->h1 ?? $this->title;
+if ($page > 1 && $catalogH1 !== null && $catalogH1 !== '') {
+    // Если в H1 ещё нет ", Страница N" в конце — добавляем.
+    if (!preg_match('/,?\s*Страница\s+\d+$/u', $catalogH1)) {
+        $catalogH1 = rtrim($catalogH1, " \t\n.") . ', Страница ' . $page;
+    }
+}
+
 $js =
     <<<JS
 
@@ -155,7 +183,7 @@ $this->registerJs($js, $this::POS_READY);
 </style>
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> px-2'>
     <h1 class="text-center">
-        <?= $seo->h1 ?? $this->title ?>
+        <?= $catalogH1 ?>
         <?php if (isset($manufacture) && $manufacture): ?>
             <a href="/backend/seo/manufacture-update?id=<?= $manufacture->id ?>"
                class="btn d-inline rounded-pill ml-2"

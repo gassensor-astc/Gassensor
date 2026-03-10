@@ -2,6 +2,14 @@
 /* @var $this yii\web\View */
 /* @var $model common\models\Product */
 
+$hasFirst = $model->first === 1 && trim((string)($model->sensitivity_first ?? '')) !== '';
+$hasAnalog = $model->analog === 1 && trim((string)($model->sensitivity_analog ?? '')) !== '';
+$hasDigital = $model->digital === 1 && trim((string)($model->sensitivity_digital ?? '')) !== '';
+
+if (!$hasFirst && !$hasAnalog && !$hasDigital) {
+    echo '&mdash;';
+    return;
+}
 ?>
 
 <div class="container">
