@@ -151,6 +151,14 @@ Use search to find needed section.
         traditional href="" links. See documentation for details.
         -->
 
+        <?php if (Yii::$app->user->can(ROLE_NAME_EDITOR)): ?>
+        <ul>
+            <li class="nav-item">
+                <a href="<?= Url::to(['seo/product-descriptions']) ?>"><i class="fa fa-fw fa-globe"></i> <span
+                            class="menu-item-parent"> SEO-описания товаров</span></a>
+            </li>
+        </ul>
+        <?php else: ?>
         <ul>
             <li class="nav-item">
                 <a href="<?= Url::to(['url/index', 'sort' => '-id']) ?>"><i class="fa fa-fw fa-chain"></i> <span
@@ -221,6 +229,7 @@ Use search to find needed section.
                 </li>
             <?php endif; ?>
         </ul>
+        <?php endif; ?>
     </nav>
 
     <span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i></span>

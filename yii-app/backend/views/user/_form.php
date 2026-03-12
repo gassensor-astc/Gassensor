@@ -13,7 +13,16 @@ $params = [
 ];
 
 $roles =  Yii::$app->authManager->getRoles();
-$items = ArrayHelper::map($roles, 'name', 'name');
+$items = [];
+foreach ($roles as $name => $role) {
+    if ($name === ROLE_NAME_MANAGER) {
+        $items[$name] = $name . ' (нет доступа к пользователям и настройкам)';
+    } elseif ($name === ROLE_NAME_EDITOR) {
+        $items[$name] = $name . ' (доступ только к разделу SEO-описания)';
+    } else {
+        $items[$name] = $name;
+    }
+}
 
 ?>
 

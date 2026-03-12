@@ -24,6 +24,10 @@ $accessRules = [
         'slider', 'applications', 'site', 'news', 'manufacture', 'product', 'seo', 'gaz', 'order', 'page', 'redirect', 'measurement-type', 'url', 'ajax'
     ]],
 
+    // editor: только вход и страница SEO «Описания товаров»
+    ['allow' => true, 'roles' => [ROLE_NAME_EDITOR], 'controllers' => ['site']],
+    ['allow' => true, 'roles' => [ROLE_NAME_EDITOR], 'controllers' => ['seo'], 'actions' => ['product-descriptions']],
+
     //allow all
     ['allow' => true, 'controllers' => ['site'], 'actions' => ['error',],],
     
@@ -37,6 +41,18 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [],
+
+    'on beforeRequest' => function () {
+        try {
+            $auth = \Yii::$app->get('authManager', false);
+            if ($auth && !$auth->getRole(ROLE_NAME_EDITOR)) {
+                $role = $auth->createRole(ROLE_NAME_EDITOR);
+                $auth->add($role);
+            }
+        } catch (\Throwable $e) {
+            // игнорируем (БД/RBAC недоступны и т.п.)
+        }
+    },
     'components' => [
         'request' => [
             'csrfParam' => '_csrf',

@@ -51,6 +51,11 @@ class SiteController extends Controller
     public function actionIndex()
     {
 
+        if (\Yii::$app->user->can(ROLE_NAME_EDITOR)) {
+            return $this->redirect(['seo/product-descriptions']);
+        }
+
+
         //$this->addFlashSuccess('test1');
         //$this->addFlashError('test2');
 
