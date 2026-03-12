@@ -7,6 +7,7 @@ use common\models\Product;
 use common\models\search\SeoSearch;
 use common\models\{search\ManufactureSearch, UploadSitemap, Seo, Manufacture};
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use yii\web\{Controller,NotFoundHttpException,Response,UploadedFile};
 use yii\filters\VerbFilter;
 
@@ -261,17 +262,20 @@ class SeoController extends Controller
             $query->joinWith(['seo' => function($q) {
                 $q->andOnCondition(['seo.type' => Seo::TYPE_PRODUCT]);
             }], false, 'LEFT JOIN')
-                ->andWhere($emptySeoCondition('title'));
+                ->andWhere($emptySeoCondition('title'))
+                ->groupBy('product.id');
         } elseif ($filter === 'no_h1') {
             $query->joinWith(['seo' => function($q) {
                 $q->andOnCondition(['seo.type' => Seo::TYPE_PRODUCT]);
             }], false, 'LEFT JOIN')
-                ->andWhere($emptySeoCondition('h1'));
+                ->andWhere($emptySeoCondition('h1'))
+                ->groupBy('product.id');
         } elseif ($filter === 'no_description') {
             $query->joinWith(['seo' => function($q) {
                 $q->andOnCondition(['seo.type' => Seo::TYPE_PRODUCT]);
             }], false, 'LEFT JOIN')
-                ->andWhere($emptySeoCondition('description'));
+                ->andWhere($emptySeoCondition('description'))
+                ->groupBy('product.id');
         }
 
         // Подсчет статистики по текущему набору товаров
@@ -304,19 +308,32 @@ class SeoController extends Controller
             ->andWhere($emptySeoCondition('description'))
             ->count();
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => [
-                'pageSize' => 100,
-                'params' => array_filter([
-                    'id' => $id ?: null,
-                    'name' => $name ?: null,
-                    'filter' => $filter ?: null,
-                ]),
-            ],
-        ]);
+        $perPage = (int)$this->request->get('per-page', 50) ?: 50;
+        $perPage = in_array($perPage, [20, 50, 100, 200], true) ? $perPage : 50;
+        $currentPage = max(1, (int)$this->request->get('page', 1));
+        $get = $this->request->getQueryParams();
 
-        return $this->render('product-descriptions', compact('dataProvider', 'id', 'name', 'filter', 'withoutTitle', 'withoutH1', 'withoutDescription'));
+        $totalCount = (int)(clone $query)->count();
+
+        $pagination = new Pagination([
+            'totalCount' => $totalCount,
+            'pageParam' => 'page',
+            'pageSizeParam' => 'per-page',
+            'defaultPageSize' => 50,
+            'pageSize' => $perPage,
+            'forcePageParam' => false,
+            'route' => 'seo/product-descriptions',
+            'params' => $get,
+            'validatePage' => false,
+        ]);
+        $pagination->setPage($currentPage - 1, false);
+
+        $products = (clone $query)
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        return $this->render('product-descriptions', compact('products', 'pagination', 'totalCount', 'id', 'name', 'filter', 'withoutTitle', 'withoutH1', 'withoutDescription'));
     }
 
     /**

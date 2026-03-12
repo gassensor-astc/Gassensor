@@ -1,6 +1,8 @@
 <?php
 /* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $products \common\models\Product[] */
+/* @var $pagination yii\data\Pagination */
+/* @var $totalCount int */
 /* @var string $id */
 /* @var string $name */
 /* @var string $filter */
@@ -13,7 +15,7 @@ use yii\helpers\Url;
 use yii\widgets\LinkPager;
 use yii\bootstrap5\ActiveForm;
 
-$this->title = 'SEO-описания товаров (' . $dataProvider->totalCount . ')';
+$this->title = 'SEO-описания товаров (' . $totalCount . ')';
 $this->params['breadcrumbs'][] = ['label' => 'SEO', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -90,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($dataProvider->getModels() as $product): ?>
+                        <?php foreach ($products as $product): ?>
                             <?php $seo = $product->seo; ?>
                             <tr data-product-id="<?= $product->id ?>">
                                 <td class="seo-product-cell">
@@ -144,7 +146,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
 
                 <div class="seo-pagination-wrapper">
-                    <?= LinkPager::widget(['pagination' => $dataProvider->pagination]) ?>
+                    <?= LinkPager::widget(['pagination' => $pagination]) ?>
                 </div>
             </div>
         </div>

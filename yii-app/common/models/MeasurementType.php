@@ -22,7 +22,7 @@ class MeasurementType extends MeasurementTypeBase
      */
     public static function getDropDownData(bool $isPrependEmpty = false): array
     {
-        $rows = self::find()->cache(10)->all();
+        $rows = self::find()->orderBy('name')->cache(10)->all();
         $rows = ArrayHelper::map($rows, 'id', 'name');
 
         if ($isPrependEmpty) {
