@@ -27,11 +27,25 @@ class StringHelpers
      */
     public static function shortText(string $str, int $chars = 500): string
     {
-        $string = str_replace(' ', '', $str);
-        $pos = mb_strpos(mb_substr($string, $chars), " ");
-        $srttmpend = mb_strlen($string) > $chars ? '...' : '';
+        $str = trim(preg_replace('/\s+/u', ' ', $str));
+        if ($chars <= 0) {
+            return '';
+        }
 
-        return mb_substr($str, 0, $chars + $pos) . ($srttmpend ?? '');
+        if (mb_strlen($str) <= $chars) {
+            return $str;
+        }
+
+        // Берем чуть больше лимита и отрезаем по последнему слову.
+        $cut = mb_substr($str, 0, $chars + 1);
+        $lastSpace = mb_strrpos($cut, ' ');
+        if ($lastSpace !== false && $lastSpace > (int)($chars * 0.6)) {
+            $cut = mb_substr($cut, 0, $lastSpace);
+        } else {
+            $cut = mb_substr($cut, 0, $chars);
+        }
+
+        return rtrim($cut, " \t\n\r\0\x0B.,;:!-") . '...';
     }
 
     /**
