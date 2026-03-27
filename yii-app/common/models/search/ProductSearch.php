@@ -2,6 +2,7 @@
 
 namespace common\models\search;
 
+use common\models\MeasurementType;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
@@ -247,7 +248,7 @@ class ProductSearch extends Product
      *
      * @return ActiveDataProvider
      */
-    public function searchFront($params)
+    public function searchFront($params, bool $normalizeMeasurementType = true)
     {
         $dataProvider = $this->getDataProvider($params);
         /* @var $query \yii\db\ActiveQuery */
@@ -257,6 +258,18 @@ class ProductSearch extends Product
             $query->orderBy('id DESC');
         }
 
+
+        if (
+            $normalizeMeasurementType
+            && !empty($this->measurement_type_id)
+            && !in_array(
+                (int)$this->measurement_type_id,
+                array_map('intval', MeasurementType::findAvailableMeasurementTypeIdsByParams($params)),
+                true
+            )
+        ) {
+            $this->measurement_type_id = null;
+        }
 
 
         // grid filtering conditions
@@ -333,4 +346,3 @@ class ProductSearch extends Product
             && (int)$this->life_time_to > 7;
     }
 }
-

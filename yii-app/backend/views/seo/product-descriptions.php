@@ -118,7 +118,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </td>
                                 <td class="seo-opisanie-td">
                                     <div class="seo-opisanie-wrap">
-                                        <label class="form-label mb-1">Описание (<span class="js-count" data-for="opis-<?= $product->id ?>">0</span>)</label>
+                                        <div class="seo-opisanie-header mb-1">
+                                            <label class="form-label mb-0">Описание (<span class="js-count" data-for="opis-<?= $product->id ?>">0</span>)</label>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm js-add-paragraphs">Добавить абзацы</button>
+                                        </div>
                                         <textarea class="form-control js-seo-opisanie js-count-input" data-count-id="opis-<?= $product->id ?>" rows="6"><?= Html::encode($seo->opisanie ?? '') ?></textarea>
                                     </div>
                                 </td>
@@ -253,6 +256,50 @@ $('.js-copy-ai').on('click', function () {
     }
 });
 
+function stripHtmlTags(text) {
+    return (text || '')
+        .replace(/<meta\b[^>]*>/gi, '')
+        .replace(/<!--[\s\S]*?-->/g, '')
+        .replace(/<\/?[^>]+>/g, '');
+}
+
+function escapeHtml(text) {
+    return $('<div>').text(text || '').html();
+}
+
+$('.js-add-paragraphs').on('click', function () {
+    var row = $(this).closest('tr');
+    var textarea = row.find('.js-seo-opisanie');
+    var sourceText = textarea.val() || '';
+
+    if (!sourceText.trim()) {
+        alert('Нет текста для обработки');
+        return;
+    }
+
+    var normalizedText = stripHtmlTags(sourceText)
+        .split(String.fromCharCode(13, 10)).join('\\n')
+        .split(String.fromCharCode(13)).join('\\n');
+    var paragraphs = normalizedText
+        .split('\\n')
+        .map(function (line) {
+            return $.trim(line);
+        })
+        .filter(function (line) {
+            return line.length > 0;
+        })
+        .map(function (line) {
+            return '<p>' + escapeHtml(line) + '</p>';
+        });
+
+    if (!paragraphs.length) {
+        alert('После очистки не осталось текста');
+        return;
+    }
+
+    textarea.val(paragraphs.join('\\r\\n')).trigger('input');
+});
+
 function updateCounts() {
     $('.js-count-input').each(function () {
         const id = $(this).data('count-id');
@@ -304,6 +351,12 @@ $this->registerJs($js);
     }
     .seo-opisanie-td {
         vertical-align: top;
+    }
+    .seo-opisanie-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
     }
     .seo-ai-buttons {
         display: flex;

@@ -76,56 +76,49 @@ class MeasurementType extends MeasurementTypeBase
         return $options;
     }
 
-    /**
-     * @param ProductSearch $searchModel
-     * @return array|null
-     */
-    public static function findAvailableMeasurementTypeIds(ProductSearch $searchModel): ?array
+    public static function findAvailableMeasurementTypeIds(ProductSearch $searchModel): array
     {
-        $params = Yii::$app->request->queryParams;
-
-        if ($searchModel->gaz_id || $searchModel->manufacture_id) {
-            unset($params['ProductSearch']['measurement_type_id']);
-
-            $ids = (new ProductSearch())->searchFront($params)->query->select(['product.id'])->column();
-
-            if ($ids) {
-                $measurementTypeIds = self::find()
-                    ->select(['measurement_type.id'])
-                    ->leftJoin('product', 'product.measurement_type_id = measurement_type.id')
-                    ->where(['in', 'product.id', $ids])
-                    ->groupBy(['measurement_type.id'])
-                    ->column();
-            } else {
-                $measurementTypeIds = null;
-            }
-        } else {
-            $measurementTypeIds = self::find()->select(['id'])->column();
-        }
-
-        return $measurementTypeIds;
+        return self::findAvailableMeasurementTypeIdsByParams([
+            'ProductSearch' => array_filter(ArrayHelper::merge(
+                Yii::$app->request->queryParams['ProductSearch'] ?? [],
+                $searchModel->getAttributes(),
+                [
+                    'gaz_id' => $searchModel->gaz_id,
+                    'gaz_group_id' => $searchModel->gaz_group_id,
+                    'selectedSignalTypes' => $searchModel->selectedSignalTypes,
+                    'response_time_from' => $searchModel->response_time_from,
+                    'response_time_to' => $searchModel->response_time_to,
+                    'life_time_to' => $searchModel->life_time_to,
+                    'resolution_from' => $searchModel->resolution_from,
+                    'resolution_to' => $searchModel->resolution_to,
+                ]
+            ), static function ($value) {
+                return $value !== null && $value !== '' && $value !== [];
+            }),
+        ]);
     }
 
-    public static function findAvailableMeasurementTypeAjaxIds(): ?array
+    public static function findAvailableMeasurementTypeIdsByParams(array $params): array
     {
-        $params = Yii::$app->request->queryParams;
-
         unset($params['ProductSearch']['measurement_type_id']);
 
-        $ids = (new ProductSearch())->searchFront($params)->query->select(['product.id'])->column();
+        $ids = (new ProductSearch())->searchFront($params, false)->query->select(['product.id'])->column();
 
-        if ($ids) {
-            $measurementTypeIds = self::find()
-                ->select(['measurement_type.id'])
-                ->leftJoin('product', 'product.measurement_type_id = measurement_type.id')
-                ->where(['in', 'product.id', $ids])
-                ->groupBy(['measurement_type.id'])
-                ->column();
-        } else {
-            $measurementTypeIds = null;
+        if (!$ids) {
+            return [];
         }
 
-        return $measurementTypeIds;
+        return self::find()
+            ->select(['measurement_type.id'])
+            ->leftJoin('product', 'product.measurement_type_id = measurement_type.id')
+            ->where(['in', 'product.id', $ids])
+            ->groupBy(['measurement_type.id'])
+            ->column();
+    }
+
+    public static function findAvailableMeasurementTypeAjaxIds(): array
+    {
+        return self::findAvailableMeasurementTypeIdsByParams(Yii::$app->request->queryParams);
     }
 
     /**
@@ -137,11 +130,9 @@ class MeasurementType extends MeasurementTypeBase
         $measurementTypeIds = self::findAvailableMeasurementTypeIds($searchModel);
         $measurementTypeOption = ['' => ['label' => 'Тип измерения']];
 
-        if ($measurementTypeIds) {
-            foreach (self::getDropDownData(true) as $id => $label) {
-                if (!in_array($id, $measurementTypeIds) && !empty($id)) {
-                    $measurementTypeOption[$id] = ['disabled' => true];
-                }
+        foreach (self::getDropDownData(true) as $id => $label) {
+            if (!empty($id) && !in_array($id, $measurementTypeIds)) {
+                $measurementTypeOption[$id] = ['disabled' => true];
             }
         }
 
