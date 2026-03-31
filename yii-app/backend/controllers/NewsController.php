@@ -32,6 +32,7 @@ class NewsController extends Controller
                     'actions' => [
                         'delete' => ['POST'],
                         'checkbox-delete' => ['POST'],
+                        'delete-content-file' => ['POST'],
                     ],
                 ],
             ]
@@ -166,6 +167,27 @@ class NewsController extends Controller
         return $this->redirect(['index']);
     }
 
+    public function actionDeleteContentFile(int $id, string $url)
+    {
+        $model = $this->findModel($id);
+        $decodedUrl = urldecode($url);
+        $filePath = $model->resolveContentFilePath($decodedUrl);
+
+        if ($filePath && is_file($filePath)) {
+            @unlink($filePath);
+        }
+
+        if (!empty($model->content)) {
+            $pattern = '~<a\b[^>]*href=["\']' . preg_quote($decodedUrl, '~') . '["\'][^>]*>.*?</a>~is';
+            $model->content = preg_replace($pattern, '', (string)$model->content);
+            $model->save(false);
+        }
+
+        Yii::$app->getSession()->setFlash('success', 'Файл удален');
+
+        return $this->redirect(['update', 'id' => $id]);
+    }
+
     /**
      * @param int|null $id
      * @param $basename
@@ -177,6 +199,15 @@ class NewsController extends Controller
         $model = $this->findModel($id);
 
         $model->delFile($basename);
+
+        if (!empty($model->content) && $basename) {
+            $basenameSafe = preg_quote((string)$basename, '~');
+            $url = $model->getUploadUrl() . '/' . $basename;
+            $urlSafe = preg_quote($url, '~');
+            $pattern = '~<\s*(img|a)\b[^>]*(?:src|href)\s*=\s*["\']?(?:' . $urlSafe . '|' . $basenameSafe . ')[^"\'>\s]*["\']?[^>]*>.*?</\1\s*>|<\s*img\b[^>]*(?:src)\s*=\s*["\']?(?:' . $urlSafe . '|' . $basenameSafe . ')[^"\'>\s]*["\']?[^>]*>~is';
+            $model->content = preg_replace($pattern, '', (string)$model->content);
+            $model->save(false);
+        }
 
         $this->addFlashSuccess("Установлен файл $basename");
 
@@ -259,4 +290,5 @@ class NewsController extends Controller
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
+
 }

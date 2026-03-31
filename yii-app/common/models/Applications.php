@@ -52,6 +52,24 @@ class Applications extends ApplicationsBase
         return [\Yii::getAlias('@documentroot' . '/upload/articles/'. $name), '/upload/articles/'. $name];
     }
 
+    public function resolveContentFilePath(string $url): ?string
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        if (!$path) {
+            return null;
+        }
+
+        if (stripos($path, '.pdf') === false) {
+            return null;
+        }
+
+        $path = str_replace(["\0"], '', $path);
+        $path = '/' . ltrim($path, '/');
+        $fullPath = \Yii::getAlias('@documentroot') . $path;
+
+        return is_file($fullPath) ? $fullPath : null;
+    }
+
     /**
      * @inheritdoc
      * @return ApplicationsQuery the active query used by this AR class.
@@ -61,4 +79,3 @@ class Applications extends ApplicationsBase
         return new ApplicationsQuery(get_called_class());
     }
 }
-

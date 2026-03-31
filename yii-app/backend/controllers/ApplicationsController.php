@@ -23,6 +23,7 @@ class ApplicationsController extends Controller
                     'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
+                        'delete-content-file' => ['POST'],
                     ],
                 ],
             ]
@@ -164,6 +165,27 @@ class ApplicationsController extends Controller
         $model->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionDeleteContentFile(int $id, string $url)
+    {
+        $model = $this->findModel($id);
+        $decodedUrl = urldecode($url);
+        $filePath = $model->resolveContentFilePath($decodedUrl);
+
+        if ($filePath && is_file($filePath)) {
+            @unlink($filePath);
+        }
+
+        if (!empty($model->content)) {
+            $pattern = '~<a\b[^>]*href=["\']' . preg_quote($decodedUrl, '~') . '["\'][^>]*>.*?</a>~is';
+            $model->content = preg_replace($pattern, '', (string)$model->content);
+            $model->save(false);
+        }
+
+        Yii::$app->getSession()->setFlash('success', 'Файл удален');
+
+        return $this->redirect(['update', 'id' => $id]);
     }
 
     /**

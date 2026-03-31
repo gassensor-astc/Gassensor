@@ -48,6 +48,46 @@ use kartik\date\DatePicker;
 
 <?= $this->render('/seo/_sub-form', ['model' => $modelSeo, 'form' => $form]) ?>
 
+<?php
+    $content = (string)($model->content ?? '');
+    $pdfLinks = [];
+    if ($content !== '') {
+        if (preg_match_all('~(?:href|src)\s*=\s*(?:["\']?)([^"\'>\s]+\.pdf(?:\?[^"\'>\s]*)?)~i', $content, $m)) {
+            $pdfLinks = array_values(array_unique($m[1]));
+        } elseif (preg_match_all('~(https?://[^\s"\']+\.pdf(?:\?[^\s"\']*)?|/[^"\'>\s]+\.pdf(?:\?[^"\'>\s]*)?)~i', $content, $m)) {
+            $pdfLinks = array_values(array_unique($m[1]));
+        }
+    }
+?>
+
+<h3>PDF в контенте</h3>
+<?php if (!empty($pdfLinks)): ?>
+    <ul style="margin-bottom: 16px;">
+        <?php foreach ($pdfLinks as $link): ?>
+            <?php
+                $path = $model->resolveContentFilePath($link);
+                $size = $path && is_file($path) ? filesize($path) : null;
+                $sizeText = $size !== null ? number_format($size / 1024, 1, '.', ' ') . ' KB' : 'файл не найден';
+            ?>
+            <li>
+                <?= Html::a(Html::encode($link), $link, ['target' => '_blank', 'rel' => 'noopener']) ?>
+                <span class="text-muted" style="margin-left: 8px;"><?= Html::encode($sizeText) ?></span>
+                <?= Html::a(
+                    'Удалить',
+                    ['delete-content-file', 'id' => $model->id, 'url' => rawurlencode($link)],
+                    [
+                        'class' => 'btn btn-danger btn-xs',
+                        'style' => 'margin-left: 8px;',
+                        'data-method' => 'post',
+                        'data-confirm' => 'Удалить PDF и убрать ссылку из контента?',
+                    ]
+                ) ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php else: ?>
+    <div class="text-muted" style="margin-bottom: 16px;">В контенте ссылки на PDF не найдены.</div>
+<?php endif; ?>
 
 <div class="form-actions">
     <div class="row">
@@ -88,8 +128,5 @@ CKEDITOR.config.removePlugins = 'spellchecker, about, save, newpage, print, temp
 
 
 ?>
-
-
-
 
 
