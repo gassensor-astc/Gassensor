@@ -36,6 +36,22 @@ use Yii;
  */
 class Product extends ProductBase
 {
+    public function beforeValidate()
+    {
+        if (!parent::beforeValidate()) {
+            return false;
+        }
+
+        foreach (['life_time', 'warranty_period'] as $attr) {
+            $value = $this->$attr;
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $this->$attr = str_replace(',', '.', (string)$value);
+        }
+
+        return true;
+    }
     use CreatedUpdateAtText;
     use DynamicForm;
 
@@ -87,7 +103,7 @@ class Product extends ProductBase
         $rules = parent::rules();
 
         $rules[] = ['uploadPict', 'file', 'extensions' => 'png, jpg, gif'];
-        $rules[] = [['uploadPdf', 'uploadPdf2', 'uploadPdf3'], 'file', 'extensions' => 'pdf'];
+        $rules[] = [['uploadPdf', 'uploadPdf2', 'uploadPdf3'], 'file', 'extensions' => 'pdf', 'maxSize' => 10485760, 'tooBig' => 'PDF должен быть не больше 10 МБ'];
 
         return $rules;
     }

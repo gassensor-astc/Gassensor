@@ -213,7 +213,7 @@ Use search to find needed section.
             </li>
             <?php if (!Yii::$app->user->isManager()): ?>
             <li class="nav-item">
-                <a href="<?= Url::to(['user/index']) ?>"><i class="fa fa-fw fa-users"></i> <span
+                <a href="<?= Url::to(['user/index']) ?>"><i class="fa fa-fw fa-user"></i> <span
                             class="menu-item-parent"> <?= Yii::t('app', 'Users') ?></span></a>
             </li>
                 <li class="nav-item">

@@ -14,6 +14,7 @@ use yii\web\UploadedFile;
 
 class ApplicationsController extends Controller
 {
+    public $enableCsrfValidation = false;
     public function behaviors()
     {
         return array_merge(

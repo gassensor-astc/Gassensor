@@ -157,6 +157,11 @@ class ProductController extends Controller
 
         $req = $this->request;
 
+        if ($req->isPost && $this->isPostSizeExceeded()) {
+            $this->addFlashError('Слишком большой размер запроса. Увеличьте post_max_size / upload_max_filesize на сервере.');
+            return $this->render('update', compact('model', 'modelSeo', 'modelProductGaz', 'modelsRange'));
+        }
+
         if ($req->isPost && $model->load($req->post()) && $modelSeo->load($req->post()) && $modelProductGaz->load($req->post())) {
             $isValid = $model->validate();
             $isValid = $modelSeo->validate() && $isValid;
@@ -235,6 +240,46 @@ class ProductController extends Controller
         $modelProductGaz->is_main_4 = $model->mainGaz4->id ?? null;
 
         return $this->render('update', compact('model', 'modelSeo', 'modelProductGaz', 'modelsRange'));
+    }
+
+    private function isPostSizeExceeded(): bool
+    {
+        if (!$this->request->isPost) {
+            return false;
+        }
+
+        $contentLength = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
+        if ($contentLength <= 0) {
+            return false;
+        }
+
+        $max = $this->parseSizeToBytes(ini_get('post_max_size'));
+        return $max > 0 && $contentLength > $max;
+    }
+
+    private function parseSizeToBytes($size): int
+    {
+        if ($size === null) {
+            return 0;
+        }
+
+        $size = trim((string)$size);
+        if ($size === '') {
+            return 0;
+        }
+
+        $unit = strtolower(substr($size, -1));
+        $value = (int)$size;
+        switch ($unit) {
+            case 'g':
+                return $value * 1024 * 1024 * 1024;
+            case 'm':
+                return $value * 1024 * 1024;
+            case 'k':
+                return $value * 1024;
+            default:
+                return (int)$size;
+        }
     }
 
     /**

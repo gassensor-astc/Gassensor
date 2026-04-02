@@ -9,7 +9,7 @@ use common\helpers\StringHelpers;
 /* @var $searchModel common\models\search\NewsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Применение датчиков газа');
+$this->title = Yii::t('app', 'Статьи');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -46,10 +46,33 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filterModel' => $searchModel,
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
-                            ['class' => 'yii\grid\ActionColumn'],
+                            ['class' => 'yii\grid\ActionColumn', 'template' => '{update} {delete}'],
                             'id',
+                            [
+                                'attribute' => 'Изображение',
+                                'format' => 'raw',
+                                'value' => function ($model) {
+                                    if (empty($model->preview)) {
+                                        return '';
+                                    }
+                                    return Html::img($model->preview, [
+                                        'style' => 'width: 120px; border: 1px solid #ddd; padding: 4px; background: #fff;',
+                                        'alt' => $model->title,
+                                        'loading' => 'lazy',
+                                    ]);
+                                }
+                            ],
                             'title',
-                            'slug',
+                            [
+                                'attribute' => 'slug',
+                                'format' => 'raw',
+                                'value' => function ($model) {
+                                    return Html::a($model->slug, "/applications/{$model->slug}", [
+                                        'target' => '_blank',
+                                        'data-pjax' => 0,
+                                    ]);
+                                }
+                            ],
                             //'content:ntext',
 
                             [
