@@ -34,29 +34,36 @@ $this->params['breadcrumbs'][] = $this->title;
 
                             <?= Html::a(Yii::t('app', 'Добавить'), ['create'], ['class' => 'btn btn-info mb-1']) ?>
 
-                            <?php foreach (array(Seo::TYPE_PAGE_HOME,
-                                               Seo::TYPE_PAGE_CATALOG,
-                                               Seo::TYPE_PAGE_CONTACT,
-                                               Seo::TYPE_MANUFACTURES,
-                                               Seo::TYPE_PAGE_VACANCY,
-                                               Seo::TYPE_PAGE_PRIVACY,
-                                               Seo::TYPE_PAGE_ACCESSORIES,
-                                               Seo::TYPE_PAGE_CONVERTER,
-                                               Seo::TYPE_PAGE_REMAINS,
-                                               Seo::TYPE_PAGE_ABOUT,
-                                           ) as $v):
+                            <?php
+                                $typeNames = Seo::getTypeDropDownData();
+                                foreach (array(Seo::TYPE_PAGE_HOME,
+                                              Seo::TYPE_PAGE_CATALOG,
+                                              Seo::TYPE_PAGE_CONTACT,
+                                              Seo::TYPE_MANUFACTURES,
+                                              Seo::TYPE_PAGE_VACANCY,
+                                              Seo::TYPE_PAGE_PRIVACY,
+                                              Seo::TYPE_PAGE_ACCESSORIES,
+                                              Seo::TYPE_PAGE_CONVERTER,
+                                              Seo::TYPE_PAGE_REMAINS,
+                                              Seo::TYPE_PAGE_NEWS,
+                                              Seo::TYPE_PAGE_ABOUT,
+                                              Seo::TYPE_PAGE_GASES,
+                                          ) as $v):
                                 if ($model = Seo::findOne(['type' => $v])) {
                                     $url = ['update', 'id' => $model->id];
                                 } else {
-                                    $url = ['create',];
+                                    $url = ['create', 'type' => $v];
                                 }
+                                $typeName = $typeNames[$v] ?? "type:$v";
                                 ?>
-                                <?= Html::a('<i class="fa fa-fw fa-edit"></i> ' . ($model->typeName ?? "create type:$v"),
+                                <?= Html::a('<i class="fa fa-fw fa-edit"></i> ' . $typeName,
                                 $url, ['class' => 'btn btn-success mb-1 mr-1']) ?>
 
                             <?php endforeach; ?>
 
                             <?= Html::a('<i class="fa fa-fw fa-edit"></i> Производители (каталог)', Url::to(['seo/manufacture']), ['class' => 'btn btn-success mr-1']) ?>
+
+                            <?= Html::a('<i class="fa fa-fw fa-edit"></i> SEO-описания товаров', Url::to(['seo/product-descriptions']), ['class' => 'btn btn-success mr-1']) ?>
 
                             <?= Html::a('<i class="fa fa-fw fa-edit"></i> Robots.txt', Url::to(['seo/robots']), ['class' => 'btn btn-success mr-1']) ?>
 

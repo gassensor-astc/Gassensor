@@ -70,10 +70,10 @@ class Gaz extends GazBase
     }
 
     /**
-     * @param int $value
+     * @param float $value
      * @return array
      */
-    public function covertFromMg(int $value): array
+    public function covertFromMg(float $value): array
     {
         $result = [];
         $result['mg'] = $value;
@@ -85,10 +85,10 @@ class Gaz extends GazBase
     }
 
     /**
-     * @param int $value
+     * @param float $value
      * @return array
      */
-    public function covertFromPpm(int $value): array
+    public function covertFromPpm(float $value): array
     {
         $result = [];
         $result['mg'] = 0.12 * ($value / 1000) * $this->weight * 101325 / 293.15;
@@ -100,10 +100,10 @@ class Gaz extends GazBase
     }
 
     /**
-     * @param int $value
+     * @param float $value
      * @return array
      */
-    public function covertFromObd(int $value): array
+    public function covertFromObd(float $value): array
     {
         $result = [];
         $result['mg'] = 0.12 * ($value / 0.1) * $this->weight * 101325 / 293.15;
@@ -115,10 +115,10 @@ class Gaz extends GazBase
     }
 
     /**
-     * @param int $value
+     * @param float $value
      * @return array
      */
-    public function covertFromNkpr(int $value): array
+    public function covertFromNkpr(float $value): array
     {
         $result = [];
         $result['mg'] = 0;//0.12 * ($value / 0.1) * $gazWeight * 101325 / 293.15;

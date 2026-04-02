@@ -6,9 +6,37 @@ use common\models\Setting;
 use common\helpers\StringHelpers;
 use yii\widgets\LinkPager;
 
-$seo = Seo::findOne(['type' => Seo::TYPE_PAGE_REMAINS])->registerMetaTags($this);
+$seo = Seo::findOne(['type' => Seo::TYPE_PAGE_REMAINS]);
+$seo->registerMetaTags($this);
+if (trim((string) ($seo->description ?? '')) === '') {
+    $this->registerMetaTag(['name' => 'description', 'content' => 'Наличие датчиков и сенсоров на складе компании Газсенсор.']);
+}
 
 $this->params['breadcrumbs'][] = $this->title;
+
+// Номер страницы для H1 остатков.
+// /remains и /remains?page=1 считаются первой страницей (без суффикса),
+// /remains?page=2 → Страница 2 и т.д.
+$req = Yii::$app->request;
+$page = 1;
+$pageParam = $req->get('page', null);
+if ($pageParam !== null && $pageParam !== '') {
+    $p = (int)$pageParam;
+    $page = $p <= 1 ? 1 : $p;
+} else {
+    $p = (int)$pages->page; // 0-based
+    $page = $p + 1;
+    if ($page <= 1) {
+        $page = 1;
+    }
+}
+
+$remainsH1 = $seo->h1 ?? $this->title;
+if ($page > 1 && $remainsH1 !== null && $remainsH1 !== '') {
+    if (!preg_match('/,?\s*Страница\s+\d+$/u', $remainsH1)) {
+        $remainsH1 = rtrim($remainsH1, " \t\n.") . ', Страница ' . $page;
+    }
+}
 
 $filename = './upload/' . Setting::getSensorsList();
 $filename_dwnld = '/upload/sensors_list.xlsx';
@@ -31,7 +59,7 @@ $filename_dwnld = '/upload/sensors_list.xlsx';
     }
 </style>
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> container'>
-    <h1><?= $seo->h1 ?></h1>
+    <h1><?= $remainsH1 ?></h1>
 
     <div class="row">
         <div class="col-12 col-sm-12">

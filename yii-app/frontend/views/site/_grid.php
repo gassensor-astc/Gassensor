@@ -41,7 +41,7 @@ use yii\helpers\Html;
                     $result .= Html::tag('div', "<b>$label</b>");
                     $result .= '<br/>';
                 }
-                $arr = Product::getGazesGridCol();
+                    $arr = Product::getGazesGridCol(false, true, false);
                 $result .= $arr['value']($model);
 
                 return $result ?: null;

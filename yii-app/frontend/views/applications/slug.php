@@ -5,13 +5,17 @@
 use common\models\Seo;
 use yii\helpers\Html;
 
-$seo = Seo::findOne(['type' => Seo::TYPE_APPLICATIONS])->registerMetaTags($this);
-$this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => '/applications'];
-$this->params['breadcrumbs'][] = $model->title;
-
+$this->title = $model->title;
+$seoList = Seo::findOne(['type' => Seo::TYPE_APPLICATIONS, 'ref_id' => 0]);
 if ($seo = $model->seo) {
     $seo->registerMetaTags($this);
+} else {
+    if ($seoList) {
+        $seoList->registerMetaTags($this);
+    }
 }
+$this->params['breadcrumbs'][] = ['label' => 'Статьи', 'url' => '/applications']; // вторая крошка — раздел, не заголовок статьи
+$this->params['breadcrumbs'][] = ($seo && trim((string) ($seo->breadcrumb_text ?? '')) !== '') ? trim($seo->breadcrumb_text) : $model->title;
 
 $cleanText = strip_tags($model->content);
 $len = mb_strlen($cleanText, 'UTF-8');
@@ -25,8 +29,6 @@ function declension($number, $titles) {
 
 $minutes = ['минута', 'минуты', 'минут'];
 
-$model->views++;
-$model->save();
 ?>
 <style>
     .new-info {

@@ -4,6 +4,59 @@ use common\models\Setting;
 use yii\helpers\Url;
 
 ?>
+<style>
+    @media (max-width: 768px) {
+        .main-footer .row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .main-footer .col-md-3.col-sm-6 {
+            width: 45% !important;
+            flex: 0 0 45% !important;
+            max-width: 45% !important;
+            padding: 0 10px;
+            margin-bottom: 15px;
+        }
+        .main-footer .col-md-3.col-sm-6:first-child {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+            text-align: left;
+            margin-bottom: 10px;
+            padding-left: 20px !important;
+        }
+        .main-footer .col-md-3.col-sm-6:first-child .widget-footer {
+            margin-bottom: 0 !important;
+        }
+        .main-footer .col-md-3.col-sm-6:first-child .widget_media_image {
+            margin-bottom: 10px !important;
+        }
+        /* Скрыть 4-ю колонку (контакты) на мобильном, если нужно */
+        .main-footer .col-md-3.col-sm-6:nth-child(4) {
+            display: none;
+        }
+        .widget-footer {
+            margin-bottom: 0 !important;
+        }
+        .main-footer ul li {
+            padding: 4px 0 !important;
+        }
+        .main-footer ul li a {
+            font-size: 14px !important;
+        }
+    }
+    #back-to-top.btn-back-to-top {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 100;
+    }
+    .site-footer {
+        margin-top: 5rem;
+    }
+</style>
 <footer id="site-footer" class="site-footer bg-footer">
     <div class="main-footer">
         <div class="container-custom">
@@ -25,10 +78,12 @@ use yii\helpers\Url;
                                 <ul>
                                     <li><a href="<?=Url::to(['/']) ?>">Главная</a></li>
                                     <li><a href="<?=Url::to(['/catalog']) ?>">Каталог</a></li>
+                                    <li><a href="<?=Url::to(['/gases']) ?>">Газы</a></li>
                                     <li><a href="<?=Url::to(['/remains']) ?>">Склад</a></li>
                                     <li><a href="<?=Url::to(['/page/accessories']) ?>">Аксессуары</a></li>
                                     <li><a href="<?=Url::to(['/manufacture']) ?>">Производители</a></li>
                                     <li><a href="<?=Url::to(['/converter']) ?>">Конвертер газа</a></li>
+                                    <li><a href="<?=Url::to(['/cart']) ?>">Корзина</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -48,9 +103,7 @@ use yii\helpers\Url;
                                     <li><a href="<?=Url::to(['/page/contacts']) ?>">Контакты</a></li>
                                 </ul>
                             </div>
-                        <div class="mt-4"><a id="back-to-top" href="#" class="btn btn-back-to-top">Наверх<i class="icon ion-ios-arrow-dropup-circle"></i></a> </div>
                         </div>
-
                     </div>
                 </div>
                 <!-- end col-lg-3 -->
@@ -95,3 +148,4 @@ use yii\helpers\Url;
     </div>
     <!-- .copyright-footer -->
 </footer>
+<a id="back-to-top" href="#" class="btn btn-back-to-top" aria-label="Наверх">Наверх<i class="icon ion-ios-arrow-dropup-circle"></i></a>

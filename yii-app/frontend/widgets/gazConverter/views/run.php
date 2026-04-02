@@ -11,6 +11,23 @@ $model = new GazConverterForm;
 $model->corvertType = GazConverterForm::CONVERT_FROM_PPM;
 
 $this->registerJsFile('lib/yii2AjaxRequest.js', ['depends' => AppAsset::class]);
+$this->registerJs(<<<JS
+$(document).on('input', '.widget-gaz-converter input[type="text"]', function () {
+    var value = $(this).val();
+    if (typeof value === 'string' && value.indexOf(',') !== -1) {
+        $(this).val(value.replace(/,/g, '.'));
+    }
+});
+
+$(document).on('beforeSubmit', '.widget-gaz-converter form', function () {
+    $(this).find('input[type="text"]').each(function () {
+        var value = $(this).val();
+        if (typeof value === 'string' && value.indexOf(',') !== -1) {
+            $(this).val(value.replace(/,/g, '.'));
+        }
+    });
+});
+JS);
 
 ?>
 

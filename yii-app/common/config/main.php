@@ -2,6 +2,7 @@
 
 defined('ROLE_NAME_ADMIN') or define('ROLE_NAME_ADMIN', 'admin');
 defined('ROLE_NAME_MANAGER') or define('ROLE_NAME_MANAGER', 'manager');
+defined('ROLE_NAME_EDITOR') or define('ROLE_NAME_EDITOR', 'editor');
 defined('ROLE_NAME_DEVELOPER') or define('ROLE_NAME_DEVELOPER', 'developer');
 
 $i18n = [];
@@ -28,6 +29,7 @@ return [
         'db' => [
             'class' => 'yii\db\Connection',
             'charset' => 'utf8',
+            'enableSchemaCache' => false,
             //'enableSchemaCache' => true,
         ],
 

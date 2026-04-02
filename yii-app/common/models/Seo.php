@@ -41,6 +41,7 @@ class Seo extends SeoBase
     const TYPE_PAGE_PRIVACY = 90;
 
     const TYPE_PAGE_ABOUT = 100;
+    const TYPE_PAGE_GASES = 110;
 
     /**
      * @param false $isPrependEmpty
@@ -107,12 +108,56 @@ class Seo extends SeoBase
      */
     public function registerMetaTags(\yii\web\View $view)
     {
-        $view->registerMetaTag(['name' => 'description', 'content' => $this->description,]);
+        // Номер страницы в пагинации.
+        // Требования:
+        // - /catalog/slug   → страница 1 (без суффикса);
+        // - /catalog/slug?page=1 → считаем той же первой страницей (без суффикса);
+        // - /catalog/slug?page=2 → Страница 2, и т.д.
+        // Поэтому:
+        // - query-параметр `page` трактуем как человеко-понятный номер (1,2,3…),
+        //   но значения 0 и 1 считаем первой страницей;
+        // - если query-параметра нет, а номер приходит в параметрах экшена (обычно 1-based,
+        //   как в случае /catalog/2), используем его как есть.
+        $request = \Yii::$app->request;
+        $page = 1;
+        $pageParam = $request->get('page', null);
+        if ($pageParam !== null && $pageParam !== '') {
+            $p = (int)$pageParam;
+            $page = $p <= 1 ? 1 : $p;
+        } elseif (isset(\Yii::$app->controller, \Yii::$app->controller->actionParams['page'])) {
+            $p = (int)\Yii::$app->controller->actionParams['page'];
+            if ($p >= 1) {
+                $page = $p;
+            }
+        }
+        if ($page < 1) {
+            $page = 1;
+        }
+        $pageSuffixTitle = $page > 1 ? '. Страница ' . $page : '';
+        $pageSuffixDesc = $page > 1 ? '. Страница ' . $page . '.' : '';
+
+        $title = rtrim((string) $this->title, " \t\n.") . $pageSuffixTitle;
+        $description = rtrim((string) ($this->description ?? ''), " \t\n.") . $pageSuffixDesc;
+        if ($pageSuffixDesc === '' && $description !== '' && !preg_match('/[.!?]$/u', $description)) {
+            $description .= '.';
+        }
+
+        if ($description !== '') {
+            $view->registerMetaTag(['name' => 'description', 'content' => $description]);
+        }
        // $view->registerMetaTag(['name' => 'keywords', 'content' => $this->keyword,]);
-        $view->title = $this->title;
+        if ($title !== '') {
+            $view->title = $title;
+        }
 
         if ($this->url_canonical) {
-            $view->registerLinkTag(['rel' => 'canonical', 'href' =>  Url::base(1) . $this->url_canonical]);
+            $path = preg_replace('/\?.*$/s', '', trim($this->url_canonical));
+            if (preg_match('#^https?://[^/]+(.*)$#', $path, $m)) {
+                $path = $m[1] !== '' ? $m[1] : '/';
+            }
+            $href = Url::base(1) . $path;
+            $href = preg_replace('/\?.*$/s', '', $href);
+            $view->registerLinkTag(['rel' => 'canonical', 'href' => $href]);
         }
 
         return $this;
@@ -169,6 +214,9 @@ class Seo extends SeoBase
                 break;
             case self::TYPE_PAGE_PRIVACY:
                 $result = '/page/privacy';
+                break;
+            case self::TYPE_PAGE_GASES:
+                $result = '/gases';
                 break;
             default:
                 throw new \Exception("not implemented  {$this->type}");

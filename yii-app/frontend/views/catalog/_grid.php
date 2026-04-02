@@ -41,7 +41,7 @@ use yii\helpers\Html;
                         $result .= Html::tag('div', "<b>$label</b>");
                         $result .= '<br/>';
                     }
-                    $arr = Product::getGazesGridCol();
+                    $arr = Product::getGazesGridCol(false, true, false);
                     $result .= $arr['value']($model);
 
                     return $result ?: null;
@@ -75,6 +75,18 @@ use yii\helpers\Html;
                         $html .= '<div>Цифровой</div>';
                     }
                     return $html;
+                }
+            ],
+            [
+                'attribute' => 'life_time',
+                'label' => Html::tag('span', 'Срок жизни, до (лет)', [
+                ]),
+                'encodeLabel' => false,
+                'headerOptions' => ['class' => 'table-top'],
+                'contentOptions' => ['style' => 'text-align:right;'],
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return $this->render('/product/_cell-life_time', ['model' => $model, 'withHint' => true]);
                 }
             ],
 

@@ -32,12 +32,29 @@ use common\helpers\StringHelpers;
             <?php
             $url = $model->getPictUrl() ?: 'https://dummyimage.com/240x160/fff/aaa.png&text=no%20foto';
             ?>
-            <?= Html::img($url, ['alt' => $model->title, 'loading' => "lazy", 'title' => $model->title,]) ?>
+            <?= Html::img($url, [
+                'alt' => $model->title,
+                'loading' => "lazy",
+                'title' => $model->title,
+            ]) ?>
         </div>
         <div class="inner-post">
             <div class="entry-summary">
                 <p>
-                    <?= StringHelpers::shortText($model->title, 73) ?>
+                    <?php
+                    $title = trim((string)$model->title);
+                    if (mb_strlen($title) > 90) {
+                        // Берём первые 90 символов
+                        $cut = mb_substr($title, 0, 90);
+                        // Пытаемся обрезать по последнему целому слову
+                        $lastSpace = mb_strrpos($cut, ' ');
+                        if ($lastSpace !== false) {
+                            $cut = mb_substr($cut, 0, $lastSpace);
+                        }
+                        $title = rtrim($cut, " \t\n\r\0\x0B.,;:!-") . '...';
+                    }
+                    echo Html::encode($title);
+                    ?>
                 </p>
             </div>
         </div>

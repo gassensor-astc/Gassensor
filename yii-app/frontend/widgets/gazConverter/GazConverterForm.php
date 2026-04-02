@@ -31,8 +31,24 @@ class GazConverterForm extends Model
             ['gazId', 'integer'],
             [['gazId'], 'exist', 'skipOnError' => true, 'targetClass' => Gaz::class, 'targetAttribute' => ['gazId' => 'id']],
             ['corvertType', 'in', 'range' => array_keys($this->getTypes())],
+            [['ppm', 'mg', 'obd'], 'filter', 'filter' => [$this, 'normalizeDecimalValue']],
+            [['ppm', 'mg', 'obd'], 'number'],
             [['ppm', 'mg', 'obd',], 'default', 'value' => 0,],
         ];
+    }
+
+    public function normalizeDecimalValue($value)
+    {
+        if ($value === null) {
+            return 0;
+        }
+
+        $value = trim((string)$value);
+        if ($value === '') {
+            return 0;
+        }
+
+        return str_replace(',', '.', $value);
     }
 
     public function getGaz()

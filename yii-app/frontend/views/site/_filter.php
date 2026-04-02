@@ -89,9 +89,12 @@ use kartik\select2\Select2;
         let maInt = setInterval(()=>{
             let elem1 = document.querySelector('.select2-container');
             if (elem1) {
-                elem1.style.marginLeft = '-80px';
-                elem1.style.maxWidth = '210px';
-                elem1.style.minWidth = '210px';
+                // Only apply these styles on desktop (> 768px)
+                if (window.innerWidth > 768) {
+                    elem1.style.marginLeft = '-80px';
+                    elem1.style.maxWidth = '210px';
+                    elem1.style.minWidth = '210px';
+                }
                 clearInterval(maInt);
                 maInt = null;
             }

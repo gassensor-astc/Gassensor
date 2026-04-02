@@ -8,13 +8,25 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Новости', 'url' => '/news'];
-$this->params['breadcrumbs'][] = $this->title;
-
-
-if ($seo = $model->seo) {
+$seo = $model->seo;
+if ($seo) {
     $seo->registerMetaTags($this);
 }
+// Если SEO нет или description пустой — выводим meta description из контента/заголовка
+$hasSeoDescription = $seo && trim((string) ($seo->description ?? '')) !== '';
+if (!$hasSeoDescription) {
+    $fallback = trim(strip_tags($model->content));
+    $fallback = $fallback !== '' && mb_strlen($fallback) > 160 ? mb_substr($fallback, 0, 157) . '...' : $fallback;
+    if ($fallback === '') {
+        $fallback = $model->title;
+    }
+    if ($fallback !== '') {
+        $this->registerMetaTag(['name' => 'description', 'content' => $fallback]);
+    }
+}
+$this->params['breadcrumbs'][] = ['label' => 'Новости', 'url' => '/news'];
+$breadcrumbLabel = ($seo && trim((string) ($seo->breadcrumb_text ?? '')) !== '') ? trim($seo->breadcrumb_text) : (($seo && $seo->h1 !== null && $seo->h1 !== '') ? $seo->h1 : $this->title);
+$this->params['breadcrumbs'][] = $breadcrumbLabel;
 
 $time = strtotime($model->date);
 

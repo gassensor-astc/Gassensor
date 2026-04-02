@@ -35,8 +35,8 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
         padding-right: 1.25rem;
     }
     .new-header-logo a img {
-        width: 209px;
-        height: 44px;
+        width: 260px;
+        /*height: 88px;*/
     }
     .new-header-right-border {
         border-right: 1px solid #DFDEDE;
@@ -147,6 +147,138 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
         margin-top: 0.8rem;
         margin-bottom: 1.3rem;
     }
+
+    /* === MOBILE BURGER MENU === */
+    .mobile-burger {
+        display: none;
+        width: 44px;
+        height: 44px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        margin-left: auto;
+        margin-right: 1rem;
+        position: relative;
+    }
+    .mobile-burger span {
+        display: block;
+        width: 24px;
+        height: 3px;
+        background-color: #153C75;
+        border-radius: 2px;
+        transition: all 0.2s ease;
+    }
+    .mobile-burger.active span:nth-child(1) {
+        position: absolute;
+        transform: rotate(45deg);
+    }
+    .mobile-burger.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .mobile-burger.active span:nth-child(3) {
+        position: absolute;
+        transform: rotate(-45deg);
+    }
+
+    .mobile-menu-dropdown {
+        display: none;
+        flex-wrap: wrap;
+        background: #fff;
+        border-top: 1px solid #DFDEDE;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .mobile-menu-dropdown.active {
+        display: flex;
+    }
+    .mobile-menu-dropdown a {
+        display: flex;
+        align-items: center;
+        width: 50%;
+        box-sizing: border-box;
+        padding: 12px 16px;
+        color: #03132B;
+        text-decoration: none;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #f0f0f0;
+        text-align: left;
+    }
+    .mobile-menu-dropdown a:nth-child(odd) {
+        border-right: 1px solid #f0f0f0;
+    }
+    .mobile-menu-dropdown a:hover,
+    .mobile-menu-dropdown a.current {
+        background-color: #F2F4F5;
+    }
+    .mobile-menu-dropdown a i {
+        margin-right: 8px;
+        color: #153C75;
+    }
+
+    /* Mobile breakpoint - 768px */
+    @media (max-width: 768px) {
+        .new-header {
+            height: auto;
+            position: relative;
+            margin-top: 0.25rem;
+        }
+        .new-header-row:first-of-type {
+            height: 44px;
+            padding: 0;
+            align-items: center;
+        }
+        .new-header-row > .new-header-text,
+        .new-header-row > .new-header-menu,
+        .new-header-row > div[style*="flex: 1"] {
+            display: none !important;
+        }
+        .new-header-row:nth-of-type(2) {
+            display: none !important;
+        }
+        .new-header-logo {
+            justify-content: flex-start !important;
+            padding-left: 1rem !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        .new-header-logo a img {
+            width: 150px;
+            height: auto;
+        }
+        .mobile-burger {
+            display: flex !important;
+        }
+        .new-header-hr {
+            margin-top: 0.4rem;
+            margin-bottom: 0.5rem;
+        }
+        .new-header-slider {
+            min-height: 15rem;
+            margin-top: 0.5rem;
+        }
+        .new-header-slider-slides {
+            height: 15rem;
+        }
+        .new-header-slider-text {
+            font-size: 1.5rem;
+            margin-left: 1rem;
+            margin-right: 1rem;
+            margin-top: 2rem;
+            line-height: 2rem;
+            width: auto;
+        }
+    }
 </style>
 
 <header id="site-header" class="new-header">
@@ -205,7 +337,33 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
                 <a style="margin-top: 6px; margin-left: 6px;" href="<?= Url::to('/backend/site/index') ?>" target="_blank">admin</a>
             <?php endif; ?>
         </div>
+        <!-- Mobile burger button -->
+        <button class="mobile-burger" id="mobileBurger" aria-label="Меню">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </div>
+
+    <!-- Mobile dropdown menu -->
+    <nav class="mobile-menu-dropdown" id="mobileMenu">
+        <a href="/" class="<?= $currentUrl == '/site/index' ? 'current' : '' ?>">Главная</a>
+        <?php if ($user->isGuest): ?>
+            <a href="<?= Url::to('/site/login') ?>"><i class="icon ion-md-person"></i> Войти</a>
+        <?php else: ?>
+            <a href="<?= Url::to('/backend/site/index') ?>" target="_blank"><i class="icon ion-md-person"></i> Admin</a>
+        <?php endif; ?>
+        <a href="<?= Url::to(['/news']) ?>" class="<?= str_starts_with($currentUrl, '/news') ? 'current' : '' ?>">Новости</a>
+        <a href="<?= Url::to('/cart') ?>"><i class="icon ion-md-basket"></i> Корзина<?php if($count = Yii::$app->cart->getItemsCount()): ?> (<?= $count ?>)<?php endif; ?></a>
+        <a href="<?= Url::to(['/remains']) ?>" class="<?= str_starts_with($currentUrl, '/remains') ? 'current' : '' ?>">Склад</a>
+        <a href="<?= Url::to(['/manufacture']) ?>" class="<?= str_starts_with($currentUrl, '/manufacture') ? 'current' : '' ?>">Производители</a>
+        <a href="<?= Url::to(['/applications']) ?>" class="<?= str_starts_with($currentUrl, '/applications') ? 'current' : '' ?>">Статьи</a>
+        <a href="<?= Url::to(['/page/accessories']) ?>" class="<?= str_starts_with($currentUrl, '/page/accessories') ? 'current' : '' ?>">Аксессуары</a>
+        <a href="<?= Url::to(['/converter']) ?>" class="<?= str_starts_with($currentUrl, '/converter') ? 'current' : '' ?>">Конвертер газа</a>
+        <a href="<?= Url::to(['/page/contacts']) ?>" class="<?= str_starts_with($currentUrl, '/page/contacts') ? 'current' : '' ?>">Контакты</a>
+        <a href="<?= Url::to(['/catalog']) ?>" class="<?= str_starts_with($currentUrl, '/catalog') ? 'current' : '' ?>">Каталог</a>
+    </nav>
+
     <div class="new-header-row">
         <div class="new-header-blank">
         </div>
@@ -243,7 +401,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
             <form action="/search" style="width: 100%;">
                 <div class="new-header-search">
                     <button class="pt-1 ms-1 bg-transparent border-0"><i class="icon ion-md-search" style="color: #DFDEDE; font-size: 24px;"></i></button>
-                    <?= Html::textInput('q', '', ['class' => 'form-control', 'style' => 'border: 0; width: 100%;', 'placeholder' => 'Поиск по сайту']) ?>
+                    <?= Html::textInput('q', Yii::$app->request->get('q', ''), ['class' => 'form-control', 'style' => 'border: 0; width: 100%;', 'placeholder' => 'Поиск по сайту']) ?>
                 </div>
             </form>
         </div>
@@ -342,7 +500,7 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
                 <li class="toggle_search topbar-search">
                   <form action="/search">
                   <div class="d-flex">
-                    <?= Html::textInput('q', '', ['class' => 'form-control']) ?>
+                    <?= Html::textInput('q', Yii::$app->request->get('q', ''), ['class' => 'form-control']) ?>
                     <button class="pt-1 ms-1 bg-transparent border-0"><i class="icon ion-md-search"></i></button>
                   </div>
                   </form>
@@ -480,6 +638,27 @@ $slides = \common\models\Slider::find()->where(['=', 'page', $currentUrl])->all(
     </div>
   </header>
 <script>
+    // Mobile burger menu toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const burger = document.getElementById('mobileBurger');
+        const menu = document.getElementById('mobileMenu');
+        
+        if (burger && menu) {
+            burger.addEventListener('click', function() {
+                burger.classList.toggle('active');
+                menu.classList.toggle('active');
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!burger.contains(e.target) && !menu.contains(e.target)) {
+                    burger.classList.remove('active');
+                    menu.classList.remove('active');
+                }
+            });
+        }
+    });
+
     setTimeout(()=> {
         let curSlide = 0;
         let totalSlides = <?php if (isset($scounter)) {echo $scounter;} else {echo 0;}?>;

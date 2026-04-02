@@ -9,4 +9,7 @@ return [
     'user.passwordMinLength' => 8,
 
     'bsDependencyEnabled' => false,
+
+    // OpenAI API ключ
+    'openaiApiKey' => ''
 ];

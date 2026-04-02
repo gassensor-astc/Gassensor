@@ -70,7 +70,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'Изображение',
                                 'format' => 'raw',
                                 'value' => function ($model) {
-                                    return $this->render('_files', ['model' => $model,]);
+                                    $url = $model->getPictUrl();
+                                    if (!$url) {
+                                        return '';
+                                    }
+                                    return Html::img($url, [
+                                        'style' => 'width: 120px; border: 1px solid #ddd; padding: 4px; background: #fff;',
+                                        'alt' => $model->title,
+                                        'loading' => 'lazy',
+                                    ]);
                                 }
                             ],
                             [

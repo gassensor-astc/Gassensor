@@ -19,7 +19,7 @@ $req = Yii::$app->request;
 
 ?>
 
-<?php $form = ActiveForm::begin(['method' => 'get', 'action' => '/catalog', 'options' => ['class' => 'pt-2']]); ?>
+<?php $form = ActiveForm::begin(['method' => 'get', 'action' => '/catalog', 'options' => ['class' => 'pt-2', 'id' => 'catalog-filter-form', 'style' => 'width: 100%']]); ?>
 <input type="hidden" name="scroll" value="">
 <div style="height: 2px;"></div>
 <?= $form->field($model, 'manufacture_id')->dropDownList(
@@ -27,9 +27,20 @@ $req = Yii::$app->request;
     ['class' => 'form-select', 'options' => Manufacture::manufactureOption2($model)])->label(false)
 ?>
 
+<?php
+    $gazOptions = Gaz::gazOption2($model);
+    foreach (Gaz::find()->select(['id', 'slug'])->orderBy('title')->asArray()->all() as $g) {
+        if ((string)$g['id'] !== '') {
+            if (!isset($gazOptions[$g['id']])) {
+                $gazOptions[$g['id']] = [];
+            }
+            $gazOptions[$g['id']]['data-slug'] = $g['slug'];
+        }
+    }
+?>
 <?= $form->field($model, 'gaz_id')->dropDownList(
     Gaz::getDropDownData(true),
-    ['class' => 'form-select', 'options' => Gaz::gazOption2($model)])->label(false)
+    ['class' => 'form-select', 'options' => $gazOptions])->label(false)
 ?>
 
 <?php if (0): ?>
@@ -94,6 +105,17 @@ echo $form->field($model, 'selectedSignalTypes', [
 ])->label(false);
 ?>
 
+<!--<div class="mb-2">-->
+<!--    <div class="row g-1">-->
+<!--        <div class="col" style="min-width: 190px; vertical-align: middle; line-height: 34px;">-->
+<!--            <label>Срок жизни, до (лет)</label>-->
+<!--        </div>-->
+<!--        <div class="col">-->
+<!--            --><?php //= $form->field($model, 'life_time_to')->input('number', ['style' => 'max-width: 100px;'])->label(false) ?>
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
 <?php if (0): ?>
     <div class="mb-3 border p-1">
         <label>Энергопотребление</label>
@@ -109,7 +131,7 @@ echo $form->field($model, 'selectedSignalTypes', [
     </div>
 <?php endif; ?>
 
-<div class="mb-3">
+<div class="mb-2" id="catalog-search-btn-block">
     <?php if ($req->get('ProductSearch')): ?>
         <div class="row g-1">
             <div class="col-8">
@@ -118,7 +140,6 @@ echo $form->field($model, 'selectedSignalTypes', [
             <div class="col-4">
                 <a title="Сброс фильтров" href="<?= Url::to(['/products']) ?>" class="btn-form w-100"><i
                             class="fa fa-fw fa-file-o" style="margin-left: 0;"></i></a>
-
             </div>
         </div>
     <?php else: ?>

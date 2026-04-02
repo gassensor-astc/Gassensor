@@ -27,6 +27,7 @@ return [
         'urlManager' => [
             //'enableStrictParsing' => true,
             'rules' => [
+                'gases' => 'gases/index',
                 'catalog/manufacture/<slug>' => 'catalog/manufacture',
                 'news/page/<page:\d+>' => 'news/index',
                 'news/<slug>' => 'news/slug',

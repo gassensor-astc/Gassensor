@@ -14,6 +14,7 @@ use yii\web\UploadedFile;
 
 class ApplicationsController extends Controller
 {
+    public $enableCsrfValidation = false;
     public function behaviors()
     {
         return array_merge(
@@ -23,6 +24,7 @@ class ApplicationsController extends Controller
                     'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
+                        'delete-content-file' => ['POST'],
                     ],
                 ],
             ]
@@ -126,6 +128,15 @@ class ApplicationsController extends Controller
                 $model->preview = $url;
 
                 $model->save();
+
+                $modelSeo->ref_id = $model->id;
+                if (isset($req->post('Seo')['description'])) {
+                    $modelSeo->description = $req->post('Seo')['description'];
+                }
+                $postSeo = $req->post('Seo');
+                if (is_array($postSeo) && array_key_exists('breadcrumb_text', $postSeo)) {
+                    $modelSeo->breadcrumb_text = trim((string) ($postSeo['breadcrumb_text'] ?? ''));
+                }
                 $modelSeo->save(false);
 
                 Yii::$app->getSession()->setFlash('success', "Данные успешно обновлены");
@@ -155,6 +166,27 @@ class ApplicationsController extends Controller
         $model->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionDeleteContentFile(int $id, string $url)
+    {
+        $model = $this->findModel($id);
+        $decodedUrl = urldecode($url);
+        $filePath = $model->resolveContentFilePath($decodedUrl);
+
+        if ($filePath && is_file($filePath)) {
+            @unlink($filePath);
+        }
+
+        if (!empty($model->content)) {
+            $pattern = '~<a\b[^>]*href=["\']' . preg_quote($decodedUrl, '~') . '["\'][^>]*>.*?</a>~is';
+            $model->content = preg_replace($pattern, '', (string)$model->content);
+            $model->save(false);
+        }
+
+        Yii::$app->getSession()->setFlash('success', 'Файл удален');
+
+        return $this->redirect(['update', 'id' => $id]);
     }
 
     /**

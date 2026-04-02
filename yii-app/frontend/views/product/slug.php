@@ -29,17 +29,35 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJsFile('lib/yii2AjaxRequest.js', ['depends' => AppAsset::class]);
 
-if ($seo = $model->seo) {
+$seo = $model->seo;
+if ($seo) {
     $seo->registerMetaTags($this);
+}
+// Если SEO нет или title/description пустые — не теряем title и подставляем meta description
+$hasSeoDescription = $seo && trim((string) ($seo->description ?? '')) !== '';
+if (!$hasSeoDescription) {
+    $fallbackDesc = trim(strip_tags($model->info ?? ''));
+    if ($fallbackDesc !== '' && mb_strlen($fallbackDesc) > 160) {
+        $fallbackDesc = mb_substr($fallbackDesc, 0, 157) . '...';
+    }
+    if ($fallbackDesc === '') {
+        $fallbackDesc = $model->name;
+    }
+    if ($fallbackDesc !== '') {
+        $this->registerMetaTag(['name' => 'description', 'content' => $fallbackDesc]);
+    }
 }
 
 $this->params['productJsonLd'] = $model->getJsonLd();
+
+// Временный отладочный комментарий: уберите после проверки (product id, есть ли SEO, длина title/description)
+echo '<!-- product_id=' . (int)$model->id . ' seo=' . ($seo ? 'yes' : 'no') . ($seo ? ' seo_title_len=' . strlen(trim((string)($seo->title ?? ''))) . ' seo_desc_len=' . strlen(trim((string)($seo->description ?? ''))) : '') . ' -->' . "\n";
 
 ?>
 
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> container'>
     <h1>
-        <?= $seo->h1 ?? $this->title ?>
+        <?= ($seo && trim((string)($seo->h1 ?? '')) !== '') ? $seo->h1 : $this->title ?>
         <?php if (\Yii::$app->user->isAdmin()): ?>
                 <a href="/backend/product/update?id=<?= $model->id ?>"
                    class="btn d-inline rounded-pill ml-2"
@@ -63,6 +81,7 @@ $this->params['productJsonLd'] = $model->getJsonLd();
             ]) ?>
             <hr/>
 
+            <div class="mt-2 mb-1 fw-bold">Техническая спецификация:</div>
             <?php foreach (Product::getPdfIndexes() as $v):
                 if (!$url = $model->getPdfUrl($v)) {
                     continue;
@@ -71,12 +90,13 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                 ?>
 
                 <div class="mt-3 border p-2 shadow position-relative pdf-link-wrap">
-                    <?= Html::a('<i class="fa fa-2x fa-file-pdf"></i> ' . $model->$attr, $url, ['target' => '_blank', 'class' => 'stretched-link']) ?>
+                    <?= Html::a('<i class="fa fa-2x fa-file-pdf"></i> ' . $model->$attr, $url, ['target' => '_blank', 'class' => 'stretched-link', 'rel' => 'noopener noreferrer']) ?>
                 </div>
 
                 <hr/>
             <?php endforeach; ?>
 
+            <div class="mt-2 mb-1 fw-bold">Заказать товар:</div>
             <div class="border my-3 p-2 bg-light">
                 <?= CartAddWidget::widget(['formAdd' => $formAdd, 'model' => $model, 'hiddenCount' => false, 'tableGrid' => true]) ?>
             </div>
@@ -109,32 +129,29 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                                     'format' => 'raw',
                                     'value' => function ($model) {
 
-                                        $arrs = [];
-                                        $rerurn = '';
+                                        $items = [];
 
                                         if ($gaz = $model->mainGaz) {
-                                            $arrs[] = ['slug' => $gaz->slug, 'title' => $gaz->title];
+                                            $items[] = Html::a($gaz->title, "/catalog/{$gaz->slug}");
                                         }
 
                                         if ($gaz2 = $model->mainGaz2) {
-                                            $arrs[] = ['slug' => $gaz2->slug, 'title' => $gaz2->title];
+                                            $items[] = Html::a($gaz2->title, "/catalog/{$gaz2->slug}");
                                         }
 
                                         if ($gaz3 = $model->mainGaz3) {
-                                            $arrs[] = ['slug' => $gaz3->slug, 'title' => $gaz3->title];
+                                            $items[] = Html::a($gaz3->title, "/catalog/{$gaz3->slug}");
                                         }
 
-                                        foreach ($arrs as $arr) {
-                                            $rerurn .= Html::a($arr['title'], "/catalog/{$arr['slug']}") . ' / ';
+                                        if ($gaz4 = $model->mainGaz4) {
+                                            $items[] = Html::a($gaz4->title, "/catalog/{$gaz4->slug}");
                                         }
 
-                                        $rerurn = rtrim($rerurn, ' / ');
-
-                                        return $rerurn;
+                                        return $items !== [] ? join(', ', $items) : '&mdash;';
                                     }
                             ],
 
-                            Product::getGazesGridCol(false, $model->notMainGazes),
+                            Product::getGazesGridCol(false, $model->notMainGazes, false),
 
                             'measurementType.name:text:Тип измерения',
 
@@ -152,7 +169,7 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                                     'label' => 'Диапазон',
                                     'format' => 'raw',
                                     'value' => function ($model) {
-                                        return $this->render('_cell-range', ['model' => $model]);
+                                        return $this->render('_cell-range-detail', ['model' => $model]);
                                     }
                             ],
 
@@ -190,6 +207,15 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                                     }
                             ],
                             [
+                                    'attribute' => 'life_time',
+                                    'label' => 'Срок жизни (гарантийный срок), лет',
+                                    'format' => 'raw',
+                                    'value' => function ($model) {
+                                        return $this->render('_cell-life_time', ['model' => $model]);
+                                    },
+                                    'visible' => $model->life_time !== null || $model->warranty_period !== null,
+                            ],
+                            [
                                     'attribute' => 'info',
                                     'label' => 'Описание',
                                     'value' => $model->info,
@@ -206,6 +232,15 @@ $this->params['productJsonLd'] = $model->getJsonLd();
                             ],
                     ],
             ]) ?>
+
+            <?php if ($seo && !empty($seo->opisanie)): ?>
+                <div class="mt-4 mb-3">
+                    <h4>Описание</h4>
+                    <div style="text-align: left;">
+                        <?= $seo->opisanie ?>
+                    </div>
+                </div>
+            <?php endif; ?>
 
         </div>
     </div>

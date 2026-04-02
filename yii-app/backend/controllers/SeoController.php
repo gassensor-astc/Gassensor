@@ -3,9 +3,12 @@
 namespace backend\controllers;
 
 use Yii;
+use common\models\Product;
 use common\models\search\SeoSearch;
 use common\models\{search\ManufactureSearch, UploadSitemap, Seo, Manufacture};
-use yii\web\{Controller,NotFoundHttpException,UploadedFile};
+use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
+use yii\web\{Controller,NotFoundHttpException,Response,UploadedFile};
 use yii\filters\VerbFilter;
 
 /**
@@ -13,6 +16,14 @@ use yii\filters\VerbFilter;
  */
 class SeoController extends Controller
 {
+    public function beforeAction($action)
+    {
+        if (in_array($action->id, ['save-product-description', 'generate-ai-description'], true)) {
+            $this->enableCsrfValidation = false;
+        }
+
+        return parent::beforeAction($action);
+    }
     /**
      * @inheritDoc
      */
@@ -222,6 +233,174 @@ class SeoController extends Controller
         }
 
         return $this->render('manufacture-update', compact('modelSeo', 'model'));
+    }
+
+    /**
+     * SEO-описания товаров
+     * @return string
+     */
+    public function actionProductDescriptions()
+    {
+        $id = trim((string)$this->request->get('id', ''));
+        $name = trim((string)$this->request->get('name', ''));
+        $filter = $this->request->get('filter', ''); // no_title, no_h1, no_description
+
+        $query = Product::find()->with('seo')->orderBy('id DESC');
+
+        if ($id !== '') {
+            $query->andWhere(['product.id' => (int)$id]);
+        }
+        if ($name !== '') {
+            $query->andWhere(['like', 'product.name', $name]);
+        }
+
+        $emptySeoCondition = function ($field) {
+            return ['or', ["seo.{$field}" => ''], ["seo.{$field}" => null], ['seo.id' => null]];
+        };
+
+        if ($filter === 'no_title') {
+            $query->joinWith(['seo' => function($q) {
+                $q->andOnCondition(['seo.type' => Seo::TYPE_PRODUCT]);
+            }], false, 'LEFT JOIN')
+                ->andWhere($emptySeoCondition('title'))
+                ->groupBy('product.id');
+        } elseif ($filter === 'no_h1') {
+            $query->joinWith(['seo' => function($q) {
+                $q->andOnCondition(['seo.type' => Seo::TYPE_PRODUCT]);
+            }], false, 'LEFT JOIN')
+                ->andWhere($emptySeoCondition('h1'))
+                ->groupBy('product.id');
+        } elseif ($filter === 'no_description') {
+            $query->joinWith(['seo' => function($q) {
+                $q->andOnCondition(['seo.type' => Seo::TYPE_PRODUCT]);
+            }], false, 'LEFT JOIN')
+                ->andWhere($emptySeoCondition('description'))
+                ->groupBy('product.id');
+        }
+
+        // Подсчет статистики по текущему набору товаров
+        $baseQuery = Product::find();
+        if ($id !== '') {
+            $baseQuery->andWhere(['product.id' => (int)$id]);
+        }
+        if ($name !== '') {
+            $baseQuery->andWhere(['like', 'product.name', $name]);
+        }
+        
+        $withoutTitle = (clone $baseQuery)
+            ->joinWith(['seo' => function($q) {
+                $q->andOnCondition(['seo.type' => Seo::TYPE_PRODUCT]);
+            }], false, 'LEFT JOIN')
+            ->andWhere($emptySeoCondition('title'))
+            ->count();
+        
+        $withoutH1 = (clone $baseQuery)
+            ->joinWith(['seo' => function($q) {
+                $q->andOnCondition(['seo.type' => Seo::TYPE_PRODUCT]);
+            }], false, 'LEFT JOIN')
+            ->andWhere($emptySeoCondition('h1'))
+            ->count();
+        
+        $withoutDescription = (clone $baseQuery)
+            ->joinWith(['seo' => function($q) {
+                $q->andOnCondition(['seo.type' => Seo::TYPE_PRODUCT]);
+            }], false, 'LEFT JOIN')
+            ->andWhere($emptySeoCondition('description'))
+            ->count();
+
+        $perPage = (int)$this->request->get('per-page', 50) ?: 50;
+        $perPage = in_array($perPage, [20, 50, 100, 200], true) ? $perPage : 50;
+        $currentPage = max(1, (int)$this->request->get('page', 1));
+        $get = $this->request->getQueryParams();
+
+        $totalCount = (int)(clone $query)->count();
+
+        $pagination = new Pagination([
+            'totalCount' => $totalCount,
+            'pageParam' => 'page',
+            'pageSizeParam' => 'per-page',
+            'defaultPageSize' => 50,
+            'pageSize' => $perPage,
+            'forcePageParam' => false,
+            'route' => 'seo/product-descriptions',
+            'params' => $get,
+            'validatePage' => false,
+        ]);
+        $pagination->setPage($currentPage - 1, false);
+
+        $products = (clone $query)
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        return $this->render('product-descriptions', compact('products', 'pagination', 'totalCount', 'id', 'name', 'filter', 'withoutTitle', 'withoutH1', 'withoutDescription'));
+    }
+
+    /**
+     * AJAX сохранение SEO-описания товара
+     * @return array
+     */
+    public function actionSaveProductDescription()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $productId = (int)$this->request->post('product_id');
+        if (!$productId) {
+            return ['success' => false, 'error' => 'Не указан товар'];
+        }
+
+        if (!$product = Product::findOne($productId)) {
+            return ['success' => false, 'error' => 'Товар не найден'];
+        }
+
+        $seo = Seo::findOne(['type' => Seo::TYPE_PRODUCT, 'ref_id' => $productId]);
+        if (!$seo) {
+            $seo = new Seo(['type' => Seo::TYPE_PRODUCT, 'ref_id' => $productId]);
+        }
+
+        $seo->title = (string)$this->request->post('title');
+        $seo->h1 = (string)$this->request->post('h1');
+        $seo->description = (string)$this->request->post('description');
+        $seo->opisanie = (string)$this->request->post('opisanie');
+        $seo->opisanie_ai = (string)$this->request->post('opisanie_ai');
+
+        if (!$seo->save()) {
+            return ['success' => false, 'error' => $seo->getFirstErrors()];
+        }
+
+        return ['success' => true];
+    }
+
+    /**
+     * Генерация ИИ-описания: вызов внешнего скрипта, затем возврат opisanie_ai из БД
+     * @return array
+     */
+    public function actionGenerateAiDescription()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $productId = (int)$this->request->get('product_id', 0) ?: (int)$this->request->post('product_id', 0);
+        if (!$productId) {
+            return ['success' => false, 'error' => 'Не указан товар'];
+        }
+
+        if (!Product::findOne($productId)) {
+            return ['success' => false, 'error' => 'Товар не найден'];
+        }
+
+        $url = 'https://gassensor.ru/_scripts/export_tovar_h1_gen-text-ai.php?product_id=' . $productId;
+        $ctx = stream_context_create([
+            'http' => [
+                'timeout' => 120,
+                'ignore_errors' => true,
+            ],
+        ]);
+        @file_get_contents($url, false, $ctx);
+
+        $seo = Seo::findOne(['type' => Seo::TYPE_PRODUCT, 'ref_id' => $productId]);
+        $opisanieAi = $seo ? (string)$seo->opisanie_ai : '';
+
+        return ['success' => true, 'opisanie_ai' => $opisanieAi];
     }
 
     /**

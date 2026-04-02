@@ -67,7 +67,7 @@ class News extends NewsBase
     /**
      * @throws \Exception
      */
-    public function upload()
+    public function upload(): ?string
     {
         if (!$dir = $this->getUploadDir()) {
             throw new \Exception('invalid upload dir');
@@ -90,6 +90,7 @@ class News extends NewsBase
 
         $this->uploadFile->saveAs($filename);
 
+        return $filename;
     }
 
     /**
@@ -133,7 +134,21 @@ class News extends NewsBase
             return [];
         }
 
-        return glob("$dir/*");
+        $files = glob("$dir/*", GLOB_NOSORT);
+        if (!$files) {
+            return [];
+        }
+
+        usort($files, static function ($a, $b) {
+            $ta = @filemtime($a) ?: 0;
+            $tb = @filemtime($b) ?: 0;
+            if ($ta === $tb) {
+                return strcmp($a, $b);
+            }
+            return $ta <=> $tb;
+        });
+
+        return $files;
     }
 
     /**
@@ -157,9 +172,15 @@ class News extends NewsBase
             return null;
         }
 
-        foreach (['jpg', 'png', 'webp', 'gif',] as $ext) {
-            if ($files = glob("$dir/*.$ext")) {
-                return $files[0];
+        $files = $this->getUploadFilenames();
+        if (!$files) {
+            return null;
+        }
+
+        foreach ($files as $file) {
+            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true)) {
+                return $file;
             }
         }
     }
@@ -173,16 +194,35 @@ class News extends NewsBase
     {
         $dir = $this->getUploadDir();
 
-        $basename = str_replace([' ', '/', '\\'], '', $basename);
+        $basename = basename((string)$basename);
+        $basename = str_replace(["\0", '/', '\\'], '', $basename);
         $basename = trim($basename, '. ');
 
         $filename = $dir . '/' . $basename;
 
         if (!is_file($filename)) {
-            throw new \Exception("file not found");
+            return false;
         }
 
         return unlink($filename);
+    }
+
+    public function resolveContentFilePath(string $url): ?string
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        if (!$path) {
+            return null;
+        }
+
+        if (stripos($path, '.pdf') === false) {
+            return null;
+        }
+
+        $path = str_replace(["\0"], '', $path);
+        $path = '/' . ltrim($path, '/');
+        $fullPath = \Yii::getAlias('@documentroot') . $path;
+
+        return is_file($fullPath) ? $fullPath : null;
     }
 
     /**
@@ -194,4 +234,3 @@ class News extends NewsBase
         return new NewsQuery(get_called_class());
     }
 }
-

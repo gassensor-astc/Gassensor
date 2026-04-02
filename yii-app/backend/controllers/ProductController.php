@@ -118,12 +118,12 @@ class ProductController extends Controller
                     $ids[] = $req->post('ProductGaz')['is_main'];
 
                     $ids = array_unique($ids);
-
                     $model->saveGazs($ids); //select2 array $modelGaz->gaz_id
                     $model->saveMainbGaz($req->post('ProductGaz')['is_main']);
 
                     if (isset($req->post('ProductGaz')['is_main_2']) && !empty($req->post('ProductGaz')['is_main_2'])) $model->saveMainbGaz2($req->post('ProductGaz')['is_main_2']);
                     if (isset($req->post('ProductGaz')['is_main_3']) && !empty($req->post('ProductGaz')['is_main_3'])) $model->saveMainbGaz3($req->post('ProductGaz')['is_main_3']);
+                    if (isset($req->post('ProductGaz')['is_main_4']) && !empty($req->post('ProductGaz')['is_main_4'])) $model->saveMainbGaz4($req->post('ProductGaz')['is_main_4']);
 
                     foreach ($modelsRange as $modelRange) {
                         $modelRange->product_id = $model->id;
@@ -156,6 +156,11 @@ class ProductController extends Controller
         $modelsRange = $model->productRanges ?: [new ProductRange];
 
         $req = $this->request;
+
+        if ($req->isPost && $this->isPostSizeExceeded()) {
+            $this->addFlashError('Слишком большой размер запроса. Увеличьте post_max_size / upload_max_filesize на сервере.');
+            return $this->render('update', compact('model', 'modelSeo', 'modelProductGaz', 'modelsRange'));
+        }
 
         if ($req->isPost && $model->load($req->post()) && $modelSeo->load($req->post()) && $modelProductGaz->load($req->post())) {
             $isValid = $model->validate();
@@ -192,6 +197,7 @@ class ProductController extends Controller
                     if (isset($req->post('ProductGaz')['is_main']) && is_array($req->post('ProductGaz')['gaz_id'])) $ids = array_merge($ids, $req->post('ProductGaz')['gaz_id']);
                     if (isset($req->post('ProductGaz')['is_main_2']) && !empty($req->post('ProductGaz')['is_main_2'])) $ids[] = $req->post('ProductGaz')['is_main_2'];
                     if (isset($req->post('ProductGaz')['is_main_3']) && !empty($req->post('ProductGaz')['is_main_3'])) $ids[] = $req->post('ProductGaz')['is_main_3'];
+                    if (isset($req->post('ProductGaz')['is_main_4']) && !empty($req->post('ProductGaz')['is_main_4'])) $ids[] = $req->post('ProductGaz')['is_main_4'];
 
                     $ids = array_unique($ids);
 
@@ -203,6 +209,7 @@ class ProductController extends Controller
 
                     if (isset($req->post('ProductGaz')['is_main_2']) && !empty($req->post('ProductGaz')['is_main_2'])) $model->saveMainbGaz2($req->post('ProductGaz')['is_main_2']);
                     if (isset($req->post('ProductGaz')['is_main_3']) && !empty($req->post('ProductGaz')['is_main_3'])) $model->saveMainbGaz3($req->post('ProductGaz')['is_main_3']);
+                    if (isset($req->post('ProductGaz')['is_main_4']) && !empty($req->post('ProductGaz')['is_main_4'])) $model->saveMainbGaz4($req->post('ProductGaz')['is_main_4']);
 
                     $deletedIDs = [];
 
@@ -230,8 +237,49 @@ class ProductController extends Controller
         $modelProductGaz->is_main = $model->mainGaz->id ?? null;
         $modelProductGaz->is_main_2 = $model->mainGaz2->id ?? null;
         $modelProductGaz->is_main_3 = $model->mainGaz3->id ?? null;
+        $modelProductGaz->is_main_4 = $model->mainGaz4->id ?? null;
 
         return $this->render('update', compact('model', 'modelSeo', 'modelProductGaz', 'modelsRange'));
+    }
+
+    private function isPostSizeExceeded(): bool
+    {
+        if (!$this->request->isPost) {
+            return false;
+        }
+
+        $contentLength = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
+        if ($contentLength <= 0) {
+            return false;
+        }
+
+        $max = $this->parseSizeToBytes(ini_get('post_max_size'));
+        return $max > 0 && $contentLength > $max;
+    }
+
+    private function parseSizeToBytes($size): int
+    {
+        if ($size === null) {
+            return 0;
+        }
+
+        $size = trim((string)$size);
+        if ($size === '') {
+            return 0;
+        }
+
+        $unit = strtolower(substr($size, -1));
+        $value = (int)$size;
+        switch ($unit) {
+            case 'g':
+                return $value * 1024 * 1024 * 1024;
+            case 'm':
+                return $value * 1024 * 1024;
+            case 'k':
+                return $value * 1024;
+            default:
+                return (int)$size;
+        }
     }
 
     /**

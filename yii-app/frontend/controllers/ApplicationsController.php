@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\helpers\BotDetector;
 use common\models\Applications;
 use yii\data\Pagination;
 use yii\web\Controller;
@@ -31,6 +32,10 @@ class ApplicationsController extends Controller
     {
         if (!$model = Applications::findOne(['slug' => $slug])) {
             throw new NotFoundHttpException('Страница не найдена');
+        }
+
+        if (!BotDetector::isSearchBot() && $model->hasAttribute('views')) {
+            $model->updateCounters(['views' => 1]);
         }
 
         return $this->render($this->action->id, compact('model'));

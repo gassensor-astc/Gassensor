@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\models\Applications;
 use common\models\News;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -15,22 +16,40 @@ class AjaxController extends Controller
 {
     public function actionMainnews()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => News::find()->orderBy('date DESC'),
-            'pagination' => [
-                'pageSize' => 20,
-                'pageSizeParam' => false
-            ],
-        ]);
+        $news = News::find()->orderBy('date DESC')->limit(20)->all();
+        $articles = Applications::find()->orderBy('created_at DESC')->limit(20)->all();
 
-        $html = '<p style="font-size: 16px; font-weight: bold">Новости</p>';
+        $items = [];
+        foreach ($news as $model) {
+            $items[] = [
+                'date' => strtotime($model->date),
+                'title' => $model->title,
+                'url' => '/news/' . $model->slug,
+                'type' => 'news',
+            ];
+        }
+        foreach ($articles as $model) {
+            $items[] = [
+                'date' => (int)$model->created_at,
+                'title' => $model->title,
+                'url' => '/applications/' . $model->slug,
+                'type' => 'article',
+            ];
+        }
 
-        foreach ($dataProvider->getModels() ?? [] as $model) {
-            $time = strtotime($model->date);
+        usort($items, function ($a, $b) {
+            return $b['date'] - $a['date'];
+        });
+
+        $items = array_slice($items, 0, 20);
+
+        $html = '<p style="font-size: 16px; font-weight: bold">Новости и статьи</p>';
+
+        foreach ($items as $item) {
             $html .= '
                 <p>
-                    <span class="new-block">' . date("d.m.Y", $time) . ' - </span>
-                    <a href="/news/' . $model->slug . '">' . StringHelpers::shortText($model->title, 66) . '</a>
+                    <span class="new-block">' . date("d.m.Y", $item['date']) . ' - </span>
+                    <a href="' . $item['url'] . '">' . StringHelpers::shortText($item['title'], 66) . '</a>
                 </p>
             ';
         }

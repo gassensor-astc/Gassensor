@@ -1,6 +1,14 @@
 <?php
 /* @var $this yii\web\View */
 /* @var $model common\models\Product */
-?>
 
-<?= $model->formfactor ?> <?= $model->formfactor_unit ?>
+$f = trim((string)$model->formfactor);
+$u = trim((string)($model->formfactor_unit ?? ''));
+$isEmpty = $f === '' && $u === '';
+
+if ($isEmpty) {
+    echo '&mdash;';
+    return;
+}
+?>
+<?= $model->formfactor ?><?= $u !== '' ? ' ' . $model->formfactor_unit : '' ?>

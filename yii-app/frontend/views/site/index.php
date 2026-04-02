@@ -46,6 +46,44 @@ $seoHome = Seo::findOne(['type' => Seo::TYPE_PAGE_ABOUT]);
         margin-bottom: 12px;
     }
 
+    /* Mobile filter form - only on screens <= 768px */
+    @media (max-width: 768px) {
+        .filter-container form .row {
+            flex-direction: column !important;
+            gap: 10px;
+        }
+        .filter-container form .row .row {
+            flex-direction: column !important;
+            gap: 10px;
+        }
+        .filter-container form .col,
+        .filter-container form .col-1,
+        .filter-container form .col-4,
+        .filter-container form [class*="col-"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
+        }
+        .filter-container form label.float-end {
+            float: none !important;
+            text-align: left;
+        }
+        .filter-container form .btn-form {
+            width: 100%;
+            display: block;
+        }
+        .filter-container form .select2-container {
+            margin-left: 0 !important;
+            max-width: 100% !important;
+            min-width: 100% !important;
+            width: 100% !important;
+        }
+        .filter-container form input[type="number"] {
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+    }
+
 </style>
 <div class="site-index">
 
@@ -59,13 +97,15 @@ $seoHome = Seo::findOne(['type' => Seo::TYPE_PAGE_ABOUT]);
 
         <div class="col-xxl-8 col-md-6 order-first order-md-0">
 
-            <h2>Последние поступления продукции</h2>
+            <?php if (false): ?>
+                <h2>Поиск по параметрам</h2>
 
-            <div class="col-lg-12 col-md-6 bg-light border p-3 mb-3">
-                <?= $this->render('_filter', [
-                    'model' => $searchModel,
-                ]) ?>
-            </div>
+                <div class="col-lg-12 col-md-6 bg-light border p-3 mb-3 filter-container">
+                    <?= $this->render('_filter', [
+                        'model' => $searchModel,
+                    ]) ?>
+                </div>
+            <?php endif; ?>
 
             <?= $this->render('_grid', [
                 'dataProvider' => $dataProviderCatalog,

@@ -2,6 +2,7 @@
 
 namespace common\models\search;
 
+use common\models\MeasurementType;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
@@ -25,6 +26,8 @@ class ProductSearch extends Product
 
     public $response_time_to;
 
+    public $life_time_to;
+
     public $gaz_title;
 
     public $manufacture_title;
@@ -36,6 +39,9 @@ class ProductSearch extends Product
         2 => 'Аналоговый',
         3 => 'Цифровой',
     ];
+
+    /** @var mixed Не используется (чекбокс убран), оставлено для совместимости с GET-параметрами */
+    public $response_time_empty;
 
     public function getAvailableSignalTypes()
     {
@@ -61,7 +67,7 @@ class ProductSearch extends Product
     {
         return [
             [['id', 'created_at', 'updated_at', 'manufacture_id', 'measurement_type_id',
-                'formfactor', 'range_from', 'range_to', 'response_time',
+                'formfactor', 'range_from', 'range_to', 'response_time', 'life_time', 'warranty_period',
                 'energy_consumption_from', 'energy_consumption_to'], 'integer'],
 
             [['price', 'resolution'], 'number'],
@@ -71,9 +77,9 @@ class ProductSearch extends Product
 
             [['response_time_from'], 'number', 'min' => 0, 'max' => 1000],
             [['response_time_to'], 'number', 'min' => 0, 'max' => 5000],
+            [['life_time_to'], 'number', 'min' => 0, 'max' => 5000],
 
             ['response_time_from', 'default', 'value' => 0],
-            ['response_time_to', 'default', 'value' => 5000],
 
             [['temperature_range_from'], 'number', 'min' => -100, 'max' => 1000],
             [['temperature_range_to'], 'number', 'min' => 0, 'max' => 1000],
@@ -82,7 +88,7 @@ class ProductSearch extends Product
             ['temperature_range_to', 'default', 'value' => 1000],
             //['selectedSignalTypes', 'each', 'rule' => ['integer']],
             [['name', 'img', 'slug', 'range_unit', 'sensitivity_unit', 'sensitivity',
-                'gaz_title', 'manufacture_title', 'measurement_type_name', 'selectedSignalTypes'], 'safe'],
+                'gaz_title', 'manufacture_title', 'measurement_type_name', 'selectedSignalTypes', 'response_time_empty'], 'safe'],
         ];
     }
 
@@ -113,6 +119,7 @@ class ProductSearch extends Product
         $labels['resolution_to'] = 'До';
         $labels['response_time_from'] = 'От';
         $labels['response_time_to'] = 'До';
+        $labels['life_time_to'] = 'До';
 
         return $labels;
     }
@@ -134,7 +141,13 @@ class ProductSearch extends Product
             ]);
         }
 
+        // Для SEO: не добавляем ?page=1 в URL, первая страница всегда без параметра.
+        if ($dataProvider->pagination !== false) {
+            $dataProvider->pagination->forcePageParam = false;
+        }
+
         $this->load($params);
+        $this->normalizeZeroFilters();
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -235,7 +248,7 @@ class ProductSearch extends Product
      *
      * @return ActiveDataProvider
      */
-    public function searchFront($params)
+    public function searchFront($params, bool $normalizeMeasurementType = true)
     {
         $dataProvider = $this->getDataProvider($params);
         /* @var $query \yii\db\ActiveQuery */
@@ -243,10 +256,20 @@ class ProductSearch extends Product
 
         if (isset($params['new']) && $params['new'] === true) {
             $query->orderBy('id DESC');
-        } else {
-            $query->orderBy('product.name ASC');
         }
 
+
+        if (
+            $normalizeMeasurementType
+            && !empty($this->measurement_type_id)
+            && !in_array(
+                (int)$this->measurement_type_id,
+                array_map('intval', MeasurementType::findAvailableMeasurementTypeIdsByParams($params)),
+                true
+            )
+        ) {
+            $this->measurement_type_id = null;
+        }
 
 
         // grid filtering conditions
@@ -287,6 +310,7 @@ class ProductSearch extends Product
 
         $query->andFilterWhere(['>=', 'response_time', $this->response_time_from]);
         $query->andFilterWhere(['<=', 'response_time', $this->response_time_to]);
+        $query->andFilterWhere(['<=', 'life_time', $this->life_time_to]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'product_range.unit', $this->range_unit])
@@ -296,12 +320,29 @@ class ProductSearch extends Product
 
         $query->andFilterWhere(['gaz_group.id' => $this->gaz_group_id]);
 
-        $dataProvider->sort->defaultOrder = [
-            //'gaz_title' => SORT_ASC,
-            'name' => SORT_ASC
-        ];
+        if ($this->life_time_to !== null && $this->life_time_to !== '') {
+            $query->orderBy(['life_time' => SORT_DESC, 'product.name' => SORT_ASC]);
+        } else {
+            $query->orderBy('product.name ASC');
+        }
 
         return $dataProvider;
     }
-}
 
+    private function normalizeZeroFilters(): void
+    {
+        foreach (['life_time_to', 'response_time_to'] as $attr) {
+            $v = $this->$attr;
+            if ($v === '' || $v === null || (string)$v === '0') {
+                $this->$attr = null;
+            }
+        }
+    }
+
+    private function isLifeTimeOutOfRange(): bool
+    {
+        return $this->life_time_to !== null
+            && $this->life_time_to !== ''
+            && (int)$this->life_time_to > 7;
+    }
+}
