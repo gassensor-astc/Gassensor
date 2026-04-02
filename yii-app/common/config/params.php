@@ -11,5 +11,5 @@ return [
     'bsDependencyEnabled' => false,
 
     // OpenAI API ключ
-    'openaiApiKey' => 'REDACTED',
+    'openaiApiKey' => ''
 ];
