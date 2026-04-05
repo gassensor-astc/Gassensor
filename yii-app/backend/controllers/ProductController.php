@@ -97,6 +97,30 @@ class ProductController extends Controller
                     $model->slug = StringHelpers::slug($model->slug);
                     $model->save(false);
                     $modelSeo->ref_id = $model->id;
+
+                    $deviceType = (string)($req->post('SeoMeta')['device_type'] ?? 'сенсор');
+                    $deviceType = in_array($deviceType, ['сенсор', 'датчик', 'модуль'], true) ? $deviceType : 'сенсор';
+
+                    $gasTitle = '';
+                    $mainGazId = (int)($req->post('ProductGaz')['is_main'] ?? 0);
+                    if ($mainGazId > 0 && ($gaz = \common\models\Gaz::findOne($mainGazId))) {
+                        $gasTitle = trim((string)$gaz->title);
+                    }
+
+                    $name = trim((string)$model->name);
+                    if ($gasTitle !== '') {
+                        $title = "{$name} {$deviceType} газа {$gasTitle}";
+                        $h1 = "{$name} {$deviceType} {$gasTitle}";
+                    } else {
+                        $title = "{$name} {$deviceType} газа";
+                        $h1 = "{$name} {$deviceType}";
+                    }
+
+                    $modelSeo->title = $title;
+                    $modelSeo->h1 = $h1;
+                    $modelSeo->breadcrumb_text = $h1;
+                    $modelSeo->description = "{$title} можно купить в компании Газсенсор в розницу и оптом в Москве.";
+
                     $modelSeo->save(false);
 
                     if ($model->uploadPict = UploadedFile::getInstance($model, 'uploadPict')) {
