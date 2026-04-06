@@ -42,6 +42,14 @@ if ($page > 1 && $newsH1 !== null && $newsH1 !== '') {
     }
 }
 
+$hostInfo = $req->hostInfo;
+$canonicalUrl = $hostInfo . '/news';
+if ($page > 1) {
+    $canonicalUrl .= '?page=' . $page;
+}
+$this->params['customCanonical'] = true;
+$this->params['canonicalUrl'] = $canonicalUrl;
+
 ?>
 <style>
     .page-item.active .page-link {
@@ -118,5 +126,3 @@ if ($page > 1 && $newsH1 !== null && $newsH1 !== '') {
     </div>
 
 </div>
-
-

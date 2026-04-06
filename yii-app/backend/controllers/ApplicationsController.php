@@ -74,6 +74,9 @@ class ApplicationsController extends Controller
                 $isValid = $model->validate();
 
                 if ($isValid) {
+                    if (trim((string)$model->slug) === '') {
+                        $model->slug = (string)$model->title;
+                    }
                     $model->slug = StringHelpers::slug($model->slug);
                     $model->created_at = strtotime($req->post()['Applications']['created_at']);
 
@@ -117,6 +120,9 @@ class ApplicationsController extends Controller
             $isValid = $model->validate();
 
             if ($isValid) {
+                if (trim((string)$model->slug) === '') {
+                    $model->slug = (string)$model->title;
+                }
                 $model->slug = StringHelpers::slug($model->slug);
                 $model->created_at = strtotime($req->post()['Applications']['created_at']);
 

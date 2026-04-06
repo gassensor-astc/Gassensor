@@ -14,15 +14,14 @@ use common\helpers\StringHelpers;
             <header class="entry-header">
                 <div class="entry-meta">
                     <span class="posted-on">
-                    <span class="entry-date published">
-                    <?php
-                        $time = strtotime($model->date);
-                    ?>
-                    <span class="date text-right">
-                    <?= date('d', $time) ?>
-                    <?= Tools::$months[date('n', $time) - 1] ?>
-                    <?= date('Y', $time) ?>
-                    </span>
+                        <span class="entry-date published">
+                            <?php
+                                $time = strtotime($model->date);
+                            ?>
+                            <span class="date text-right">
+                                <?= date('d', $time) . ' ' . Tools::$months[date('n', $time) - 1] . ' ' . date('Y', $time) ?>
+                            </span>
+                        </span>
                     </span>
                 </div>
             </header>

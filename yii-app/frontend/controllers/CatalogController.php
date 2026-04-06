@@ -30,6 +30,33 @@ class CatalogController extends Controller
         }
 
         $params = $this->request->queryParams;
+        $productSearch = $params['ProductSearch'] ?? [];
+        $productSearchFiltered = array_filter($productSearch, static function ($value) {
+            return $value !== '' && $value !== null && $value !== [];
+        });
+
+        if (isset($productSearchFiltered['manufacture_id']) && count($productSearchFiltered) === 1) {
+            $manufactureId = (int)$productSearchFiltered['manufacture_id'];
+            if ($manufactureId > 0 && ($manufacture = Manufacture::findOne($manufactureId))) {
+                $slug = $manufacture->slug ?: StringHelpers::slug($manufacture->title);
+                $queryParams = $params;
+                unset($queryParams['ProductSearch'], $queryParams['scroll']);
+                $page = $this->request->get('page', null);
+                if ($page !== null && $page !== '' && (int)$page > 1) {
+                    $queryParams['page'] = (int)$page;
+                } else {
+                    unset($queryParams['page']);
+                }
+                $queryParams = array_filter($queryParams, static function ($v) {
+                    return $v !== '' && $v !== null && $v !== [];
+                });
+                return $this->redirect(
+                    array_merge(['catalog/gas', 'slug' => $slug], $queryParams),
+                    302
+                );
+            }
+        }
+
         $gazId = isset($params['ProductSearch']['gaz_id']) ? (int)$params['ProductSearch']['gaz_id'] : 0;
         if ($gazId > 0 && ($gaz = Gaz::findOne($gazId)) && !empty($gaz->slug)) {
             $queryParams = $params;
@@ -77,7 +104,7 @@ class CatalogController extends Controller
         $params = $this->request->queryParams;
 
         if (!$gaz = Gaz::findOne(['slug' => $slug])) {
-            throw new NotFoundHttpException();
+            return $this->actionManufacture($slug);
         }
 
         $params['ProductSearch']['gaz_id'] = $gaz->id;
@@ -101,8 +128,15 @@ class CatalogController extends Controller
 
         $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle . ' купить ' . $count . ' шт в Москве');
         $seo->setAttribute('h1', 'Сенсоры и датчики газа ' . $gasTitle);
-        // Canonical задаём отдельно
+        // Canonical задаём отдельно (с учетом пагинации)
         $canonicalUrl = 'https://gassensor.ru/catalog/' . $gaz->slug;
+        $pageParam = $this->request->get('page', null);
+        if ($pageParam !== null && $pageParam !== '') {
+            $p = (int)$pageParam;
+            if ($p > 1) {
+                $canonicalUrl .= '?page=' . $p;
+            }
+        }
         $seo->setAttribute('url_canonical', null);
 
         return $this->render('index', [
@@ -134,12 +168,24 @@ class CatalogController extends Controller
         $dataProvider = $searchModel->searchFront($params);
         $dataProvider->sort = false;
 
+        $canonicalUrl = 'https://gassensor.ru/catalog/' . $manufacture->slug;
+        $pageParam = $this->request->get('page', null);
+        if ($pageParam !== null && $pageParam !== '') {
+            $p = (int)$pageParam;
+            if ($p > 1) {
+                $canonicalUrl .= '?page=' . $p;
+            }
+        }
+        if ($seo) {
+            $seo->setAttribute('url_canonical', null);
+        }
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'seo' => $seo,
             'manufacture' => $manufacture,
+            'canonicalUrl' => $canonicalUrl,
         ]);
     }
 }
-

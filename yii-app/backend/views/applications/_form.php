@@ -14,6 +14,49 @@ use kartik\date\DatePicker;
 
 ?>
 
+<?php
+$js = <<<JS
+// Автоматическая генерация slug из title (только если slug пустой)
+$("#applications-title").on("change keyup input", function () {
+    if ($("#applications-slug").val()) {
+        return;
+    }
+    if (this.value.length >= 2) {
+        let q = this.value;
+        let request = $.ajax({
+            url: '/backend/ajax/slug?q=' + q,
+            method: "GET",
+            dataType: "json"
+        });
+        request.done(function (data) {
+            if (data.slug != null && data.slug !== '') {
+                $("#applications-slug").val(data.slug);
+            }
+        });
+    }
+});
+
+// Также транслитерация при ручном вводе slug
+$("#applications-slug").on("change", function () {
+    if (this.value.length >= 2) {
+        let q = this.value;
+        let request = $.ajax({
+            url: '/backend/ajax/slug?q=' + q,
+            method: "GET",
+            dataType: "json"
+        });
+        request.done(function (data) {
+            if (data.slug != null && data.slug !== '') {
+                $("#applications-slug").val(data.slug);
+            }
+        });
+    }
+});
+JS;
+
+$this->registerJs($js, $this::POS_READY);
+?>
+
 <?php $form = ActiveForm::begin(); ?>
 <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
@@ -128,5 +171,4 @@ CKEDITOR.config.removePlugins = 'spellchecker, about, save, newpage, print, temp
 
 
 ?>
-
 

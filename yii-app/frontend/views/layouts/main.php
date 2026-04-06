@@ -56,7 +56,8 @@ LegacyAsset::register($this);
         <?= $this->render('json-ld') ?>
 
 
-        <link rel="shortcut icon" href="/i/favicon.png"/>
+        <?php $indent = '        '; ?>
+        <?= $indent ?><link rel="shortcut icon" href="/i/favicon.png"/>
 
         <?php
 
@@ -65,21 +66,31 @@ LegacyAsset::register($this);
          * шаблоны URL по типам страниц — в common\models\Seo::getRefUrl(). */
         /* @var $request \yii\web\Request */
         $request = Yii::$app->request;
-        if ($request->get('page') || $request->get('sort')) {
+        if (!empty($this->params['canonicalUrl'])) {
+            echo $indent . "<link rel=\"canonical\" href=\"" . Html::encode($this->params['canonicalUrl']) . "\" />" . "\n";
+        } elseif (!($this->params['customCanonical'] ?? false) && ($request->get('page') || $request->get('sort'))) {
             $path = trim($request->pathInfo, '/');
             $canonicalHref = 'https://gassensor.ru/' . ($path !== '' ? $path : '');
-            echo "<link rel='canonical' href='" . Html::encode($canonicalHref) . "' />";
+            echo $indent . "<link rel=\"canonical\" href=\"" . Html::encode($canonicalHref) . "\" />" . "\n";
         }
 
         ?>
 
-        <?php $this->head() ?>
+        <?php
+            ob_start();
+            $this->head();
+            $head = trim((string)ob_get_clean());
+            if ($head !== '') {
+                $head = preg_replace('/^/m', '        ', $head);
+                echo $head . "\n";
+            }
+        ?>
 
-        <?php if (!defined('LOCAL_SITE')): ?>
-            <script src="//code.jivo.ru/widget/T5tUejTiZb" async></script>
-        <?php else: ?>
-            <!--  LOCAL_SITE -->
-        <?php endif; ?>
+<?php if (!defined('LOCAL_SITE')): ?>
+<script src="//code.jivo.ru/widget/T5tUejTiZb" async></script>
+<?php else: ?>
+<!--  LOCAL_SITE -->
+<?php endif; ?>
 
     </head>
     <body class="d-flex flex-column min-vh-100">

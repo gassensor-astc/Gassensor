@@ -26,7 +26,8 @@ if (isset($canonicalUrl)) {
 }
 $seo->registerMetaTags($this);
 if (!empty($canonicalUrl)) {
-    $this->registerLinkTag(['rel' => 'canonical', 'href' => $canonicalUrl]);
+    $this->params['customCanonical'] = true;
+    $this->params['canonicalUrl'] = $canonicalUrl;
 }
 
 /* @var $request \yii\web\Request */
@@ -214,6 +215,3 @@ $this->registerJs($js, $this::POS_READY);
     </div>
 
 </div>
-
-
-

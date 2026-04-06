@@ -10,14 +10,17 @@ use yii\widgets\ActiveForm;
 use yii\web\View;
 
 $js = <<<JS
- // Автоматическая генерация slug из title
+ // Автоматическая генерация slug из title (только если slug пустой)
  $("#news-title").on("change keyup input", function () {
+     if ($("#news-slug").val()) {
+         return;
+     }
      if (this.value.length >= 2) {
          let q = this.value;
          let request = $.ajax({
              url: '/backend/ajax/slug?q=' + q,
-             method: "GET",
-             dataType: "json"
+                method: "GET",
+                dataType: "json"
          });
          request.done(function (data) {
              if (data.slug != null && data.slug !== '') {
@@ -158,6 +161,5 @@ $this->registerJs("$(document).on('click', '.js-insert-news-image', function (e)
 });", View::POS_END);
 
 ?>
-
 
 

@@ -38,6 +38,14 @@ if ($page > 1 && $remainsH1 !== null && $remainsH1 !== '') {
     }
 }
 
+$hostInfo = $req->hostInfo;
+$canonicalUrl = $hostInfo . '/remains';
+if ($page > 1) {
+    $canonicalUrl .= '?page=' . $page;
+}
+$this->params['customCanonical'] = true;
+$this->params['canonicalUrl'] = $canonicalUrl;
+
 $filename = './upload/' . Setting::getSensorsList();
 $filename_dwnld = '/upload/sensors_list.xlsx';
 ?>
