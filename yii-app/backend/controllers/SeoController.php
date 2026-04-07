@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\Product;
 use common\models\search\SeoSearch;
+use common\components\SitemapGenerator;
 use common\models\{search\ManufactureSearch, UploadSitemap, Seo, Manufacture};
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
@@ -124,6 +125,23 @@ class SeoController extends Controller
         }
 
         return $this->render('sitemap-upload', compact('model'));
+    }
+
+    /**
+     * @return \yii\web\Response
+     */
+    public function actionGenerateSitemap()
+    {
+        $baseUrl = rtrim(Yii::$app->request->hostInfo ?? 'https://gassensor.ru', '/');
+        $dir = Yii::getAlias('@documentroot');
+
+        $generator = new SitemapGenerator();
+        $counts = $generator->writeAll($baseUrl, $dir);
+
+        $total = array_sum($counts);
+        Yii::$app->session->setFlash('success', "Sitemap сформирован. URL всего: {$total}");
+
+        return $this->redirect(['seo/sitemap']);
     }
 
     /**

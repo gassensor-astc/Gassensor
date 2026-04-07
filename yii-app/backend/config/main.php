@@ -71,6 +71,7 @@ return [
                 'PUT,POST seo/update-robots' => 'seo/update-robots',
                 'seo/sitemap' => 'seo/sitemap',
                 'seo/upload-sitemap' => 'seo/upload-sitemap',
+                'seo/generate-sitemap' => 'seo/generate-sitemap',
             ],
         ],
     ],

@@ -50,9 +50,26 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'sitemap.xml');
 
                     <h1><?= Html::encode($this->title) ?></h1>
 
-                    <?= Html::a('Загрузить карту sitemap.xml','/sitemap.xml', ['class' => 'btn btn-success', 'download' => 'sitemap.xml' ]) ?>
+                    <?= Html::a('Загрузить карту sitemap.xml', '/sitemap.xml', ['class' => 'btn btn-success', 'download' => 'sitemap.xml' ]) ?>
 
-                    <?= Html::a('Выгрузить карту sitemap.xml',Url::to(['seo/upload-sitemap']), ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('Выгрузить карту sitemap.xml', Url::to(['seo/upload-sitemap']), ['class' => 'btn btn-success']) ?>
+
+                    <?= Html::a('Сгенерировать sitemap.xml', Url::to(['seo/generate-sitemap']), [
+                        'class' => 'btn btn-primary',
+                        'data' => ['confirm' => 'Сформировать sitemap.xml и дочерние карты?']
+                    ]) ?>
+
+                    <div style="margin-top: 15px;">
+                        <div>Файлы карт сайта:</div>
+                        <div>sitemap.xml</div>
+                        <div>sitemap-main.xml</div>
+                        <div>sitemap-news.xml</div>
+                        <div>sitemap-applications.xml</div>
+                        <div>sitemap-manufacture.xml</div>
+                        <div>sitemap-manufacture-products.xml</div>
+                        <div>sitemap-gases.xml</div>
+                        <div>sitemap-products.xml</div>
+                    </div>
 
                 </div>
 
@@ -64,5 +81,4 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'sitemap.xml');
     </article>
 
 </div>
-
 
