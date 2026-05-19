@@ -100,12 +100,14 @@ LegacyAsset::register($this);
 
         <?= $this->render('header') ?>
 
-        <div class="m-3">
-            <?= Breadcrumbs::widget([
-                'homeLink' => ['label' => 'Главная', 'url' => '/',],
-                'links' => $this->params['breadcrumbs'] ?? [],
-            ]) ?>
-        </div>
+        <?php if (!($this->params['hideBreadcrumbs'] ?? false)): ?>
+            <div class="m-3">
+                <?= Breadcrumbs::widget([
+                    'homeLink' => ['label' => 'Главная', 'url' => '/',],
+                    'links' => $this->params['breadcrumbs'] ?? [],
+                ]) ?>
+            </div>
+        <?php endif; ?>
 
         <main class="p-2 flex-grow-1" style="min-height: 0;">
 
