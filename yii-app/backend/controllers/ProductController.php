@@ -108,12 +108,21 @@ class ProductController extends Controller
                     }
 
                     $name = trim((string)$model->name);
+                    $manufacturerTitle = '';
+                    if ((int)$model->manufacture_id > 0 && ($manufacture = \common\models\Manufacture::findOne((int)$model->manufacture_id))) {
+                        $manufacturerTitle = trim((string)$manufacture->title);
+                    }
+
                     if ($gasTitle !== '') {
                         $title = "{$name} {$deviceType} газа {$gasTitle}";
-                        $h1 = "{$name} {$deviceType} {$gasTitle}";
+                        $h1 = trim("{$name} {$manufacturerTitle} {$deviceType} {$gasTitle}");
                     } else {
                         $title = "{$name} {$deviceType} газа";
-                        $h1 = "{$name} {$deviceType}";
+                        $h1 = trim("{$name} {$manufacturerTitle} {$deviceType}");
+                    }
+
+                    if ($manufacturerTitle !== '') {
+                        $title .= " от производителя {$manufacturerTitle}";
                     }
 
                     $modelSeo->title = $title;
@@ -148,6 +157,7 @@ class ProductController extends Controller
                     if (isset($req->post('ProductGaz')['is_main_2']) && !empty($req->post('ProductGaz')['is_main_2'])) $model->saveMainbGaz2($req->post('ProductGaz')['is_main_2']);
                     if (isset($req->post('ProductGaz')['is_main_3']) && !empty($req->post('ProductGaz')['is_main_3'])) $model->saveMainbGaz3($req->post('ProductGaz')['is_main_3']);
                     if (isset($req->post('ProductGaz')['is_main_4']) && !empty($req->post('ProductGaz')['is_main_4'])) $model->saveMainbGaz4($req->post('ProductGaz')['is_main_4']);
+                    if (isset($req->post('ProductGaz')['is_main_5']) && !empty($req->post('ProductGaz')['is_main_5'])) $model->saveMainbGaz5($req->post('ProductGaz')['is_main_5']);
 
                     foreach ($modelsRange as $modelRange) {
                         $modelRange->product_id = $model->id;
@@ -222,6 +232,7 @@ class ProductController extends Controller
                     if (isset($req->post('ProductGaz')['is_main_2']) && !empty($req->post('ProductGaz')['is_main_2'])) $ids[] = $req->post('ProductGaz')['is_main_2'];
                     if (isset($req->post('ProductGaz')['is_main_3']) && !empty($req->post('ProductGaz')['is_main_3'])) $ids[] = $req->post('ProductGaz')['is_main_3'];
                     if (isset($req->post('ProductGaz')['is_main_4']) && !empty($req->post('ProductGaz')['is_main_4'])) $ids[] = $req->post('ProductGaz')['is_main_4'];
+                    if (isset($req->post('ProductGaz')['is_main_5']) && !empty($req->post('ProductGaz')['is_main_5'])) $ids[] = $req->post('ProductGaz')['is_main_5'];
 
                     $ids = array_unique($ids);
 
@@ -234,6 +245,7 @@ class ProductController extends Controller
                     if (isset($req->post('ProductGaz')['is_main_2']) && !empty($req->post('ProductGaz')['is_main_2'])) $model->saveMainbGaz2($req->post('ProductGaz')['is_main_2']);
                     if (isset($req->post('ProductGaz')['is_main_3']) && !empty($req->post('ProductGaz')['is_main_3'])) $model->saveMainbGaz3($req->post('ProductGaz')['is_main_3']);
                     if (isset($req->post('ProductGaz')['is_main_4']) && !empty($req->post('ProductGaz')['is_main_4'])) $model->saveMainbGaz4($req->post('ProductGaz')['is_main_4']);
+                    if (isset($req->post('ProductGaz')['is_main_5']) && !empty($req->post('ProductGaz')['is_main_5'])) $model->saveMainbGaz5($req->post('ProductGaz')['is_main_5']);
 
                     $deletedIDs = [];
 
@@ -262,6 +274,7 @@ class ProductController extends Controller
         $modelProductGaz->is_main_2 = $model->mainGaz2->id ?? null;
         $modelProductGaz->is_main_3 = $model->mainGaz3->id ?? null;
         $modelProductGaz->is_main_4 = $model->mainGaz4->id ?? null;
+        $modelProductGaz->is_main_5 = $model->mainGaz5->id ?? null;
 
         return $this->render('update', compact('model', 'modelSeo', 'modelProductGaz', 'modelsRange'));
     }

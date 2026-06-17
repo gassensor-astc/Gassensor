@@ -14,6 +14,7 @@ use common\models\{Gaz,Product};
  * @property integer $is_main_2
  * @property integer $is_main_3
  * @property integer $is_main_4
+ * @property integer $is_main_5
  *
  * @property Gaz $gaz
  * @property Product $product
@@ -35,7 +36,7 @@ class ProductGazBase extends \yii\db\ActiveRecord
     {
         return [
             [['product_id'], 'required'],
-            [['product_id', 'gaz_id', 'is_main', 'is_main_2', 'is_main_3', 'is_main_4'], 'integer'],
+            [['product_id', 'gaz_id', 'is_main', 'is_main_2', 'is_main_3', 'is_main_4', 'is_main_5'], 'integer'],
             [['product_id', 'gaz_id'], 'unique', 'targetAttribute' => ['product_id', 'gaz_id']],
             [['gaz_id'], 'exist', 'skipOnError' => true, 'targetClass' => GazBase::class, 'targetAttribute' => ['gaz_id' => 'id']],
             [['product_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProductBase::class, 'targetAttribute' => ['product_id' => 'id']],
@@ -54,6 +55,7 @@ class ProductGazBase extends \yii\db\ActiveRecord
             'is_main_2' => Yii::t('app', 'Is Main 2'),
             'is_main_3' => Yii::t('app', 'Is Main 3'),
             'is_main_4' => Yii::t('app', 'Is Main 4'),
+            'is_main_5' => Yii::t('app', 'Is Main 5'),
         ];
     }
 

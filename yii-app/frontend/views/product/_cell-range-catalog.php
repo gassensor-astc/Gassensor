@@ -71,5 +71,47 @@ use \yii\helpers\ArrayHelper;
 
     <?php endif; ?>
 
+    <?php
+
+    $productRanges4 = $model->ProductRangesByPos(3);
+
+    if ($productRanges4 && is_array($productRanges4)):
+
+    ?>
+        <div class="col-sm">
+
+            <?= ArrayHelper::getValue($model, 'mainGaz4.title') ?><br>
+
+            <?php foreach ($productRanges4 as $v): ?>
+
+            <?= $v->from ?> - <?= $v->to ?> <?= $v->unit ?>
+
+            <?php endforeach; ?>
+
+        </div>
+
+    <?php endif; ?>
+
+    <?php
+
+    $productRanges5 = $model->ProductRangesByPos(4);
+
+    if ($productRanges5 && is_array($productRanges5)):
+
+    ?>
+        <div class="col-sm">
+
+            <?= ArrayHelper::getValue($model, 'mainGaz5.title') ?><br>
+
+            <?php foreach ($productRanges5 as $v): ?>
+
+            <?= $v->from ?> - <?= $v->to ?> <?= $v->unit ?>
+
+            <?php endforeach; ?>
+
+        </div>
+
+    <?php endif; ?>
+
     </div>
 </div>

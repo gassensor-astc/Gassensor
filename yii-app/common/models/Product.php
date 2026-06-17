@@ -29,6 +29,7 @@ use Yii;
  * @property Gaz $mainGaz2
  * @property Gaz $mainGaz3
  * @property Gaz $mainGaz4
+ * @property Gaz $mainGaz5
  * @property Gaz $notMainGazes
  * @property string $pictUrl
  * @property string $pictPath
@@ -36,13 +37,57 @@ use Yii;
  */
 class Product extends ProductBase
 {
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        $hasLegacyEnergy = $this->energy_consumption_from !== null
+            || $this->energy_consumption_to !== null
+            || trim((string)($this->energy_consumption_unit ?? '')) !== '';
+
+        $hasAnalogEnergy = $this->energy_consumption_analog_from !== null
+            || $this->energy_consumption_analog_to !== null
+            || trim((string)($this->energy_consumption_analog_unit ?? '')) !== '';
+
+        $hasDigitalEnergy = $this->energy_consumption_digital_from !== null
+            || $this->energy_consumption_digital_to !== null
+            || trim((string)($this->energy_consumption_digital_unit ?? '')) !== '';
+
+        if ($this->analog && !$hasAnalogEnergy && $hasLegacyEnergy) {
+            $this->energy_consumption_analog_from = $this->energy_consumption_from;
+            $this->energy_consumption_analog_to = $this->energy_consumption_to;
+            $this->energy_consumption_analog_unit = $this->energy_consumption_unit;
+        }
+
+        if ($this->digital && !$hasDigitalEnergy && !$this->analog && $hasLegacyEnergy) {
+            $this->energy_consumption_digital_from = $this->energy_consumption_from;
+            $this->energy_consumption_digital_to = $this->energy_consumption_to;
+            $this->energy_consumption_digital_unit = $this->energy_consumption_unit;
+        }
+    }
+
     public function beforeValidate()
     {
         if (!parent::beforeValidate()) {
             return false;
         }
 
+        $this->response_time_unit = 'сек.';
+
         foreach (['life_time', 'warranty_period'] as $attr) {
+            $value = $this->$attr;
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $this->$attr = str_replace(',', '.', (string)$value);
+        }
+
+        foreach ([
+            'energy_consumption_analog_from',
+            'energy_consumption_analog_to',
+            'energy_consumption_digital_from',
+            'energy_consumption_digital_to',
+        ] as $attr) {
             $value = $this->$attr;
             if ($value === null || $value === '') {
                 continue;
@@ -95,6 +140,11 @@ class Product extends ProductBase
         return $this->mainGaz4->id ?? null;
     }
 
+    public function getMainGaz5Id()
+    {
+        return $this->mainGaz5->id ?? null;
+    }
+
     /**
      * @return array
      */
@@ -103,7 +153,7 @@ class Product extends ProductBase
         $rules = parent::rules();
 
         $rules[] = ['uploadPict', 'file', 'extensions' => 'png, jpg, gif'];
-        $rules[] = [['uploadPdf', 'uploadPdf2', 'uploadPdf3'], 'file', 'extensions' => 'pdf', 'maxSize' => 10485760, 'tooBig' => 'PDF должен быть не больше 10 МБ'];
+        $rules[] = [['uploadPdf', 'uploadPdf2', 'uploadPdf3'], 'file', 'extensions' => 'pdf', 'maxSize' => 20971520, 'tooBig' => 'PDF должен быть не больше 20 МБ'];
 
         return $rules;
     }
@@ -182,6 +232,14 @@ class Product extends ProductBase
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getMainProductGaz5()
+    {
+        return $this->hasOne(ProductGaz::class, ['product_id' => 'id'])->andOnCondition(['is_main_5' => 1]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getMainGaz()
     {
         return $this->hasOne(Gaz::class, ['id' => 'gaz_id'])->via('mainProductGaz');
@@ -212,6 +270,14 @@ class Product extends ProductBase
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMainGaz5()
+    {
+        return $this->hasOne(Gaz::class, ['id' => 'gaz_id'])->via('mainProductGaz5');
+    }
+
+    /**
      * @return Gaz[]
      */
     public function getNotMainGazes()
@@ -223,6 +289,7 @@ class Product extends ProductBase
             ->andWhere(['is_main_2' => 0])
             ->andWhere(['is_main_3' => 0])
             ->andWhere(['is_main_4' => 0])
+            ->andWhere(['is_main_5' => 0])
             ->all();
     }
 
@@ -569,6 +636,11 @@ class Product extends ProductBase
             } else {
                 $model->is_main_4 = 0;
             }
+            if ($model->hasAttribute('is_main_5')) {
+                $model->setAttribute('is_main_5', 0);
+            } else {
+                $model->is_main_5 = 0;
+            }
 
             if (!$model->save()) {
                 throw new \Exception('fail saving ProductGaz');
@@ -637,6 +709,11 @@ class Product extends ProductBase
         } else {
             $model->is_main_4 = 0;
         }
+        if ($model->hasAttribute('is_main_5')) {
+            $model->setAttribute('is_main_5', 0);
+        } else {
+            $model->is_main_5 = 0;
+        }
 
         if (!$model->save()) {
             throw new \Exception('fail saving ProductGaz');
@@ -687,6 +764,11 @@ class Product extends ProductBase
         } else {
             $model->is_main_4 = 0;
         }
+        if ($model->hasAttribute('is_main_5')) {
+            $model->setAttribute('is_main_5', 0);
+        } else {
+            $model->is_main_5 = 0;
+        }
 
         if (!$model->save()) {
             throw new \Exception('fail saving ProductGaz');
@@ -722,6 +804,52 @@ class Product extends ProductBase
             $model->setAttribute('is_main_4', 1);
         } else {
             $model->is_main_4 = 1;
+        }
+        if ($model->hasAttribute('is_main_5')) {
+            $model->setAttribute('is_main_5', 0);
+        } else {
+            $model->is_main_5 = 0;
+        }
+
+        if (!$model->save()) {
+            throw new \Exception('fail saving ProductGaz');
+        }
+    }
+
+    /**
+     * @param int|null $id
+     * @return void
+     * @throws \Exception
+     */
+    public function saveMainbGaz5(?int $id = null)
+    {
+        if (!$id) {
+            return;
+        }
+
+        $cond = ['product_id' => $this->id, 'gaz_id' => $id];
+        $model = ProductGaz::findOne($cond);
+
+        if (!$model) {
+            $model = new ProductGaz($cond);
+        }
+
+        if ($model->hasAttribute('is_main_5') && (int)$model->getAttribute('is_main_5') === 1) {
+            return;
+        }
+
+        $model->is_main = 0;
+        $model->is_main_2 = 0;
+        $model->is_main_3 = 0;
+        if ($model->hasAttribute('is_main_4')) {
+            $model->setAttribute('is_main_4', 0);
+        } else {
+            $model->is_main_4 = 0;
+        }
+        if ($model->hasAttribute('is_main_5')) {
+            $model->setAttribute('is_main_5', 1);
+        } else {
+            $model->is_main_5 = 1;
         }
 
         if (!$model->save()) {

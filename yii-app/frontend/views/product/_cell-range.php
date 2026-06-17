@@ -14,9 +14,10 @@ use yii\helpers\Html;
         ArrayHelper::getValue($model, 'mainGaz2.title'),
         ArrayHelper::getValue($model, 'mainGaz3.title'),
         ArrayHelper::getValue($model, 'mainGaz4.title'),
+        ArrayHelper::getValue($model, 'mainGaz5.title'),
     ];
 
-    for ($i = 0; $i < 4; $i++):
+    for ($i = 0; $i < 5; $i++):
         $title = $titles[$i] ?? null;
         $cleanTitle = $title ? trim($title) : null;
         $ranges = $model->ProductRangesByPos($i);

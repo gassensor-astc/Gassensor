@@ -86,9 +86,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'sensitivity_unit:raw:Чувсвительность unit',
                         'response_time:raw',
                         'response_time_unit',
-                        'energy_consumption_from:raw:Энергопотребление от',
-                        'energy_consumption_to:raw:Энергопотребление до',
-                        'energy_consumption_unit',
+                        'energy_consumption_analog_from:raw:Энергопотребление аналоговый от',
+                        'energy_consumption_analog_to:raw:Энергопотребление аналоговый до',
+                        'energy_consumption_analog_unit:raw:Энергопотребление аналоговый ед. изм.',
+                        'energy_consumption_digital_from:raw:Энергопотребление цифровой от',
+                        'energy_consumption_digital_to:raw:Энергопотребление цифровой до',
+                        'energy_consumption_digital_unit:raw:Энергопотребление цифровой ед. изм.',
                         'temperature_range_from:raw:Температурный диапазон от',
                         'temperature_range_to:raw:Температурный диапазон до',
                         'info:raw:Описание',
@@ -115,6 +118,4 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
-
-
 

@@ -90,6 +90,12 @@ $this->registerJs($js, $this::POS_READY);
                     )->label("Главный газ 4")
                 ?>
 
+                <?= $form->field($modelProductGaz, 'is_main_5')
+                    ->dropDownList(
+                        Gaz::getDropDownData(true,), ['id' => 'list5', 'class' => 'select2 form-list itemName2', 'style' => 'width:100%', 'prompt' => 'Выберите']
+                    )->label("Главный газ 5")
+                ?>
+
                 <?= $form->field($modelProductGaz, 'gaz_id')
                     ->dropDownList(
                         Gaz::getDropDownData(true,), ['class' => 'select2 itemName2', 'multiple' => 'multiple', 'style' => 'width:100%', 'id' => 'main_gaz_id', 'placeholder' => 'Поиск газа ...',]
@@ -130,18 +136,12 @@ $this->registerJs($js, $this::POS_READY);
                 <div class="col">
                     <?= $form->field($model, 'first')->checkbox() ?>
                 </div>
-                <div class="col">
-                    <?= $form->field($model, 'analog')->checkbox() ?>
-                </div>
-                <div class="col">
-                    <?= $form->field($model, 'digital')->checkbox() ?>
-                </div>
             </div>
 
             <div class="row">
-                <div class="col"><?= $form->field($model, 'sensitivity_first')->textInput(['maxlength' => true])->label(false) ?></div>
-                <div class="col"><?= $form->field($model, 'sensitivity_analog')->textInput(['maxlength' => true])->label(false) ?></div>
-                <div class="col"><?= $form->field($model, 'sensitivity_digital')->textInput(['maxlength' => true])->label(false) ?></div>
+                <div class="col"><?= $form->field($model, 'sensitivity_first')->textInput(['maxlength' => true])->label('Первичный') ?></div>
+                <div class="col"><?= $form->field($model, 'sensitivity_analog')->textInput(['maxlength' => true])->label('Аналоговый') ?></div>
+                <div class="col"><?= $form->field($model, 'sensitivity_digital')->textInput(['maxlength' => true])->label('Цифровой') ?></div>
             </div>
 
             <div class="row hidden">
@@ -152,15 +152,32 @@ $this->registerJs($js, $this::POS_READY);
 
             <div class="row">
                 <div class="col"><?= $form->field($model, 'response_time')->textInput() ?></div>
-                <div class="col"><?= $form->field($model, 'response_time_unit')->textInput(['maxlength' => true])->label('Ед. изм.') ?></div>
             </div>
 
             <legend>Потребление энергии</legend>
 
             <div class="row">
-                <div class="col"><?= $form->field($model, 'energy_consumption_from')->textInput() ?></div>
-                <div class="col"><?= $form->field($model, 'energy_consumption_to')->textInput() ?></div>
-                <div class="col"><?= $form->field($model, 'energy_consumption_unit')->textInput()->label('Ед. изм.') ?></div>
+                <div class="col-12">
+                    <?= $form->field($model, 'analog')->checkbox()->label('аналоговый') ?>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col"><?= $form->field($model, 'energy_consumption_analog_from')->textInput()->label('От') ?></div>
+                <div class="col"><?= $form->field($model, 'energy_consumption_analog_to')->textInput()->label('До') ?></div>
+                <div class="col"><?= $form->field($model, 'energy_consumption_analog_unit')->textInput()->label('Ед. изм.') ?></div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <?= $form->field($model, 'digital')->checkbox()->label('цифровой') ?>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col"><?= $form->field($model, 'energy_consumption_digital_from')->textInput()->label('От') ?></div>
+                <div class="col"><?= $form->field($model, 'energy_consumption_digital_to')->textInput()->label('До') ?></div>
+                <div class="col"><?= $form->field($model, 'energy_consumption_digital_unit')->textInput()->label('Ед. изм.') ?></div>
             </div>
 
             <legend>Диапазон температур</legend>
@@ -238,6 +255,9 @@ $this->registerJs($js, $this::POS_READY);
                         case 3:
                             $title = ArrayHelper::getValue($model, 'mainGaz4.title');
                             break;
+                        case 4:
+                            $title = ArrayHelper::getValue($model, 'mainGaz5.title');
+                            break;
                     }
 
                     ?>
@@ -267,7 +287,7 @@ $this->registerJs($js, $this::POS_READY);
 
                                 <?= $form->field($modelRange, "[{$i}]pos")
                                     ->dropDownList(
-                                        [0 => 'Главный газ 1', 1 => 'Главный газ 2', 2 => 'Главный газ 3', 3 => 'Главный газ 4'],
+                                        [0 => 'Главный газ 1', 1 => 'Главный газ 2', 2 => 'Главный газ 3', 3 => 'Главный газ 4', 4 => 'Главный газ 5'],
                                         ['class' => 'form-select form-list select-gaz', 'data-list' => $i]
                                     )->label('Газы (<span id="gaz_' . $i . '">' . $title . '</span>)') ?>
 

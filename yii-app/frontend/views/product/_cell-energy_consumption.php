@@ -2,15 +2,36 @@
 /* @var $this yii\web\View */
 /* @var $model common\models\Product */
 
-$from = $model->energy_consumption_from;
-$to = $model->energy_consumption_to;
-$isEmpty = ($from === null || $from === '' || trim((string)$from) === '' || (is_numeric($from) && (float)$from == 0))
-    && ($to === null || $to === '' || trim((string)$to) === '' || (is_numeric($to) && (float)$to == 0));
+$analogFrom = $model->energy_consumption_analog_from;
+$analogTo = $model->energy_consumption_analog_to;
+$analogUnit = trim((string)($model->energy_consumption_analog_unit ?? ''));
 
-if ($isEmpty) {
+$digitalFrom = $model->energy_consumption_digital_from;
+$digitalTo = $model->energy_consumption_digital_to;
+$digitalUnit = trim((string)($model->energy_consumption_digital_unit ?? ''));
+
+$hasAnalog = $model->analog
+    && $analogFrom !== null
+    && $analogTo !== null
+    && trim((string)$analogFrom) !== ''
+    && trim((string)$analogTo) !== '';
+
+$hasDigital = $model->digital
+    && $digitalFrom !== null
+    && $digitalTo !== null
+    && trim((string)$digitalFrom) !== ''
+    && trim((string)$digitalTo) !== '';
+
+if (!$hasAnalog && !$hasDigital) {
     echo '&mdash;';
     return;
 }
-$unit = $model->energy_consumption_unit !== null && (string)$model->energy_consumption_unit !== '' ? ' ' . $model->energy_consumption_unit : '';
 ?>
-<?= $model->energy_consumption_from ?>&ndash;<?= $model->energy_consumption_to ?><?= $unit ?>
+<div>
+    <?php if ($hasAnalog): ?>
+        <div>Аналоговый: <?= $analogFrom ?>&ndash;<?= $analogTo ?><?= $analogUnit !== '' ? ' ' . $analogUnit : '' ?></div>
+    <?php endif; ?>
+    <?php if ($hasDigital): ?>
+        <div>Цифровой: <?= $digitalFrom ?>&ndash;<?= $digitalTo ?><?= $digitalUnit !== '' ? ' ' . $digitalUnit : '' ?></div>
+    <?php endif; ?>
+</div>

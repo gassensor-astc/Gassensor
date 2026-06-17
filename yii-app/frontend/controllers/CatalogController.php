@@ -117,17 +117,17 @@ class CatalogController extends Controller
         // SEO: как в actionIndex при выборе газа — единый формат H1/title/description
         $gazSeo = $gaz->seo;
         $gasTitle = trim(rtrim($gaz->title, '.'));
+        $gasFirstWord = trim((string)preg_split('/\s+/u', $gasTitle)[0]);
         $count = (int) $dataProvider->totalCount;
         if ($gazSeo && (string)$gazSeo->h1 !== '' && (string)$gazSeo->title !== '') {
             $seo = $gazSeo;
         } else {
             $seo = new Seo();
-            $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle . ' купить ' . $count . ' шт в Москве');
-            $seo->setAttribute('description', 'Каталог сенсоров и датчиков газа ' . $gasTitle . ' по доступной цене. ' . $count . ' сенсоров и датчиков на базе газа ' . $gasTitle . ' купить в Москве.');
         }
 
-        $seo->setAttribute('title', 'Сенсоры и датчики газа ' . $gasTitle . ' купить ' . $count . ' шт в Москве');
-        $seo->setAttribute('h1', 'Сенсоры и датчики газа ' . $gasTitle);
+        $seo->setAttribute('title', 'Датчики газа ' . $gasTitle . ', купить ' . $count . ' моделей сенсоров газа ' . $gasFirstWord . ' в Москве');
+        $seo->setAttribute('description', 'Каталог датчиков для обнаружения газа ' . $gasTitle . '. Купить оптом и в розницу полупроводниковые модули и сенсоры газа ' . $gasFirstWord . ' в Москве для газоаналитического оборудования в компании Газсенсор.');
+        $seo->setAttribute('h1', 'Датчики обнаружения газа ' . $gasTitle . ', ' . $count . ' моделей сенсоров в продаже');
         // Canonical задаём отдельно (с учетом пагинации)
         $canonicalUrl = 'https://gassensor.ru/catalog/' . $gaz->slug;
         $pageParam = $this->request->get('page', null);
@@ -162,11 +162,15 @@ class CatalogController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $seo = Seo::find()->where(['type' => Seo::TYPE_CATALOG_MANUFACTURES, 'ref_id' => $manufacture->id])->one();
-
         $params['ProductSearch']['manufacture_id'] = $manufacture->id;
         $dataProvider = $searchModel->searchFront($params);
         $dataProvider->sort = false;
+
+        $manufacturerTitle = trim((string)$manufacture->title);
+        $seo = Seo::find()->where(['type' => Seo::TYPE_CATALOG_MANUFACTURES, 'ref_id' => $manufacture->id])->one() ?: new Seo();
+        $seo->setAttribute('title', 'Датчики и сенсоры обнаружения газа ' . $manufacturerTitle . ' купить в Москве');
+        $seo->setAttribute('description', 'Купить датчики и сенсоры ' . $manufacturerTitle . ' в компании Газсенсор с доставкой по Москве и России.');
+        $seo->setAttribute('h1', 'Датчики и сенсоры газа ' . $manufacturerTitle);
 
         $canonicalUrl = 'https://gassensor.ru/catalog/' . $manufacture->slug;
         $pageParam = $this->request->get('page', null);

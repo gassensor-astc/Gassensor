@@ -49,6 +49,12 @@ use common\models\ProductRange;
  * @property double $energy_consumption_from
  * @property double $energy_consumption_to
  * @property string $energy_consumption_unit
+ * @property double $energy_consumption_analog_from
+ * @property double $energy_consumption_analog_to
+ * @property string $energy_consumption_analog_unit
+ * @property double $energy_consumption_digital_from
+ * @property double $energy_consumption_digital_to
+ * @property string $energy_consumption_digital_unit
  * @property integer $temperature_range_from
  * @property integer $temperature_range_to
  * @property string $info
@@ -83,7 +89,7 @@ class ProductBase extends \yii\db\ActiveRecord
         return [
             [['created_at', 'updated_at', 'manufacture_id', 'measurement_type_id', 'temperature_range_from', 'temperature_range_to'], 'integer'],
             [['manufacture_id', 'name', 'measurement_type_id'], 'required'],
-            [['price', 'range_from', 'range_to', 'resolution', 'sensitivity_from', 'sensitivity_to', 'energy_consumption_from', 'energy_consumption_to', 'response_time', 'life_time', 'warranty_period'], 'number'],
+            [['price', 'range_from', 'range_to', 'resolution', 'sensitivity_from', 'sensitivity_to', 'energy_consumption_from', 'energy_consumption_to', 'energy_consumption_analog_from', 'energy_consumption_analog_to', 'energy_consumption_digital_from', 'energy_consumption_digital_to', 'response_time', 'life_time', 'warranty_period'], 'number'],
             [['formfactor', 'range_unit'], 'string', 'max' => 30],
             [['sensitivity'], 'string',],
             [['name'], 'string', 'max' => 100],
@@ -93,7 +99,7 @@ class ProductBase extends \yii\db\ActiveRecord
             [['bias_voltage'], 'string', 'max' => 255],
             [['sensitivity_first','sensitivity_analog','sensitivity_digital'], 'string', 'max' => 25],
             [['formfactor_unit', 'sensitivity_unit'], 'string', 'max' => 20],
-            [['response_time_unit', 'energy_consumption_unit'], 'string', 'max' => 10],
+            [['response_time_unit', 'energy_consumption_unit', 'energy_consumption_analog_unit', 'energy_consumption_digital_unit'], 'string', 'max' => 10],
             [['slug'], 'unique'],
             [['first', 'analog', 'digital'], 'boolean'],
             [['manufacture_id'], 'exist', 'skipOnError' => true, 'targetClass' => ManufactureBase::class, 'targetAttribute' => ['manufacture_id' => 'id']],
@@ -142,6 +148,12 @@ class ProductBase extends \yii\db\ActiveRecord
             'energy_consumption_from' => Yii::t('app', 'Energy Consumption From'),
             'energy_consumption_to' => Yii::t('app', 'Energy Consumption To'),
             'energy_consumption_unit' => Yii::t('app', 'Energy Consumption Unit'),
+            'energy_consumption_analog_from' => Yii::t('app', 'Energy Consumption Analog From'),
+            'energy_consumption_analog_to' => Yii::t('app', 'Energy Consumption Analog To'),
+            'energy_consumption_analog_unit' => Yii::t('app', 'Energy Consumption Analog Unit'),
+            'energy_consumption_digital_from' => Yii::t('app', 'Energy Consumption Digital From'),
+            'energy_consumption_digital_to' => Yii::t('app', 'Energy Consumption Digital To'),
+            'energy_consumption_digital_unit' => Yii::t('app', 'Energy Consumption Digital Unit'),
             'temperature_range_from' => Yii::t('app', 'Temperature Range From'),
             'temperature_range_to' => Yii::t('app', 'Temperature Range To'),
             'info' => Yii::t('app', 'Info'),

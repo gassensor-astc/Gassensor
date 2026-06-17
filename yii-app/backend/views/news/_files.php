@@ -18,12 +18,20 @@ foreach ($model->getUploadFilenames() as $filename):
 
     $url = $model->getUploadUrl() . '/' . basename($filename);
     $basename = basename($filename);
+    $isPict = Tools::isPict($url);
+    $isPdf = preg_match('~\.pdf$~i', $basename);
 
 ?>
 
-    <?php if (Tools::isPict($url)): ?>
+    <?php if ($isPict || $isPdf): ?>
     <div style="display: inline-block; margin: 8px; padding: 8px; border: 1px solid #ddd; text-align: center; vertical-align: top;">
-        <img src="<?= $url ?>" style="width: 120px; display: block; margin-bottom: 8px;"/>
+        <?php if ($isPict): ?>
+            <img src="<?= $url ?>" style="width: 120px; display: block; margin-bottom: 8px;"/>
+        <?php else: ?>
+            <div style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #f7f7f7; color: #c9302c; font-size: 42px; border: 1px solid #eee;">
+                PDF
+            </div>
+        <?php endif; ?>
         <?php if ($showNames): ?>
             <div style="font-size: 12px; margin-bottom: 6px; word-break: break-all; max-width: 120px;">
                 <?= Html::encode($basename) ?>
@@ -39,14 +47,16 @@ foreach ($model->getUploadFilenames() as $filename):
                     'data-confirm' => 'Удалить файл ' . $basename . '?',
                 ]
                 ) ?>
-                <a
-                    href="#"
-                    class="btn btn-xs js-insert-news-image"
-                    style="margin-left: 6px; display: inline-block; padding: 6px 10px; background: #5cb85c; color: #fff; text-decoration: none; border-radius: 3px;"
-                    data-url="<?= Html::encode($url) ?>"
-                >
-                    Вставить в контент
-                </a>
+                <?php if ($isPict): ?>
+                    <a
+                        href="#"
+                        class="btn btn-xs js-insert-news-image"
+                        style="margin-left: 6px; display: inline-block; padding: 6px 10px; background: #5cb85c; color: #fff; text-decoration: none; border-radius: 3px;"
+                        data-url="<?= Html::encode($url) ?>"
+                    >
+                        Вставить в контент
+                    </a>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>

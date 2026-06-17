@@ -10,10 +10,11 @@ $titles = [
     ArrayHelper::getValue($model, 'mainGaz2.title'),
     ArrayHelper::getValue($model, 'mainGaz3.title'),
     ArrayHelper::getValue($model, 'mainGaz4.title'),
+    ArrayHelper::getValue($model, 'mainGaz5.title'),
 ];
 
 $hasAnyContent = false;
-for ($i = 0; $i < 4; $i++) {
+for ($i = 0; $i < 5; $i++) {
     $productRanges = $model->ProductRangesByPos($i);
     $title = $titles[$i] ?? null;
     if ($title) {
@@ -39,7 +40,7 @@ if (!$hasAnyContent) {
 ?>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px 16px;">
         <?php
-        for ($i = 0; $i < 4; $i++):
+        for ($i = 0; $i < 5; $i++):
             $productRanges = $model->ProductRangesByPos($i);
             $title = $titles[$i] ?? null;
             if (!$title && (!$productRanges || !is_array($productRanges))) {

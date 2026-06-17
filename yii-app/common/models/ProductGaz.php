@@ -12,6 +12,7 @@ use common\models\query\ProductGazQuery;
 class ProductGaz extends ProductGazBase
 {
     public $is_main_4;
+    public $is_main_5;
 
     /**
      * @inheritdoc

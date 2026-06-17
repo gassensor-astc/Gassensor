@@ -147,6 +147,10 @@ echo '<!-- product_id=' . (int)$model->id . ' seo=' . ($seo ? 'yes' : 'no') . ($
                                             $items[] = Html::a($gaz4->title, "/catalog/{$gaz4->slug}");
                                         }
 
+                                        if ($gaz5 = $model->mainGaz5) {
+                                            $items[] = Html::a($gaz5->title, "/catalog/{$gaz5->slug}");
+                                        }
+
                                         return $items !== [] ? join(', ', $items) : '&mdash;';
                                     }
                             ],
@@ -183,6 +187,7 @@ echo '<!-- product_id=' . (int)$model->id . ' seo=' . ($seo ? 'yes' : 'no') . ($
 
                             [
                                     'attribute' => 'response_time',
+                                    'label' => 'Время отклика t90',
                                     'format' => 'raw',
                                     'value' => function ($model) {
                                         return $this->render('_cell-response-time', ['model' => $model]);
@@ -247,5 +252,3 @@ echo '<!-- product_id=' . (int)$model->id . ' seo=' . ($seo ? 'yes' : 'no') . ($
 
 
 </div>
-
-
