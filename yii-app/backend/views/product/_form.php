@@ -104,8 +104,6 @@ $this->registerJs($js, $this::POS_READY);
 
             </div>
 
-            <legend>Чувствительность</legend>
-
             <div class="row">
                 <?= $form->field($model, 'measurement_type_id')
                     ->dropDownList(
@@ -115,12 +113,32 @@ $this->registerJs($js, $this::POS_READY);
                 ?>
             </div>
 
+            <legend>Чувствительность / Выходной сигнал</legend>
+
             <div class="row">
                 <div class="col">
-                    <?= $form->field($model, 'formfactor')->textInput() ?>
+                    <?= $form->field($model, 'first')->checkbox() ?>
                 </div>
                 <div class="col">
-                    <?= $form->field($model, 'formfactor_unit')->textInput() ?>
+                    <?= $form->field($model, 'analog')->checkbox() ?>
+                </div>
+                <div class="col">
+                    <?= $form->field($model, 'digital')->checkbox() ?>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <div class="mb-1">Первичный</div>
+                    <?= $form->field($model, 'sensitivity_first')->textInput(['maxlength' => true])->label(false) ?>
+                </div>
+                <div class="col">
+                    <div class="mb-1">Аналоговый</div>
+                    <?= $form->field($model, 'sensitivity_analog')->textInput(['maxlength' => true])->label(false) ?>
+                </div>
+                <div class="col">
+                    <div class="mb-1">Цифровой</div>
+                    <?= $form->field($model, 'sensitivity_digital')->textInput(['maxlength' => true])->label(false) ?>
                 </div>
             </div>
 
@@ -130,18 +148,6 @@ $this->registerJs($js, $this::POS_READY);
 
             <div class="row hidden">
                 <?= $form->field($model, 'resolution')->textInput() ?>
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <?= $form->field($model, 'first')->checkbox() ?>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col"><?= $form->field($model, 'sensitivity_first')->textInput(['maxlength' => true])->label('Первичный') ?></div>
-                <div class="col"><?= $form->field($model, 'sensitivity_analog')->textInput(['maxlength' => true])->label('Аналоговый') ?></div>
-                <div class="col"><?= $form->field($model, 'sensitivity_digital')->textInput(['maxlength' => true])->label('Цифровой') ?></div>
             </div>
 
             <div class="row hidden">
@@ -154,14 +160,11 @@ $this->registerJs($js, $this::POS_READY);
                 <div class="col"><?= $form->field($model, 'response_time')->textInput() ?></div>
             </div>
 
-            <legend>Потребление энергии</legend>
+            <legend>Энергопотребление</legend>
 
             <div class="row">
-                <div class="col-12">
-                    <?= $form->field($model, 'analog')->checkbox()->label('аналоговый') ?>
-                </div>
+                <div class="col-12 mb-1"><strong>Аналоговый выход</strong></div>
             </div>
-
             <div class="row">
                 <div class="col"><?= $form->field($model, 'energy_consumption_analog_from')->textInput()->label('От') ?></div>
                 <div class="col"><?= $form->field($model, 'energy_consumption_analog_to')->textInput()->label('До') ?></div>
@@ -169,11 +172,8 @@ $this->registerJs($js, $this::POS_READY);
             </div>
 
             <div class="row">
-                <div class="col-12">
-                    <?= $form->field($model, 'digital')->checkbox()->label('цифровой') ?>
-                </div>
+                <div class="col-12 mb-1"><strong>Цифровой выход</strong></div>
             </div>
-
             <div class="row">
                 <div class="col"><?= $form->field($model, 'energy_consumption_digital_from')->textInput()->label('От') ?></div>
                 <div class="col"><?= $form->field($model, 'energy_consumption_digital_to')->textInput()->label('До') ?></div>

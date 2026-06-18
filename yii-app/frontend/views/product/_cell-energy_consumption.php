@@ -10,28 +10,36 @@ $digitalFrom = $model->energy_consumption_digital_from;
 $digitalTo = $model->energy_consumption_digital_to;
 $digitalUnit = trim((string)($model->energy_consumption_digital_unit ?? ''));
 
-$hasAnalog = $model->analog
-    && $analogFrom !== null
+$hasAnalog = $analogFrom !== null
     && $analogTo !== null
     && trim((string)$analogFrom) !== ''
-    && trim((string)$analogTo) !== '';
+    && trim((string)$analogTo) !== ''
+    && $analogUnit !== '';
 
-$hasDigital = $model->digital
-    && $digitalFrom !== null
+$hasDigital = $digitalFrom !== null
     && $digitalTo !== null
     && trim((string)$digitalFrom) !== ''
-    && trim((string)$digitalTo) !== '';
+    && trim((string)$digitalTo) !== ''
+    && $digitalUnit !== '';
 
 if (!$hasAnalog && !$hasDigital) {
-    echo '&mdash;';
+    echo '-';
     return;
 }
-?>
-<div>
-    <?php if ($hasAnalog): ?>
-        <div>Аналоговый: <?= $analogFrom ?>&ndash;<?= $analogTo ?><?= $analogUnit !== '' ? ' ' . $analogUnit : '' ?></div>
-    <?php endif; ?>
-    <?php if ($hasDigital): ?>
-        <div>Цифровой: <?= $digitalFrom ?>&ndash;<?= $digitalTo ?><?= $digitalUnit !== '' ? ' ' . $digitalUnit : '' ?></div>
-    <?php endif; ?>
+
+if ($hasAnalog && $hasDigital): ?>
+<div class="d-flex gap-4">
+    <div>
+        <div class="text-muted small">Аналоговый выход</div>
+        <div>    <?= $analogFrom ?>-<?= $analogTo ?> <?= $analogUnit ?></div>
+    </div>
+    <div>
+        <div class="text-muted small">Цифровой выход</div>
+        <div><?= $digitalFrom ?>-<?= $digitalTo ?> <?= $digitalUnit ?></div>
+    </div>
 </div>
+<?php elseif ($hasAnalog): ?>
+    <?= $analogFrom ?>-<?= $analogTo ?> <?= $analogUnit ?>
+<?php else: ?>
+    <?= $digitalFrom ?>-<?= $digitalTo ?> <?= $digitalUnit ?>
+<?php endif; ?>
