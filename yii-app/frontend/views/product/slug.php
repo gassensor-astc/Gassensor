@@ -90,7 +90,7 @@ echo '<!-- product_id=' . (int)$model->id . ' seo=' . ($seo ? 'yes' : 'no') . ($
                 ?>
 
                 <div class="mt-3 border p-2 shadow position-relative pdf-link-wrap">
-                    <?= Html::a('<i class="fa fa-2x fa-file-pdf"></i> ' . $model->$attr, $url, ['target' => '_blank', 'class' => 'stretched-link', 'rel' => 'noopener noreferrer']) ?>
+                    <?= Html::a('<i class="fa fa-2x fa-file-pdf"></i> ' . $model->$attr, $url, ['target' => '_blank', 'class' => 'stretched-link', 'rel' => 'noopener noreferrer', 'download' => $model->$attr]) ?>
                 </div>
 
                 <hr/>

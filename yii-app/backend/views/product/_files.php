@@ -47,12 +47,12 @@ use common\models\Product;
     <?php if ($url = $model->getPdfUrl($v)):
         $attr = Product::getPdfAttr($v);
     ?>
-      <?= Html::a($model->$attr, $url, ['target' => '_blank',]) ?>
+      <?= Html::a($model->$attr, $url, ['target' => '_blank', 'download' => $model->$attr]) ?>
 
       <br />
 
       <?php if ($model->isFilePdfExists($v)): ?>
-        <iframe src="<?= $url ?>" style="width: 100%; height: 600px;"></iframe>
+        <embed src="<?= $url ?>" type="application/pdf" style="width: 100%; height: 600px;" />
       <?php else: ?>
         БД ссылается на файл, который не найден на диске.
       <?php endif; ?>
