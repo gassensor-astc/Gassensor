@@ -185,7 +185,7 @@ $this->registerJs($js, $this::POS_READY);
 <div class='<?= $this->context->id ?>-<?= $this->context->action->id ?> px-2'>
     <h1 class="text-center">
         <?= $catalogH1 ?>
-        <?php if (isset($manufacture) && $manufacture): ?>
+        <?php if (isset($manufacture) && $manufacture && Yii::$app->user->isAdmin()): ?>
             <a href="/backend/seo/manufacture-update?id=<?= $manufacture->id ?>"
                class="btn d-inline rounded-pill ml-2"
                target="_blank"
