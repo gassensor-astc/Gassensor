@@ -41,11 +41,11 @@ class ProductController extends Controller
             }
 
             if ($mainGaz = $model->mainGaz and $mainGaz->slug != $slugGaz) {
-                return $this->redirect("/catalog/{$mainGaz->slug}/$slug");
+                return $this->redirect("/catalog/{$mainGaz->slug}/$slug", 301);
             }
 
         } elseif ($gazSlugs) {
-            return $this->redirect("/catalog/{$gazSlugs[0]}/$slug");
+            return $this->redirect("/catalog/{$gazSlugs[0]}/$slug", 301);
         }
 
         $formAdd = new AddToCartForm(['count' => 1, 'productId' => $model->id,]);
