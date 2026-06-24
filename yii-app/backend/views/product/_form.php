@@ -113,6 +113,15 @@ $this->registerJs($js, $this::POS_READY);
                 ?>
             </div>
 
+            <div class="row">
+                <div class="col">
+                    <?= $form->field($model, 'formfactor')->textInput()->label('Диаметр') ?>
+                </div>
+                <div class="col">
+                    <?= $form->field($model, 'formfactor_unit')->textInput()->label('Ед. изм.') ?>
+                </div>
+            </div>
+
             <legend>Чувствительность / Выходной сигнал</legend>
 
             <div class="row">
