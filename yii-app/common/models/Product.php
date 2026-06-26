@@ -567,7 +567,7 @@ class Product extends ProductBase
             'format' => 'raw',
             'value' => function ($model) use ($backend) {
                 $label = $model->manufacture->title ?? null;
-                $url = "/catalog/manufacture/{$model->manufacture->slug}";
+                $url = "/catalog/{$model->manufacture->slug}";
 
                 /*
                 if ($backend) {
@@ -579,7 +579,7 @@ class Product extends ProductBase
 
                 if (isset($_GET['ProductSearch']['manufacture_id']) && $_GET['ProductSearch']['manufacture_id']) {
                     $text = '<p>' . $label;
-                    $text .= '<a target="_blank" href="/manufacture/' . $model->manufacture->slug . '">
+                    $text .= '<a target="_blank" href="/catalog/' . $model->manufacture->slug . '">
                             ' . Html::img('/i/new-window.gif', ['loading' => "lazy"]) . '
                         </a></p>';
 
