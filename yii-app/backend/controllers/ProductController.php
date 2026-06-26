@@ -129,6 +129,7 @@ class ProductController extends Controller
                     $modelSeo->h1 = $h1;
                     $modelSeo->breadcrumb_text = $h1;
                     $modelSeo->description = "{$title} можно купить в компании Газсенсор в розницу и оптом в Москве.";
+                    $modelSeo->opisanie_ai = $modelSeo->opisanie_ai ?? '';
 
                     $modelSeo->save(false);
 

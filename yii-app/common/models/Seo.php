@@ -43,6 +43,14 @@ class Seo extends SeoBase
     const TYPE_PAGE_ABOUT = 100;
     const TYPE_PAGE_GASES = 110;
 
+    public function beforeSave($insert)
+    {
+        if ($insert && !isset($this->getOldAttributes()['opisanie_ai'])) {
+            $this->setAttribute('opisanie_ai', (string) ($this->opisanie_ai ?? ''));
+        }
+        return parent::beforeSave($insert);
+    }
+
     /**
      * @param false $isPrependEmpty
      * @return array
