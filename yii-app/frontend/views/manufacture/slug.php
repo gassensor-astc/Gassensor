@@ -49,7 +49,7 @@ if ($seo = $model->seo) {
                         <i class="icon ion-md-map"></i> <a target="_blank" rel="nofollow" href="<?= $model->url ?>"><?= $model->url ?></a>
                     </div>
                     <div class="mt-2">
-                        <i class="icon ion-md-map"></i> <a href="/catalog/manufacture/<?= $model->slug ?>">Перейти в товары
+                        <i class="icon ion-md-map"></i> <a href="/catalog/<?= $model->slug ?>">Перейти в товары
                             бренда <?= $model->title ?></a>
                     </div>
                 </div>
