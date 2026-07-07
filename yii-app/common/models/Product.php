@@ -335,7 +335,7 @@ class Product extends ProductBase
      * @param bool $addTimestamp
      * @return string|void
      */
-    public function getPictUrl($addTimestamp = true)
+    public function getPictUrl($addTimestamp = false)
     {
         if (!$this->img) {
             return;
@@ -380,7 +380,7 @@ class Product extends ProductBase
      * @param bool $addTimestamp
      * @return string|void
      */
-    public function getPdfUrl($i = '', $addTimestamp = true)
+    public function getPdfUrl($i = '', $addTimestamp = false)
     {
         $attr = self::getPdfAttr($i);
         if (!$this->$attr) {
