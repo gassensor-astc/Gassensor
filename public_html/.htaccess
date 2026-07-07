@@ -10,8 +10,20 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule [A-Z] %1 [R=301,L]
 
 
+RewriteCond %{HTTP_HOST} ^www\.(.+) [NC]
+RewriteRule ^(.*) https://%1/$1 [R=301,NE,L]
+
+
 RewriteCond %{REQUEST_URI} ^/.*/$
 RewriteRule ^(.*)/ /$1 [L,R=301]
+
+
+
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.php\ HTTP/
+RewriteRule ^index\.php$ https://gassensor.ru [R=301,L]
+
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.html\ HTTP/
+RewriteRule ^index\.html$ https://gassensor.ru [R=301,L]
 
 
 RewriteCond %{REQUEST_FILENAME} !-f

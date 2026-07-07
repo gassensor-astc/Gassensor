@@ -27,5 +27,7 @@ phpunit.phar
 /public_html/pdf
 /public_html/.vscode
 /.vscode
+.mimocode/
+.DS_Store
 
 /composer.lock
