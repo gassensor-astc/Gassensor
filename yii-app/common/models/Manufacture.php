@@ -157,7 +157,24 @@ class Manufacture extends ManufactureBase
      */
     public static function findAvailableManufacturesIds(ProductSearch $searchModel): ?array
     {
-        $params = Yii::$app->request->queryParams;
+        $params = [
+            'ProductSearch' => array_filter(ArrayHelper::merge(
+                (array)(Yii::$app->request->queryParams['ProductSearch'] ?? []),
+                $searchModel->getAttributes(),
+                [
+                    'gaz_id' => $searchModel->gaz_id,
+                    'gaz_group_id' => $searchModel->gaz_group_id,
+                    'selectedSignalTypes' => $searchModel->selectedSignalTypes,
+                    'response_time_from' => $searchModel->response_time_from,
+                    'response_time_to' => $searchModel->response_time_to,
+                    'life_time_to' => $searchModel->life_time_to,
+                    'resolution_from' => $searchModel->resolution_from,
+                    'resolution_to' => $searchModel->resolution_to,
+                ]
+            ), static function ($value) {
+                return $value !== null && $value !== '' && $value !== [];
+            }),
+        ];
 
         if ($searchModel->gaz_id) {
             unset($params['ProductSearch']['manufacture_id']);
