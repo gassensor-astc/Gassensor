@@ -192,7 +192,11 @@ class Manufacture extends ManufactureBase
                 $manufactureAvailableIds = null;
             }
         } else {
-            $manufactureAvailableIds = self::find()->select(['id'])->column();
+            $manufactureAvailableIds = self::find()
+                ->select(['manufacture.id'])
+                ->innerJoin('product', 'product.manufacture_id = manufacture.id')
+                ->groupBy(['manufacture.id'])
+                ->column();
         }
 
         return $manufactureAvailableIds;

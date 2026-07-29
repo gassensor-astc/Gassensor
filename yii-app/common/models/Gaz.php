@@ -191,7 +191,11 @@ class Gaz extends GazBase
                 $gazAvailableIds = null;
             }
         } else {
-            $gazAvailableIds = self::find()->select(['id'])->column();
+            $gazAvailableIds = self::find()
+                ->select(['gaz.id'])
+                ->innerJoin('product_gaz', 'product_gaz.gaz_id = gaz.id')
+                ->groupBy(['gaz.id'])
+                ->column();
         }
 
         return $gazAvailableIds;
