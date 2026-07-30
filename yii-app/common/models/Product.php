@@ -154,8 +154,17 @@ class Product extends ProductBase
 
         $rules[] = ['uploadPict', 'file', 'extensions' => 'png, jpg, gif'];
         $rules[] = [['uploadPdf', 'uploadPdf2', 'uploadPdf3'], 'file', 'extensions' => 'pdf', 'maxSize' => 20971520, 'tooBig' => 'PDF должен быть не больше 20 МБ'];
+        $rules[] = [['device_type'], 'string', 'max' => 20];
+        $rules[] = [['device_type'], 'in', 'range' => ['сенсор', 'датчик', 'модуль']];
 
         return $rules;
+    }
+
+    public function attributeLabels()
+    {
+        $labels = parent::attributeLabels();
+        $labels['device_type'] = 'Тип для SEO';
+        return $labels;
     }
 
     public function getAvailableSignalTypes()

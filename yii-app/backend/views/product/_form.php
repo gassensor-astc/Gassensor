@@ -333,16 +333,14 @@ $this->registerJs($js, $this::POS_READY);
             <h3>SEO</h3>
 
             <div class="mb-2">
-                <?= Html::label('Тип для SEO', 'seo-meta-device-type', ['class' => 'form-label']) ?>
-                <?= Html::dropDownList('SeoMeta[device_type]', 'сенсор', [
+                <?= $form->field($model, 'device_type')->dropDownList([
                     'сенсор' => 'сенсор',
                     'датчик' => 'датчик',
                     'модуль' => 'модуль',
                 ], [
-                    'id' => 'seo-meta-device-type',
                     'class' => 'form-select',
                     'style' => 'height: 38px; font-size: 14px;',
-                ]) ?>
+                ])->label('Тип для SEO') ?>
             </div>
 
             <?= $this->render('/seo/_sub-form', ['model' => $modelSeo, 'form' => $form]) ?>

@@ -4,10 +4,10 @@ namespace backend\controllers;
 
 use Yii;
 use common\helpers\FlashTrait;
-use common\models\{ProductRange, SensorsList, Seo, Product, ProductGaz, Setting};
+use common\models\{Gaz, Manufacture, MeasurementType, ProductRange, SensorsList, Seo, Product, ProductGaz, Setting};
 use backend\models\ProductSearch;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
+use yii\helpers\{ArrayHelper, FileHelper, Html};
 use yii\web\{Controller, NotFoundHttpException, UploadedFile};
 use common\helpers\StringHelpers;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -98,8 +98,7 @@ class ProductController extends Controller
                     $model->save(false);
                     $modelSeo->ref_id = $model->id;
 
-                    $deviceType = (string)($req->post('SeoMeta')['device_type'] ?? 'сенсор');
-                    $deviceType = in_array($deviceType, ['сенсор', 'датчик', 'модуль'], true) ? $deviceType : 'сенсор';
+                    $deviceType = trim((string)($model->device_type ?: 'сенсор'));
 
                     $gasTitle = '';
                     $mainGazId = (int)($req->post('ProductGaz')['is_main'] ?? 0);
@@ -113,22 +112,18 @@ class ProductController extends Controller
                         $manufacturerTitle = trim((string)$manufacture->title);
                     }
 
-                    if ($gasTitle !== '') {
-                        $title = "{$name} {$deviceType} газа {$gasTitle}";
-                        $h1 = trim("{$name} {$manufacturerTitle} {$deviceType} {$gasTitle}");
-                    } else {
-                        $title = "{$name} {$deviceType} газа";
-                        $h1 = trim("{$name} {$manufacturerTitle} {$deviceType}");
-                    }
+                    $seoTemplates = $this->getSeoTemplates();
+                    $replaces = [
+                        '{product_name}' => $name,
+                        '{gasname}' => $gasTitle,
+                        '{manufacturer}' => $manufacturerTitle,
+                        '{type_ru}' => $deviceType,
+                    ];
 
-                    if ($manufacturerTitle !== '') {
-                        $title .= " от производителя {$manufacturerTitle}";
-                    }
-
-                    $modelSeo->title = $title;
-                    $modelSeo->h1 = $h1;
-                    $modelSeo->breadcrumb_text = $h1;
-                    $modelSeo->description = "{$title} можно купить в компании Газсенсор в розницу и оптом в Москве.";
+                    $modelSeo->title = strtr($seoTemplates['title'] ?? '{product_name} {type_ru} газа {gasname} от производителя {manufacturer}', $replaces);
+                    $modelSeo->h1 = strtr($seoTemplates['h1'] ?? '{product_name} {manufacturer} {type_ru} {gasname}', $replaces);
+                    $modelSeo->breadcrumb_text = strtr($seoTemplates['крошка'] ?? '{product_name} {manufacturer} {type_ru} {gasname}', $replaces);
+                    $modelSeo->description = strtr($seoTemplates['desc'] ?? '{product_name} {type_ru} газа {gasname} от производителя {manufacturer} можно купить в компании Газсенсор в розницу и оптом в Москве.', $replaces);
                     $modelSeo->opisanie_ai = $modelSeo->opisanie_ai ?? '';
 
                     $modelSeo->save(false);
@@ -596,5 +591,264 @@ class ProductController extends Controller
         $worksheetData = $open_file($importFile->tempName);
 
         return $processed($worksheetData);
+    }
+
+    /**
+     * Импорт товаров из Excel по шаблону "3. Gassensor - Импорт 330 новых товаров.xlsx"
+     */
+    public function actionImportFromExcel()
+    {
+        $model = new DynamicModel(['file' => 'Файл импорта товаров']);
+        $model->addRule(['file'], 'required');
+        $model->addRule(['file'], 'file', ['extensions' => 'ods,xls,xlsx,csv'], ['maxSize' => 1024 * 1024 * 10]);
+
+        $log = [];
+        $imported = 0;
+        $skipped = 0;
+
+        if (Yii::$app->request->post()) {
+            $model->file = UploadedFile::getInstance($model, 'file');
+
+            if ($model->file && $model->validate()) {
+                $extension = strtolower($model->file->getExtension());
+
+                $inputFileType = match ($extension) {
+                    'xlsx' => 'Xlsx',
+                    'xls' => 'Xls',
+                    'csv' => 'Csv',
+                    'ods' => 'Ods',
+                    default => null,
+                };
+
+                if (!$inputFileType) {
+                    Yii::$app->getSession()->setFlash('error', 'Неподдерживаемый формат файла');
+                    return $this->render('import-from-excel', ['model' => $model]);
+                }
+
+                try {
+                    $reader = IOFactory::createReader($inputFileType);
+                    $reader->setReadDataOnly(true);
+                    $spreadsheet = $reader->load($model->file->tempName);
+                } catch (\Exception $e) {
+                    Yii::$app->getSession()->setFlash('error', 'Ошибка чтения файла: ' . $e->getMessage());
+                    return $this->render('import-from-excel', ['model' => $model]);
+                }
+                $worksheet = $spreadsheet->getActiveSheet();
+                $rows = $worksheet->toArray(null, true, true, true);
+
+                $gazByTitle = [];
+                foreach (Gaz::find()->all() as $gaz) {
+                    $gazByTitle[mb_strtolower(trim($gaz->title))] = $gaz;
+                }
+
+                $seoTemplates = $this->getSeoTemplates();
+
+                try {
+                foreach ($rows as $i => $row) {
+                    if ($i === 1) continue;
+
+                    $rowNum = $i;
+                    $row = array_map(fn($v) => is_string($v) ? trim($v) : $v, $row);
+
+                    $excelManId = $row['A'] ?? '';
+                    $gasTitle = $row['B'] ?? '';
+                    $productName = $row['C'] ?? '';
+                    $measTypeId = $row['D'] ?? '';
+                    $measTypeId = $measTypeId === '' || $measTypeId === null ? '1' : $measTypeId;
+                    $rangeFrom = $row['F'] ?? '';
+                    $rangeTo = $row['G'] ?? '';
+                    $rangeUnit = $row['H'] ?? '';
+                    $energyFrom = $row['P'] ?? '';
+                    $energyTo = $row['Q'] ?? '';
+                    $energyUnit = $row['R'] ?? '';
+
+                    if (empty($productName)) {
+                        $skipped++;
+                        $log[] = "Строка {$rowNum}: пустое название товара";
+                        continue;
+                    }
+
+                    if (Product::find()->where(['name' => $productName])->exists()) {
+                        $existing = Product::find()->where(['name' => $productName])->one();
+                        $this->copyImagesAndPdf($productName, $existing, $rowNum, $log);
+                        $skipped++;
+                        $log[] = "Строка {$rowNum}: товар '{$productName}' уже существует (картинки обновлены)";
+                        continue;
+                    }
+
+                    $manId = (int)$excelManId;
+                    $manufacture = Manufacture::findOne($manId);
+                    if (!$manufacture) {
+                        $skipped++;
+                        $log[] = "Строка {$rowNum}: производитель с id={$manId} не найден";
+                        continue;
+                    }
+
+                    $gazKey = mb_strtolower(trim((string)$gasTitle));
+                    $gaz = $gazByTitle[$gazKey] ?? null;
+                    if (!$gaz) {
+                        $skipped++;
+                        $log[] = "Строка {$rowNum}: газ '{$gasTitle}' не найден в БД";
+                        continue;
+                    }
+
+                    $measType = MeasurementType::findOne((int)$measTypeId);
+                    if (!$measType) {
+                        $skipped++;
+                        $log[] = "Строка {$rowNum}: тип измерения id={$measTypeId} не найден";
+                        continue;
+                    }
+
+                    $product = new Product();
+                    $product->manufacture_id = $manId;
+                    $product->name = $productName;
+                    $product->measurement_type_id = (int)$measTypeId;
+                    $product->bias_voltage = '';
+                    $product->formfactor = !empty($row['E']) ? (string)$row['E'] : null;
+                    $product->first = !empty($row['I']) ? (int)$row['I'] : 0;
+                    $product->analog = !empty($row['K']) ? (int)$row['K'] : 0;
+                    $product->digital = !empty($row['M']) ? (int)$row['M'] : 0;
+                    $product->sensitivity_first = !empty($row['J']) ? (string)$row['J'] : null;
+                    $product->sensitivity_analog = !empty($row['L']) ? (string)$row['L'] : null;
+                    $product->sensitivity_digital = !empty($row['N']) ? (string)$row['N'] : null;
+                    $product->response_time = $row['O'] !== '' ? (float)$row['O'] : null;
+                    $product->life_time = $row['U'] !== '' ? (int)$row['U'] : null;
+                    $product->warranty_period = $row['V'] !== '' ? (int)$row['V'] : null;
+                    $product->temperature_range_from = $row['S'] !== '' ? (int)$row['S'] : null;
+                    $product->temperature_range_to = $row['T'] !== '' ? (int)$row['T'] : null;
+
+                    $product->digital = 1;
+                    $product->device_type = 'модуль';
+                    if ($energyFrom !== '') {
+                        $product->energy_consumption_digital_from = (float)str_replace(',', '.', (string)$energyFrom);
+                        $product->energy_consumption_from = (float)str_replace(',', '.', (string)$energyFrom);
+                    }
+                    if ($energyTo !== '') {
+                        $product->energy_consumption_digital_to = (float)str_replace(',', '.', (string)$energyTo);
+                        $product->energy_consumption_to = (float)str_replace(',', '.', (string)$energyTo);
+                    }
+                    if ($energyUnit !== '') {
+                        $product->energy_consumption_digital_unit = (string)$energyUnit;
+                        $product->energy_consumption_unit = (string)$energyUnit;
+                    }
+
+                    if (!$product->save()) {
+                        $skipped++;
+                        $errors = implode('; ', $product->getFirstErrors());
+                        $log[] = "Строка {$rowNum}: ошибка сохранения товара '{$productName}': {$errors}";
+                        continue;
+                    }
+
+                    $product->saveGazs([$gaz->id]);
+                    $product->saveMainbGaz($gaz->id);
+
+                    if ($rangeFrom !== '' || $rangeTo !== '') {
+                        $productRange = new ProductRange();
+                        $productRange->product_id = $product->id;
+                        $productRange->from = (float)$rangeFrom;
+                        $productRange->to = (float)$rangeTo;
+                        $productRange->unit = !empty($rangeUnit) ? (string)$rangeUnit : '';
+                        $productRange->pos = 0;
+                        if (!$productRange->save()) {
+                            $log[] = "Строка {$rowNum}: ошибка сохранения диапазона: " . implode('; ', $productRange->getFirstErrors());
+                        }
+                    }
+
+                    $deviceType = $product->device_type ?: 'модуль';
+                    $replaces = [
+                        '{product_name}' => $productName,
+                        '{gasname}' => $gaz->title,
+                        '{manufacturer}' => $manufacture->title,
+                        '{type_ru}' => $deviceType,
+                    ];
+
+                    $seo = new Seo();
+                    $seo->ref_id = $product->id;
+                    $seo->type = Seo::TYPE_PRODUCT;
+                    $seo->title = strtr($seoTemplates['title'], $replaces);
+                    $seo->h1 = strtr($seoTemplates['h1'], $replaces);
+                    $seo->breadcrumb_text = strtr($seoTemplates['крошка'], $replaces);
+                    $seo->description = strtr($seoTemplates['desc'], $replaces);
+                    $seo->opisanie = '';
+                    $seo->opisanie_ai = '';
+                    if (!$seo->save()) {
+                        $log[] = "Строка {$rowNum}: ошибка сохранения SEO: " . implode('; ', $seo->getFirstErrors());
+                    }
+
+                    $this->copyImagesAndPdf($productName, $product, $rowNum, $log);
+
+                    $imported++;
+                }
+                } catch (\Exception $e) {
+                    $skipped++;
+                    $log[] = 'Критическая ошибка при обработке строки: ' . $e->getMessage();
+                }
+
+                $msg = "Импорт завершен. Импортировано: {$imported}, пропущено: {$skipped}";
+                if ($imported > 0) {
+                    Yii::$app->getSession()->setFlash('success', $msg);
+                } else {
+                    Yii::$app->getSession()->setFlash('warning', $msg);
+                }
+                if (!empty($log)) {
+                    Yii::$app->getSession()->setFlash('info', nl2br('Лог импорта:<br>' . Html::encode(implode("<br>", $log))));
+                }
+            } else {
+                Yii::$app->getSession()->setFlash('error', 'Ошибка при загрузке файла');
+            }
+        }
+
+        return $this->render('import-from-excel', ['model' => $model]);
+    }
+
+    private function getSeoTemplates(): array
+    {
+        return [
+            'title' => '{product_name} {type_ru} газа {gasname} от производителя {manufacturer}',
+            'h1' => '{product_name} {manufacturer} {type_ru} {gasname}',
+            'крошка' => '{product_name} {manufacturer} {type_ru} {gasname}',
+            'desc' => '{product_name} {type_ru} газа {gasname} от производителя {manufacturer} можно купить в компании Газсенсор в розницу и оптом в Москве.',
+        ];
+    }
+
+    private function copyImagesAndPdf(string $productName, Product $product, int $rowNum, array &$log): void
+    {
+        $iiiDir = Yii::getAlias('@documentroot') . '/iii/' . $productName;
+        if (!is_dir($iiiDir)) {
+            return;
+        }
+
+        foreach (['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'] as $ext) {
+            $files = glob($iiiDir . "/*.$ext");
+            if ($files) {
+                $destDir = Product::getUploadPictDir();
+                FileHelper::createDirectory($destDir);
+                $lowExt = strtolower($ext);
+                $dest = $destDir . "/{$product->id}.$lowExt";
+                if (@copy($files[0], $dest)) {
+                    $product->img = $lowExt;
+                    $product->save(false);
+                } else {
+                    $log[] = "Строка {$rowNum}: не удалось скопировать картинку для '{$productName}'";
+                }
+                break;
+            }
+        }
+
+        $pdfFiles = array_merge(
+            glob($iiiDir . '/*.pdf'),
+            glob($iiiDir . '/*.PDF')
+        );
+        if ($pdfFiles) {
+            $destDirPdf = Product::getUploadPdfDir();
+            FileHelper::createDirectory($destDirPdf);
+            $destPdf = $destDirPdf . "/{$product->id}.pdf";
+            if (@copy($pdfFiles[0], $destPdf)) {
+                $product->pdf = basename($pdfFiles[0]);
+                $product->save(false);
+            } else {
+                $log[] = "Строка {$rowNum}: не удалось скопировать PDF для '{$productName}'";
+            }
+        }
     }
 }

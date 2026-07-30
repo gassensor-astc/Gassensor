@@ -34,6 +34,8 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index', 's
 
                             <?= Html::a(Yii::t('app', 'Добавить сенсоры'), ['upload-sensors'], ['class' => 'btn btn-info btn-sm']) ?>
 
+                            <?= Html::a('<i class="fas fa-file-excel"></i> Импорт товаров из Excel', ['import-from-excel'], ['class' => 'btn btn-sm btn-success mr-1']) ?>
+
                             <?= Html::a('<i class="far fa-file-excel"></i> Выгрузить каталог', Url::current(['export-excel']), ['class' => 'btn btn-sm btn-primary mr-1']) ?>
 
                         </div>
