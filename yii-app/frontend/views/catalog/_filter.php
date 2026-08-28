@@ -55,6 +55,20 @@ $req = Yii::$app->request;
     ['class' => 'form-select', 'options' => MeasurementType::measurementTypeOption2($model)])->label(false)
 ?>
 
+<?= $form->field($model, 'life_time_to')->dropDownList(
+    [
+        2 => 'от 2 лет',
+        3 => 'от 3 лет',
+        4 => 'от 4 лет',
+        5 => 'от 5 лет',
+        10 => 'от 10 лет',
+    ],
+    [
+        'class' => 'form-select',
+        'options' => ['' => ['label' => 'Срок жизни, лет']],
+    ])->label(false)
+?>
+
 <?php if (0): ?>
     <div class="mb-3 border p-1">
         <label>Разрешение</label>
@@ -103,20 +117,6 @@ echo $form->field($model, 'selectedSignalTypes', [
         'unselectLabel' => '',
     ],
 ])->label(false);
-?>
-
-<?= $form->field($model, 'life_time_to')->dropDownList(
-    [
-        2 => 'срок жизни до 2 лет',
-        3 => 'срок жизни до 3 лет',
-        4 => 'срок жизни до 4 лет',
-        5 => 'срок жизни до 5 лет',
-        10 => 'срок жизни до 10 лет',
-    ],
-    [
-        'class' => 'form-select',
-        'options' => ['' => ['label' => 'Срок жизни, лет']],
-    ])->label(false)
 ?>
 
 <?php if (0): ?>
