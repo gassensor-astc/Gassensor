@@ -310,7 +310,10 @@ class ProductSearch extends Product
 
         $query->andFilterWhere(['>=', 'response_time', $this->response_time_from]);
         $query->andFilterWhere(['<=', 'response_time', $this->response_time_to]);
-        $query->andFilterWhere(['<=', 'life_time', $this->life_time_to]);
+
+        if ($this->life_time_to !== null && $this->life_time_to !== '') {
+            $query->andWhere(['OR', ['>=', 'life_time', $this->life_time_to], ['life_time' => null]]);
+        }
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'product_range.unit', $this->range_unit])
@@ -321,7 +324,7 @@ class ProductSearch extends Product
         $query->andFilterWhere(['gaz_group.id' => $this->gaz_group_id]);
 
         if ($this->life_time_to !== null && $this->life_time_to !== '') {
-            $query->orderBy(['life_time' => SORT_DESC, 'product.name' => SORT_ASC]);
+            $query->orderBy([new \yii\db\Expression('life_time IS NULL ASC'), 'life_time' => SORT_ASC, 'product.name' => SORT_ASC]);
         } else {
             $query->orderBy('product.name ASC');
         }
@@ -337,12 +340,5 @@ class ProductSearch extends Product
                 $this->$attr = null;
             }
         }
-    }
-
-    private function isLifeTimeOutOfRange(): bool
-    {
-        return $this->life_time_to !== null
-            && $this->life_time_to !== ''
-            && (int)$this->life_time_to > 7;
     }
 }
