@@ -65,7 +65,7 @@ $req = Yii::$app->request;
     ],
     [
         'class' => 'form-select',
-        'options' => ['' => ['label' => 'Срок жизни, лет']],
+        'prompt' => 'Срок жизни, лет',
     ])->label(false)
 ?>
 
