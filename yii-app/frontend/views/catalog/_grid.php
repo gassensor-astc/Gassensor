@@ -79,7 +79,7 @@ use yii\helpers\Html;
             ],
             [
                 'attribute' => 'life_time',
-                'label' => Html::tag('span', 'Срок жизни, до (лет)', [
+                'label' => Html::tag('span', 'Срок жизни, лет (гарантийный)', [
                 ]),
                 'encodeLabel' => false,
                 'headerOptions' => ['class' => 'table-top'],
