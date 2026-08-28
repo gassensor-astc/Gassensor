@@ -105,19 +105,19 @@ echo $form->field($model, 'selectedSignalTypes', [
 ])->label(false);
 ?>
 
-<div class="mb-2" style="margin-top: -8px;">
-    <div class="row g-1">
-        <div class="col" style="min-width: 190px; vertical-align: middle; line-height: 34px;">
-            <label>Срок жизни, лет</label>
-        </div>
-        <div class="col">
-            <?= $form->field($model, 'life_time_to')->dropDownList(
-                [2 => '2', 3 => '3', 4 => '4', 5 => '5', 10 => '10'],
-                ['prompt' => 'Срок жизни, лет']
-            )->label(false) ?>
-        </div>
-    </div>
-</div>
+<?= $form->field($model, 'life_time_to')->dropDownList(
+    [
+        2 => 'срок жизни до 2 лет',
+        3 => 'срок жизни до 3 лет',
+        4 => 'срок жизни до 4 лет',
+        5 => 'срок жизни до 5 лет',
+        10 => 'срок жизни до 10 лет',
+    ],
+    [
+        'class' => 'form-select',
+        'options' => ['' => ['label' => 'Срок жизни, лет']],
+    ])->label(false)
+?>
 
 <?php if (0): ?>
     <div class="mb-3 border p-1">
