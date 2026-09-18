@@ -158,6 +158,10 @@ class ProductSearch extends Product
         //$query->joinWith(['manufacture', 'gaz.gazGroups', 'measurementType',]);
         $query->joinWith(['manufacture', 'gazs.gazGroups', 'measurementType', 'productRanges']);
 
+        // Основной газ нужен для канонического URL товара (Product::getUrl) —
+        // подгружаем заранее, чтобы не было запроса на каждую строку грида.
+        $query->with(['mainGaz']);
+
         $query->leftJoin('{{product_gaz}} pgm', 'product.id = pgm.product_id AND pgm.is_main = 1');
         $query->leftJoin('{{gaz}} gm', 'gm.id = pgm.gaz_id');
 

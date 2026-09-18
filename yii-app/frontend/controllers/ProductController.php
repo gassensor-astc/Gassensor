@@ -31,6 +31,10 @@ class ProductController extends Controller
 
         $gazSlugs = ArrayHelper::getColumn($model->gazs, 'slug');
 
+        // Конечный URL товара (страница основного газа) — из модели, чтобы ссылки
+        // в каталоге и редиректы здесь не разъезжались.
+        $finalUrl = $model->url;
+
         if ($slugGaz) {
             if (!Gaz::findOne(['slug' => $slugGaz])) {
                 throw new BadRequestHttpException('invalid gaz');
@@ -40,12 +44,12 @@ class ProductController extends Controller
                 throw new NotFoundHttpException('not match gaz');
             }
 
-            if ($mainGaz = $model->mainGaz and $mainGaz->slug != $slugGaz) {
-                return $this->redirect("/catalog/{$mainGaz->slug}/$slug", 301);
+            if ($finalUrl !== "/catalog/{$slugGaz}/$slug") {
+                return $this->redirect($finalUrl, 301);
             }
 
         } elseif ($gazSlugs) {
-            return $this->redirect("/catalog/{$gazSlugs[0]}/$slug", 301);
+            return $this->redirect($finalUrl, 301);
         }
 
         $formAdd = new AddToCartForm(['count' => 1, 'productId' => $model->id,]);

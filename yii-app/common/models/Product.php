@@ -481,12 +481,23 @@ class Product extends ProductBase
     }
 
     /**
+     * Канонический (конечный) URL товара: страница основного газа (is_main = 1),
+     * иначе — страница первого газа товара, иначе — /product/<slug>.
+     * Совпадает с целью редиректов ProductController::actionSlug, чтобы ссылки
+     * в каталоге не ходили через 301.
+     *
      * @return string
      */
     public function getUrl()
     {
-        if ($this->gaz->slug ?? null) {
-            return "/catalog/{$this->gaz->slug}/{$this->slug}";
+        $gaz = $this->mainGaz;
+
+        if (!$gaz && ($gazs = $this->gazs)) {
+            $gaz = reset($gazs);
+        }
+
+        if ($gaz && trim((string)$gaz->slug) !== '') {
+            return "/catalog/{$gaz->slug}/{$this->slug}";
         }
 
         return "/product/{$this->slug}";
@@ -551,7 +562,7 @@ class Product extends ProductBase
             'value' => function ($model) {
                 //$label = $model->name;
 
-                $url = "/product/{$model->slug}";
+                $url = $model->url;
 
                 $text = '<a href="' . $url . '" target="_blank" data-pjax="0" title="'.$model->name.'">'.$model->name.'</a>';
                 $text .= '<div style="height: 20px;"></div>';
@@ -914,7 +925,7 @@ class Product extends ProductBase
                 '@type' => 'Offer',
                 'price' => 0.01,
                 'availability' => 'https://schema.org/InStock',
-                'url' => 'https://gassensor.ru/product/' . $this->slug,
+                'url' => 'https://gassensor.ru' . $this->url,
                 'priceValidUntil' => date('Y-m-d', time() + 3600 * 24 * 365),
                 'priceCurrency' => 'RUR',
             ],

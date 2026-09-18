@@ -32,7 +32,7 @@ $cart = Yii::$app->cart;
 <?php foreach ($cart->getItems() as $id => $data): ?>
 <tr>
     <td>
-      <?= Html::a($data->product->name, "/product/{$data->product->slug}") ?>
+      <?= Html::a($data->product->name, $data->product->url) ?>
     </td>
     <td>
         <?= $data->product->seo->h1 ?>
