@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\helpers\BotDetector;
+use common\helpers\Tools;
 use common\models\Applications;
 use yii\data\Pagination;
 use yii\web\Controller;
@@ -15,6 +16,12 @@ class ApplicationsController extends Controller
      */
     public function actionIndex()
     {
+        // SEO: у «Статей» пагинации нет вовсе — и /applications/page/<N>, и
+        // ?page=<N> отдают тот же полный список. Оба адреса 301-им на /applications.
+        if ($target = Tools::getPageParamStrippedRedirectTarget('/applications')) {
+            return $this->redirect($target, 301);
+        }
+
         $query = Applications::find();
         $applications = $query->where('type=1')->all();
         $detectorTubes = $query->where('type=2')->all();

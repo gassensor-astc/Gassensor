@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\helpers\BotDetector;
+use common\helpers\Tools;
 use common\models\News;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -13,6 +14,13 @@ class NewsController extends Controller
 {
     public function actionIndex()
     {
+        // SEO: /news/page/<N> — дубль формы /news?page=<N> (каноническая —
+        // именно она: её отдаёт canonical-тег и ссылки постраничной навигации).
+        // Путевую форму и page<=1 301-им на каноническую.
+        if ($target = Tools::getQueryFormPageRedirectTarget('/news')) {
+            return $this->redirect($target, 301);
+        }
+
         $dataProvider = new ActiveDataProvider([
             'query' => News::find()->orderBy('date DESC'),
             'pagination' => [

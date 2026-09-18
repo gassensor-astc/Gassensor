@@ -486,4 +486,145 @@ class Tools
             return "string";
         }
     }
+
+    /**
+     * Параметр пагинации `page` из СЫРОЙ строки запроса (без учёта параметров
+     * сматченного роута — см. getPathFormPage()).
+     *
+     * @return string|null значение как есть; null — параметра в запросе нет
+     */
+    public static function getRawPageParam(): ?string
+    {
+        $params = self::getRawQueryParams();
+
+        if (!isset($params['page']) || $params['page'] === '') {
+            return null;
+        }
+
+        return (string)$params['page'];
+    }
+
+    /**
+     * Номер страницы, если запрос пришёл ПУТЕВОЙ формой пагинации
+     * (`/<section>/page/<N>`). Такие адреса дублируют `/<section>?page=<N>`.
+     *
+     * ВАЖНО: смотрим СЫРУЮ строку запроса — Yii подмешивает параметры
+     * сматченного роута в query-параметры (`/news/page/2` → `page=2` в
+     * queryParams), поэтому по queryParams путевой адрес от формы с
+     * параметром не отличить (и редирект уходит сам на себя — петля).
+     *
+     * @return int|null
+     */
+    public static function getPathFormPage(): ?int
+    {
+        if (array_key_exists('page', self::getRawQueryParams())) {
+            return null;
+        }
+
+        $page = Yii::$app->request->get('page', null);
+
+        if ($page === null || $page === '') {
+            return null;
+        }
+
+        return (int)$page;
+    }
+
+    /**
+     * GET-параметры текущего запроса без `page` (пустые значения отброшены).
+     *
+     * @return array
+     */
+    public static function getQueryParamsWithoutPage(): array
+    {
+        $params = self::getRawQueryParams();
+        unset($params['page']);
+
+        return array_filter($params, static function ($value) {
+            return $value !== '' && $value !== null && $value !== [];
+        });
+    }
+
+    /**
+     * Куда 301-ить для разделов, где каноническая форма пагинации — с
+     * параметром (`/<section>?page=<N>`, страница 1 — без параметра):
+     * /news, /remains.
+     *
+     * @param string $basePath например '/news'
+     * @return string|null адрес для редиректа; null — запрос уже канонический
+     */
+    public static function getQueryFormPageRedirectTarget(string $basePath): ?string
+    {
+        $rawPage = self::getRawPageParam();
+        $pathPage = self::getPathFormPage();
+
+        // Пришло параметром и это не первая страница — адрес уже канонический.
+        if ($rawPage !== null && (int)$rawPage > 1) {
+            return null;
+        }
+
+        // Ни путевой формы, ни параметра — трогать нечего.
+        if ($pathPage === null && $rawPage === null) {
+            return null;
+        }
+
+        $page = (int)($pathPage ?? $rawPage);
+        $queryParams = self::getQueryParamsWithoutPage();
+
+        if ($page > 1) {
+            $queryParams = array_merge(['page' => $page], $queryParams);
+        }
+
+        return $basePath . ($queryParams ? '?' . http_build_query($queryParams) : '');
+    }
+
+    /**
+     * Обратная политика: каноническая форма пагинации — ПУТЕВАЯ
+     * (`/<section>/<N>`, так у индекса каталога), а `?page=<N>` 301-им на неё.
+     * Страница 1 — без номера в пути.
+     *
+     * @param string $basePath например '/catalog'
+     * @return string|null адрес для редиректа; null — параметра в запросе нет
+     */
+    public static function getPathFormPageRedirectTarget(string $basePath): ?string
+    {
+        if (($rawPage = self::getRawPageParam()) === null) {
+            return null;
+        }
+
+        $page = (int)$rawPage;
+        $queryParams = self::getQueryParamsWithoutPage();
+        $target = $page > 1 ? $basePath . '/' . $page : $basePath;
+
+        return $target . ($queryParams ? '?' . http_build_query($queryParams) : '');
+    }
+
+    /**
+     * Убрать параметр пагинации из адреса разделов БЕЗ пагинации: и путевая
+     * форма `/<section>/page/<N>`, и `?page=<N>` ведут на `/<section>`.
+     *
+     * @param string $basePath например '/applications'
+     * @return string|null адрес для редиректа; null — параметра в запросе нет
+     */
+    public static function getPageParamStrippedRedirectTarget(string $basePath): ?string
+    {
+        if (self::getRawPageParam() === null && self::getPathFormPage() === null) {
+            return null;
+        }
+
+        $queryParams = self::getQueryParamsWithoutPage();
+
+        return $basePath . ($queryParams ? '?' . http_build_query($queryParams) : '');
+    }
+
+    /**
+     * @return array
+     */
+    private static function getRawQueryParams(): array
+    {
+        $params = [];
+        parse_str((string)Yii::$app->request->getQueryString(), $params);
+
+        return $params;
+    }
 }

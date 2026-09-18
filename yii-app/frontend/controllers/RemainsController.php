@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\helpers\Tools;
 use common\models\SensorsList;
 use yii\data\Pagination;
 use yii\web\Controller;
@@ -10,6 +11,13 @@ class RemainsController extends Controller
 {
     public function actionIndex()
     {
+        // SEO: /remains/page/<N> — дубль формы /remains?page=<N> (каноническая —
+        // именно она: её отдаёт canonical-тег и ссылки постраничной навигации).
+        // Путевую форму и page<=1 301-им на каноническую.
+        if ($target = Tools::getQueryFormPageRedirectTarget('/remains')) {
+            return $this->redirect($target, 301);
+        }
+
         $query = SensorsList::find();
         $pages = new Pagination([
             'totalCount' => $query->count(),

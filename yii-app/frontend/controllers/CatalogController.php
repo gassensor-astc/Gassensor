@@ -6,6 +6,8 @@
 
 namespace frontend\controllers;
 
+use common\helpers\StringHelpers;
+use common\helpers\Tools;
 use common\models\Gaz;
 use common\models\Manufacture;
 use common\models\search\ProductSearch;
@@ -74,23 +76,7 @@ class CatalogController extends Controller
         // его отдаёт <link rel="canonical"> и ссылки постраничной навигации)
         // и /catalog?page=<N>. Второй 301-им на первый, чтобы не было дублей;
         // страница 1 — всегда без параметра (pagination->forcePageParam = false).
-        // ВАЖНО: проверяем СЫРУЮ строку запроса — Yii подмешивает параметры
-        // роута (page из /catalog/<N>) в queryParams, и по ним путь считался бы
-        // за ?page= и редиректил сам на себя (петля).
-        parse_str((string)$this->request->getQueryString(), $pageQueryParams);
-        if (isset($pageQueryParams['page']) && $pageQueryParams['page'] !== '') {
-            $page = (int)$pageQueryParams['page'];
-            unset($pageQueryParams['page']);
-            $queryParams = array_filter($pageQueryParams, static function ($v) {
-                return $v !== '' && $v !== null && $v !== [];
-            });
-
-            $target = $page > 1 ? "/catalog/$page" : '/catalog';
-
-            if ($queryParams) {
-                $target .= '?' . http_build_query($queryParams);
-            }
-
+        if ($target = Tools::getPathFormPageRedirectTarget('/catalog')) {
             return $this->redirect($target, 301);
         }
 
