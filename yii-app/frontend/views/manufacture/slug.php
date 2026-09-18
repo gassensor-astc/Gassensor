@@ -63,7 +63,7 @@ if ($seo = $model->seo) {
 
     <?php if (!empty($products)): ?>
         <div class="manufacture-samples">
-            <h2 class="manufacture-samples__title">Примеры товаров</h2>
+            <h2 class="manufacture-samples__title">Последние добавленные товары</h2>
 
             <div class="manufacture-samples__grid">
                 <?php foreach ($products as $product): ?>
