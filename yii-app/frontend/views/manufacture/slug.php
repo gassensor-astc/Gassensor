@@ -61,6 +61,23 @@ if ($seo = $model->seo) {
         </div>
     </div>
 
+    <?php if (!empty($products)): ?>
+        <div class="manufacture-samples">
+            <h2 class="manufacture-samples__title">Примеры товаров</h2>
+
+            <div class="manufacture-samples__grid">
+                <?php foreach ($products as $product): ?>
+                    <?= $this->render('_sample-product', ['model' => $product]) ?>
+                <?php endforeach; ?>
+            </div>
+
+            <p class="manufacture-samples__link">
+                <a class="share" href="/catalog/<?= $model->slug ?>">Перейти в каталог товаров
+                    <?= Html::encode($model->title) ?> &rarr;</a>
+            </p>
+        </div>
+    <?php endif; ?>
+
 </div>
 
 

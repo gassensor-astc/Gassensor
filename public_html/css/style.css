@@ -380,3 +380,128 @@ textarea.select2-search__field::placeholder {
 .sensors-table td {
     word-break: break-word;
 }
+/* Блок «Примеры товаров» на странице производителя */
+.manufacture-samples {
+    margin-top: 40px;
+}
+
+.manufacture-samples__title {
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.manufacture-samples__grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.sample-card {
+    display: flex;
+    flex-direction: column;
+    padding: 18px 16px 16px;
+    background-color: #fff;
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
+    transition: box-shadow 0.2s ease;
+}
+
+.sample-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+}
+
+.sample-card__image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    margin-bottom: 14px;
+}
+
+.sample-card__image img {
+    max-width: 100%;
+    max-height: 150px;
+    width: auto;
+    object-fit: contain;
+}
+
+.sample-card__noimg {
+    color: #999;
+    font-size: 14px;
+}
+
+.sample-card__title {
+    display: block;
+    min-height: 56px;
+    margin-bottom: 12px;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.sample-card__title:hover {
+    color: #b53e00;
+    text-decoration: none;
+}
+
+.sample-card__more {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    color: #4c5d8d;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.sample-card__more:hover {
+    color: #3d4d7a;
+    text-decoration: none;
+}
+
+.sample-card__more-icon {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 7px;
+    color: #fff;
+    background: #4c5d8d;
+    border-radius: 50%;
+}
+
+.sample-card__more-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.sample-card__more:hover .sample-card__more-icon {
+    background: #3d4d7a;
+}
+
+.manufacture-samples__link {
+    margin: 18px 0 0;
+    text-align: right;
+}
+
+@media (max-width: 991px) {
+    .manufacture-samples__grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575px) {
+    .manufacture-samples__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .manufacture-samples__link {
+        text-align: left;
+    }
+}
